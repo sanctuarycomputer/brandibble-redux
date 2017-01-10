@@ -11,5 +11,11 @@
   "devDependencies": {
   },
   "dependencies": {
+    "brandibble": "https://github.com/sanctuarycomputer/brandibble.js",
+    "lodash.find": "^4.6.0",
+    "redux": "^3.6.0",
+    "redux-crud": "^2.0.0",
+    "redux-promise-middleware": "^4.2.0",
+    "redux-thunk": "^2.1.0"
   }
 }

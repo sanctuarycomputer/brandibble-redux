@@ -2,9 +2,14 @@
   "name": "brandibble-redux",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint src",
+    "build:lib": "babel src --out-dir lib",
+    "build:umd": "webpack src/index.js dist/pigeon-redux.js --config webpack.config.development.js",
+    "build:umd:min": "webpack src/index.js dist/pigeon-redux.min.js --config webpack.config.production.js",
+    "build": "npm run build:lib && npm run build:umd && npm run build:umd:min",
+    "test": "node ./node_modules/karma/bin/karma start --auto-watch"
   },
   "author": "",
   "license": "ISC",

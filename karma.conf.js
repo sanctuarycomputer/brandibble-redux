@@ -29,6 +29,7 @@ module.exports = function(config) {
       'tests/**/*.test.js': [ 'webpack', 'sourcemap' ]
     },
     reporters: ['progress'],
+    singleRun: !!process.env.CI,
     webpack: webpackConfig
   });
 };

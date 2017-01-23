@@ -2,14 +2,13 @@
   "name": "brandibble-redux",
   "version": "0.2.1",
   "description": "",
-  "main": "lib/index.js",
+  "main": "dist/brandibble-redux.min.js",
   "scripts": {
     "lint": "eslint src",
     "build:lib": "babel src --out-dir lib",
-    "build:umd": "webpack src/index.js dist/pigeon-redux.js --config webpack.config.development.js",
-    "build:umd:min": "webpack src/index.js dist/pigeon-redux.min.js --config webpack.config.production.js",
+    "build:umd": "webpack src/index.js dist/brandibble-redux.js --config webpack.config.development.js",
+    "build:umd:min": "webpack src/index.js dist/brandibble-redux.min.js --config webpack.config.production.js",
     "build": "npm run build:lib && npm run build:umd && npm run build:umd:min",
-    "postinstall": "npm run build:lib",
     "test": "node ./node_modules/karma/bin/karma start"
   },
   "author": "",

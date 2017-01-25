@@ -78,16 +78,16 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = {
   DEFAULT_KEY:       'id',
 };
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isArray           = __webpack_require__(7);
 var assertHasKey      = __webpack_require__(54);
@@ -112,9 +112,9 @@ function common(config, current, record, reducerName) {
 module.exports = common;
 
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var forEach     = __webpack_require__(36);
 var wrapArray   = __webpack_require__(11)
@@ -149,14 +149,16 @@ function mergeMutable (current, records, key) {
 module.exports = mergeMutable;
 
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 var g;
 
 // This works in non-strict mode
-g = (function() { return this; })();
+g = (function() {
+	return this;
+})();
 
 try {
 	// This works if eval is allowed (see CSP)
@@ -174,9 +176,9 @@ try {
 module.exports = g;
 
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = function(module) {
 	if(!module.webpackPolyfill) {
@@ -186,23 +188,25 @@ module.exports = function(module) {
 		if(!module.children) module.children = [];
 		Object.defineProperty(module, "loaded", {
 			enumerable: true,
-			configurable: false,
-			get: function() { return module.l; }
+			get: function() {
+				return module.l;
+			}
 		});
 		Object.defineProperty(module, "id", {
 			enumerable: true,
-			configurable: false,
-			get: function() { return module.i; }
+			get: function() {
+				return module.i;
+			}
 		});
 		module.webpackPolyfill = 1;
 	}
 	return module;
-}
+};
 
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -843,9 +847,9 @@ function keys(object) {
 module.exports = assign;
 
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isArray           = __webpack_require__(7);
 
@@ -854,9 +858,9 @@ module.exports = function(config, scope, record) {
 }
 
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 /**
  * lodash 4.0.0 (Custom Build) <https://lodash.com/>
@@ -895,9 +899,9 @@ var isArray = Array.isArray;
 module.exports = isArray;
 
 
-/***/ },
+/***/ }),
 /* 8 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var actionCreatorsFor = __webpack_require__(41);
 var actionTypesFor    = __webpack_require__(9);
@@ -915,18 +919,18 @@ for (var c in constants) {
 }
 
 
-/***/ },
+/***/ }),
 /* 9 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var actionTypesFor = __webpack_require__(21);
 
 module.exports = actionTypesFor;
 
 
-/***/ },
+/***/ }),
 /* 10 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var find = __webpack_require__(13);
 
@@ -941,9 +945,9 @@ function findByKey(collection, key, id) {
 module.exports = findByKey;
 
 
-/***/ },
+/***/ }),
 /* 11 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isArray     = __webpack_require__(7);
 
@@ -952,9 +956,9 @@ module.exports = function wrapArray(recordOrRecords) {
 };
 
 
-/***/ },
+/***/ }),
 /* 12 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module, global) {/**
  * lodash 3.0.1 (Custom Build) <https://lodash.com/>
@@ -1018,9 +1022,9 @@ module.exports = root;
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)(module), __webpack_require__(3)))
 
-/***/ },
+/***/ }),
 /* 13 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {/**
  * lodash (Custom Build) <https://lodash.com/>
@@ -3478,9 +3482,9 @@ module.exports = find;
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(4)(module)))
 
-/***/ },
+/***/ }),
 /* 14 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {/**
  * lodash (Custom Build) <https://lodash.com/>
@@ -4973,9 +4977,9 @@ module.exports = omit;
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
-/***/ },
+/***/ }),
 /* 15 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {/**
  * lodash (Custom Build) <https://lodash.com/>
@@ -7378,84 +7382,42 @@ module.exports = reject;
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(4)(module)))
 
-/***/ },
+/***/ }),
 /* 16 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE_16__;
 
-/***/ },
+/***/ }),
 /* 17 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+Object.defineProperty(exports,"__esModule",{value:true});var _data=__webpack_require__(23);Object.keys(_data).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _data[key];}});});
 
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _data = __webpack_require__(23);
-
-Object.keys(_data).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function get() {
-      return _data[key];
-    }
-  });
-});
-
-/***/ },
+/***/ }),
 /* 18 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+Object.defineProperty(exports,"__esModule",{value:true});var _reduxThunk=__webpack_require__(57);var _reduxThunk2=_interopRequireDefault(_reduxThunk);
+var _reduxPromiseMiddleware=__webpack_require__(55);var _reduxPromiseMiddleware2=_interopRequireDefault(_reduxPromiseMiddleware);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}exports.default=
 
+[_reduxThunk2.default,
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+(0,_reduxPromiseMiddleware2.default)()];
 
-var _reduxThunk = __webpack_require__(57);
-
-var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
-
-var _reduxPromiseMiddleware = __webpack_require__(55);
-
-var _reduxPromiseMiddleware2 = _interopRequireDefault(_reduxPromiseMiddleware);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = [_reduxThunk2.default, (0, _reduxPromiseMiddleware2.default)()];
-
-/***/ },
+/***/ }),
 /* 19 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+Object.defineProperty(exports,"__esModule",{value:true});var _redux=__webpack_require__(16);
+var _data=__webpack_require__(26);var _data2=_interopRequireDefault(_data);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}exports.default=
 
+(0,_redux.combineReducers)({
+data:_data2.default});
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _redux = __webpack_require__(16);
-
-var _data = __webpack_require__(26);
-
-var _data2 = _interopRequireDefault(_data);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = (0, _redux.combineReducers)({
-  data: _data2.default
-});
-
-/***/ },
+/***/ }),
 /* 20 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
@@ -29177,9 +29139,9 @@ return /******/ (function(modules) { // webpackBootstrap
 });
 ;
 
-/***/ },
+/***/ }),
 /* 21 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var snakeCase = __webpack_require__(37);
 var trim      = __webpack_require__(38);
@@ -29219,190 +29181,86 @@ module.exports = function(resource) {
 }
 
 
-/***/ },
+/***/ }),
 /* 22 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+Object.defineProperty(exports,"__esModule",{value:true});exports.
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.fetchAllergens = fetchAllergens;
-
-var _reduxCrud = __webpack_require__(8);
-
-var _reduxCrud2 = _interopRequireDefault(_reduxCrud);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var _reduxCrud$actionCrea = _reduxCrud2.default.actionCreatorsFor('allergens'),
-    fetchStart = _reduxCrud$actionCrea.fetchStart,
-    fetchSuccess = _reduxCrud$actionCrea.fetchSuccess,
-    fetchError = _reduxCrud$actionCrea.fetchError;
-
-function fetchAllergens(brandibbleRef) {
-  return function (dispatch) {
-    dispatch(fetchStart());
-    return brandibbleRef.allergens.all().then(function (res) {
-      return dispatch(fetchSuccess(res.data));
-    }).catch(function (errors) {
-      return dispatch(fetchError(errors));
-    });
-  };
+fetchAllergens=fetchAllergens;var _reduxCrud=__webpack_require__(8);var _reduxCrud2=_interopRequireDefault(_reduxCrud);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var _reduxCrud$actionCrea=_reduxCrud2.default.actionCreatorsFor('allergens'),fetchStart=_reduxCrud$actionCrea.fetchStart,fetchSuccess=_reduxCrud$actionCrea.fetchSuccess,fetchError=_reduxCrud$actionCrea.fetchError;function fetchAllergens(brandibbleRef){
+return function(dispatch){
+dispatch(fetchStart());
+return brandibbleRef.allergens.all().
+then(function(res){return dispatch(fetchSuccess(res.data));}).
+catch(function(errors){return dispatch(fetchError(errors));});
+};
 }
 
-/***/ },
+/***/ }),
 /* 23 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+Object.defineProperty(exports,"__esModule",{value:true});var _allergens=__webpack_require__(22);Object.defineProperty(exports,'fetchAllergens',{enumerable:true,get:function get(){return _allergens.fetchAllergens;}});var _locations=__webpack_require__(24);Object.defineProperty(exports,'fetchLocations',{enumerable:true,get:function get(){return _locations.
+fetchLocations;}});Object.defineProperty(exports,'findLocationByAddress',{enumerable:true,get:function get(){return _locations.findLocationByAddress;}});
 
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _allergens = __webpack_require__(22);
-
-Object.defineProperty(exports, 'fetchAllergens', {
-  enumerable: true,
-  get: function get() {
-    return _allergens.fetchAllergens;
-  }
-});
-
-var _locations = __webpack_require__(24);
-
-Object.defineProperty(exports, 'fetchLocations', {
-  enumerable: true,
-  get: function get() {
-    return _locations.fetchLocations;
-  }
-});
-Object.defineProperty(exports, 'findLocationByAddress', {
-  enumerable: true,
-  get: function get() {
-    return _locations.findLocationByAddress;
-  }
-});
-
-/***/ },
+/***/ }),
 /* 24 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+Object.defineProperty(exports,"__esModule",{value:true});exports.
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+
+fetchLocations=fetchLocations;exports.
+
+
+
+
+
+
+
+
+findLocationByAddress=findLocationByAddress;var _lodash=__webpack_require__(13);var _lodash2=_interopRequireDefault(_lodash);var _reduxCrud=__webpack_require__(8);var _reduxCrud2=_interopRequireDefault(_reduxCrud);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var _reduxCrud$actionCrea=_reduxCrud2.default.actionCreatorsFor('locations'),fetchStart=_reduxCrud$actionCrea.fetchStart,fetchSuccess=_reduxCrud$actionCrea.fetchSuccess,fetchError=_reduxCrud$actionCrea.fetchError;function fetchLocations(brandibbleRef){var lat=arguments.length>1&&arguments[1]!==undefined?arguments[1]:null;var lng=arguments.length>2&&arguments[2]!==undefined?arguments[2]:null;return function(dispatch){dispatch(fetchStart());return brandibbleRef.locations.index(lat,lng).then(function(res){return dispatch(fetchSuccess(res));}).catch(function(errors){return dispatch(fetchError(errors));});};}function findLocationByAddress(brandibbleRef,address){
+return function(dispatch){var
+latitude=address.latitude,longitude=address.longitude;
+return dispatch(fetchLocations(brandibbleRef,latitude,longitude)).then(function(res){
+var locations=res.records;
+var deliverableLocation=(0,_lodash2.default)(locations.data||[],function(location){return location.in_delivery_zone;});
+return deliverableLocation?deliverableLocation.location_id:null;
 });
-exports.fetchLocations = fetchLocations;
-exports.findLocationByAddress = findLocationByAddress;
-
-var _lodash = __webpack_require__(13);
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _reduxCrud = __webpack_require__(8);
-
-var _reduxCrud2 = _interopRequireDefault(_reduxCrud);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var _reduxCrud$actionCrea = _reduxCrud2.default.actionCreatorsFor('locations'),
-    fetchStart = _reduxCrud$actionCrea.fetchStart,
-    fetchSuccess = _reduxCrud$actionCrea.fetchSuccess,
-    fetchError = _reduxCrud$actionCrea.fetchError;
-
-function fetchLocations(brandibbleRef) {
-  var lat = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-  var lng = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-
-  return function (dispatch) {
-    dispatch(fetchStart());
-    return brandibbleRef.locations.index(lat, lng).then(function (res) {
-      return dispatch(fetchSuccess(res));
-    }).catch(function (errors) {
-      return dispatch(fetchError(errors));
-    });
-  };
+};
 }
 
-function findLocationByAddress(brandibbleRef, address) {
-  return function (dispatch) {
-    var latitude = address.latitude,
-        longitude = address.longitude;
-
-    return dispatch(fetchLocations(brandibbleRef, latitude, longitude)).then(function (res) {
-      var locations = res.records;
-      var deliverableLocation = (0, _lodash2.default)(locations.data || [], function (location) {
-        return location.in_delivery_zone;
-      });
-      return deliverableLocation ? deliverableLocation.location_id : null;
-    });
-  };
-}
-
-/***/ },
+/***/ }),
 /* 25 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+Object.defineProperty(exports,"__esModule",{value:true});exports.default=
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = allergens;
 
-var _reduxCrud = __webpack_require__(8);
 
-var _reduxCrud2 = _interopRequireDefault(_reduxCrud);
+allergens;var _reduxCrud=__webpack_require__(8);var _reduxCrud2=_interopRequireDefault(_reduxCrud);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var baseReducers=_reduxCrud2.default.reducersFor('allergens');var initialState=[];function allergens(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
+switch(action.type){
+default:
+return baseReducers(state,action);}
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var baseReducers = _reduxCrud2.default.reducersFor('allergens');
-
-var initialState = [];
-
-function allergens() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
-  var action = arguments[1];
-
-  switch (action.type) {
-    default:
-      return baseReducers(state, action);
-  }
 }
 
-/***/ },
+/***/ }),
 /* 26 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+Object.defineProperty(exports,"__esModule",{value:true});var _redux=__webpack_require__(16);
+var _allergens=__webpack_require__(25);var _allergens2=_interopRequireDefault(_allergens);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}exports.default=
 
+(0,_redux.combineReducers)({
+allergens:_allergens2.default});
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _redux = __webpack_require__(16);
-
-var _allergens = __webpack_require__(25);
-
-var _allergens2 = _interopRequireDefault(_allergens);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = (0, _redux.combineReducers)({
-  allergens: _allergens2.default
-});
-
-/***/ },
+/***/ }),
 /* 27 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /**
@@ -29458,9 +29316,9 @@ var invariant = function(condition, format, a, b, c, d, e, f) {
 module.exports = invariant;
 
 
-/***/ },
+/***/ }),
 /* 28 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 /**
  * lodash 3.0.1 (Custom Build) <https://lodash.com/>
@@ -29486,9 +29344,9 @@ function baseToString(value) {
 module.exports = baseToString;
 
 
-/***/ },
+/***/ }),
 /* 29 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 /**
  * lodash 3.0.0 (Custom Build) <https://lodash.com/>
@@ -29519,9 +29377,9 @@ function charsLeftIndex(string, chars) {
 module.exports = charsLeftIndex;
 
 
-/***/ },
+/***/ }),
 /* 30 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 /**
  * lodash 3.0.0 (Custom Build) <https://lodash.com/>
@@ -29551,9 +29409,9 @@ function charsRightIndex(string, chars) {
 module.exports = charsRightIndex;
 
 
-/***/ },
+/***/ }),
 /* 31 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 /**
  * lodash 3.0.9 (Custom Build) <https://lodash.com/>
@@ -29689,9 +29547,9 @@ function isObject(value) {
 module.exports = isIterateeCall;
 
 
-/***/ },
+/***/ }),
 /* 32 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 /**
  * lodash 3.0.0 (Custom Build) <https://lodash.com/>
@@ -29734,9 +29592,9 @@ function trimmedLeftIndex(string) {
 module.exports = trimmedLeftIndex;
 
 
-/***/ },
+/***/ }),
 /* 33 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 /**
  * lodash 3.0.0 (Custom Build) <https://lodash.com/>
@@ -29778,9 +29636,9 @@ function trimmedRightIndex(string) {
 module.exports = trimmedRightIndex;
 
 
-/***/ },
+/***/ }),
 /* 34 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /**
  * lodash 3.2.0 (Custom Build) <https://lodash.com/>
@@ -29967,9 +29825,9 @@ function deburr(string) {
 module.exports = deburr;
 
 
-/***/ },
+/***/ }),
 /* 35 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {/**
  * lodash (Custom Build) <https://lodash.com/>
@@ -32369,9 +32227,9 @@ module.exports = every;
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(4)(module)))
 
-/***/ },
+/***/ }),
 /* 36 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -32940,9 +32798,9 @@ function identity(value) {
 module.exports = forEach;
 
 
-/***/ },
+/***/ }),
 /* 37 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /**
  * lodash 3.1.1 (Custom Build) <https://lodash.com/>
@@ -33018,9 +32876,9 @@ var snakeCase = createCompounder(function(result, word, index) {
 module.exports = snakeCase;
 
 
-/***/ },
+/***/ }),
 /* 38 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /**
  * lodash 3.1.1 (Custom Build) <https://lodash.com/>
@@ -33074,9 +32932,9 @@ function trim(string, chars, guard) {
 module.exports = trim;
 
 
-/***/ },
+/***/ }),
 /* 39 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /**
  * lodash 3.2.0 (Custom Build) <https://lodash.com/>
@@ -33278,9 +33136,9 @@ function words(string, pattern, guard) {
 module.exports = words;
 
 
-/***/ },
+/***/ }),
 /* 40 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
  * @license
@@ -50352,7 +50210,8 @@ module.exports = words;
     // referenced as the "underscore" module.
     !(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
       return _;
-    }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    }.call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   }
   // Check for `exports` after `define` in case a build optimizer adds it.
   else if (freeModule) {
@@ -50369,9 +50228,9 @@ module.exports = words;
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(4)(module)))
 
-/***/ },
+/***/ }),
 /* 41 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var actionTypesFor = __webpack_require__(9);
 var assertNotArray = __webpack_require__(6);
@@ -50538,9 +50397,9 @@ function actionCreatorsFor(resourceName, config) {
 module.exports = actionCreatorsFor;
 
 
-/***/ },
+/***/ }),
 /* 42 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var reject            = __webpack_require__(15);
 var common            = __webpack_require__(1);
@@ -50567,9 +50426,9 @@ function error(config, current, addedRecord) {
 module.exports = error;
 
 
-/***/ },
+/***/ }),
 /* 43 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var assign            = __webpack_require__(5);
 var constants         = __webpack_require__(0);
@@ -50597,9 +50456,9 @@ function start(config, current, record) {
 module.exports = start;
 
 
-/***/ },
+/***/ }),
 /* 44 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var common            = __webpack_require__(1);
 var constants         = __webpack_require__(0);
@@ -50637,9 +50496,9 @@ function success(config, current, addedRecord, clientGenKey) {
 module.exports = success;
 
 
-/***/ },
+/***/ }),
 /* 45 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var common            = __webpack_require__(1);
 var constants         = __webpack_require__(0);
@@ -50663,9 +50522,9 @@ function error(config, current, record) {
 module.exports = error;
 
 
-/***/ },
+/***/ }),
 /* 46 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var assign            = __webpack_require__(5);
 var common            = __webpack_require__(1);
@@ -50693,9 +50552,9 @@ function start(config, current, record) {
 module.exports = start;
 
 
-/***/ },
+/***/ }),
 /* 47 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var reject            = __webpack_require__(15);
 var common            = __webpack_require__(1);
@@ -50719,9 +50578,9 @@ function success(config, current, record) {
 module.exports = success;
 
 
-/***/ },
+/***/ }),
 /* 48 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isArray           = __webpack_require__(7);
 var assertAllHaveKeys = __webpack_require__(53);
@@ -50748,9 +50607,9 @@ function success(config, current, records) {
 module.exports = success;
 
 
-/***/ },
+/***/ }),
 /* 49 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var common            = __webpack_require__(1);
 var constants         = __webpack_require__(0);
@@ -50779,9 +50638,9 @@ function error(config, current, record) {
 module.exports = error;
 
 
-/***/ },
+/***/ }),
 /* 50 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var assign            = __webpack_require__(5);
 var common            = __webpack_require__(1);
@@ -50808,9 +50667,9 @@ function start(config, current, record) {
 module.exports = start;
 
 
-/***/ },
+/***/ }),
 /* 51 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var common            = __webpack_require__(1);
 var mergeMutable      = __webpack_require__(2);
@@ -50828,9 +50687,9 @@ function success(config, current, record) {
 module.exports = success;
 
 
-/***/ },
+/***/ }),
 /* 52 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var actionTypesFor  = __webpack_require__(9);
 var assign          = __webpack_require__(5);
@@ -50913,9 +50772,9 @@ function reducersFor(resourceName, args) {
 module.exports = reducersFor;
 
 
-/***/ },
+/***/ }),
 /* 53 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var every = __webpack_require__(35);
 
@@ -50926,9 +50785,9 @@ module.exports = function(config, reducerName, records) {
 }
 
 
-/***/ },
+/***/ }),
 /* 54 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var _ = __webpack_require__(40);
 var constants = __webpack_require__(0);
@@ -50945,9 +50804,9 @@ module.exports = function(config, reducerName, record) {
 }
 
 
-/***/ },
+/***/ }),
 /* 55 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
@@ -51120,9 +50979,9 @@ function promiseMiddleware() {
   };
 }
 
-/***/ },
+/***/ }),
 /* 56 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
@@ -51142,9 +51001,9 @@ function isPromise(value) {
   return false;
 }
 
-/***/ },
+/***/ }),
 /* 57 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
@@ -51171,48 +51030,19 @@ thunk.withExtraArgument = createThunkMiddleware;
 
 exports['default'] = thunk;
 
-/***/ },
+/***/ }),
 /* 58 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+Object.defineProperty(exports,"__esModule",{value:true});exports.brandibbleMiddleware=exports.reducer=exports.Brandibble=undefined;var _actions=__webpack_require__(17);
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.brandibbleMiddleware = exports.reducer = exports.Brandibble = undefined;
 
-var _actions = __webpack_require__(17);
+Object.keys(_actions).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _actions[key];}});});var _middleware=__webpack_require__(18);var _middleware2=_interopRequireDefault(_middleware);var _reducers=__webpack_require__(19);var _reducers2=_interopRequireDefault(_reducers);var _brandibble=__webpack_require__(20);var _brandibble2=_interopRequireDefault(_brandibble);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}
+var Brandibble=exports.Brandibble=_brandibble2.default;
+var reducer=exports.reducer=_reducers2.default;
+var brandibbleMiddleware=exports.brandibbleMiddleware=_middleware2.default;
 
-Object.keys(_actions).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function get() {
-      return _actions[key];
-    }
-  });
-});
-
-var _middleware = __webpack_require__(18);
-
-var _middleware2 = _interopRequireDefault(_middleware);
-
-var _reducers = __webpack_require__(19);
-
-var _reducers2 = _interopRequireDefault(_reducers);
-
-var _brandibble = __webpack_require__(20);
-
-var _brandibble2 = _interopRequireDefault(_brandibble);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Brandibble = exports.Brandibble = _brandibble2.default;
-var reducer = exports.reducer = _reducers2.default;
-var brandibbleMiddleware = exports.brandibbleMiddleware = _middleware2.default;
-
-/***/ }
+/***/ })
 /******/ ]);
 });

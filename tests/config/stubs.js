@@ -10,5 +10,3 @@ export const brandibble = new Brandibble({
   apiEndpoint: ENV.BRANDIBBLE_API_ENDPOINT,
   storage: localforage,
 });
-
-export const SAMPLE_MENU_LOCATION_ID = 19;

@@ -1,1 +1,0 @@
-export { fetchMenu } from './menu';

@@ -11,15 +11,15 @@ export function fetchMenu(brandibble, locationId, serviceType='delivery', reques
   return dispatch => {
     dispatch(fetchStart());
     return brandibble.menus.build(locationId, serviceType, requestedAtFormatted)
-      .then(res => {
-        let menuData = res.data;
+      .then(({ data }) => {
+        let menuData = data;
         menuData.id = generateUUID();
         dispatch(fetchSuccess(menuData));
         return success(menuData);
       })
-      .catch(res => {
-        dispatch(fetchError(res.errors));
-        return fail(res.errors);
+      .catch(({ errors }) => {
+        dispatch(fetchError(errors));
+        return fail(errors);
       });
   };
 }

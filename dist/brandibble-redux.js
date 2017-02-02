@@ -41662,14 +41662,18 @@ function fetchMenu(brandibble, locationId) {
   var requestedAtFormatted = new Date((0, _moment2.default)(requestedAt));
   return function (dispatch) {
     dispatch(fetchStart());
-    return brandibble.menus.build(locationId, serviceType, requestedAtFormatted).then(function (res) {
-      var menuData = res.data;
+    return brandibble.menus.build(locationId, serviceType, requestedAtFormatted).then(function (_ref) {
+      var data = _ref.data;
+
+      var menuData = data;
       menuData.id = (0, _generateUUID2.default)();
       dispatch(fetchSuccess(menuData));
       return success(menuData);
-    }).catch(function (res) {
-      dispatch(fetchError(res.errors));
-      return fail(res.errors);
+    }).catch(function (_ref2) {
+      var errors = _ref2.errors;
+
+      dispatch(fetchError(errors));
+      return fail(errors);
     });
   };
 }

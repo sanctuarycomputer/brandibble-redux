@@ -2,12 +2,12 @@ import find from 'lodash.find';
 import reduxCrud from 'redux-crud';
 const { fetchStart, fetchSuccess, fetchError } = reduxCrud.actionCreatorsFor('locations');
 
-export function fetchLocations(brandibbleRef, lat=null, lng=null) {
+export function fetchLocations(brandibble, lat=null, lng=null, orderType='olo') {
   return dispatch => {
     dispatch(fetchStart());
-    return brandibbleRef.locations.index(lat, lng)
       .then(res => dispatch(fetchSuccess(res)))
       .catch(errors => dispatch(fetchError(errors)));
+    return brandibble.locations.index(lat, lng, orderType)
   };
 }
 

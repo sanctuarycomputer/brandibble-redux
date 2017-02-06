@@ -1,23 +1,11 @@
 import { expect } from 'chai';
 import reduxCrud from 'redux-crud';
 import reducer from 'reducers/session/menus';
-import generateUUID from 'utils/generateUUID';
+import { menusStub } from '../../config/stubs';
 
 const { MENUS_FETCH_SUCCESS } = reduxCrud.actionTypesFor('menus');
 const initialState = {};
-const payload = {
-  id: generateUUID(),
-  expires_at: "2016-07-09T03:59:00Z",
-  sold_out_items: [0],
-  menu: [
-    {
-      slug: "marketplates",
-      pos_display_color: "",
-      name: "Marketplates",
-      items: [],
-    }
-  ],
-}
+const payload = menusStub
 
 describe('reducers/session/menus', () => {
   it('should return the initial state', () => {

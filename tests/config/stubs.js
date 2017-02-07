@@ -11,5 +11,13 @@ export const brandibble = new Brandibble({
   storage: localforage,
 });
 
+export const customersValidateStub = {
+  is_brandibble_active: true,
+  is_brandibble_customer: true,
+  is_levelup_connected: true,
+  is_levelup_user: true,
+  levelup_connected_email: 'api@brandibble.co',
+}
+
 export const SAMPLE_MENU_LOCATION_ID = 19;
 export const SAMPLE_EMAIL = 'sanctuary-testing-email@example.com';

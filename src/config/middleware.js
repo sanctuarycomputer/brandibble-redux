@@ -3,5 +3,7 @@ import promiseMiddleware from 'redux-promise-middleware';
 
 export default [
   thunk,
-  promiseMiddleware(),
+  promiseMiddleware({
+    promiseTypeSuffixes: ['START', 'SUCCESS', 'ERROR']
+  }),
 ];

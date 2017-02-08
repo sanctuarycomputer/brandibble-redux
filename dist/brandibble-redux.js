@@ -4416,7 +4416,7 @@ return hooks;
 
 })));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(69)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(70)(module)))
 
 /***/ }),
 /* 2 */
@@ -4505,7 +4505,7 @@ module.exports = {
   and: __webpack_require__(181),
   any: __webpack_require__(182),
   anyPass: __webpack_require__(286),
-  ap: __webpack_require__(52),
+  ap: __webpack_require__(53),
   aperture: __webpack_require__(287),
   append: __webpack_require__(288),
   apply: __webpack_require__(183),
@@ -4517,15 +4517,15 @@ module.exports = {
   bind: __webpack_require__(185),
   both: __webpack_require__(292),
   call: __webpack_require__(293),
-  chain: __webpack_require__(53),
+  chain: __webpack_require__(54),
   clamp: __webpack_require__(294),
   clone: __webpack_require__(295),
   comparator: __webpack_require__(296),
   complement: __webpack_require__(297),
-  compose: __webpack_require__(54),
+  compose: __webpack_require__(55),
   composeK: __webpack_require__(186),
   composeP: __webpack_require__(298),
-  concat: __webpack_require__(55),
+  concat: __webpack_require__(56),
   cond: __webpack_require__(299),
   construct: __webpack_require__(300),
   constructN: __webpack_require__(187),
@@ -4554,7 +4554,7 @@ module.exports = {
   eqProps: __webpack_require__(313),
   equals: __webpack_require__(13),
   evolve: __webpack_require__(314),
-  filter: __webpack_require__(56),
+  filter: __webpack_require__(57),
   find: __webpack_require__(315),
   findIndex: __webpack_require__(316),
   findLast: __webpack_require__(317),
@@ -4572,7 +4572,7 @@ module.exports = {
   hasIn: __webpack_require__(328),
   head: __webpack_require__(329),
   identical: __webpack_require__(196),
-  identity: __webpack_require__(57),
+  identity: __webpack_require__(58),
   ifElse: __webpack_require__(330),
   inc: __webpack_require__(331),
   indexBy: __webpack_require__(332),
@@ -4655,7 +4655,7 @@ module.exports = {
   prepend: __webpack_require__(226),
   product: __webpack_require__(417),
   project: __webpack_require__(418),
-  prop: __webpack_require__(62),
+  prop: __webpack_require__(63),
   propEq: __webpack_require__(419),
   propIs: __webpack_require__(420),
   propOr: __webpack_require__(421),
@@ -4687,7 +4687,7 @@ module.exports = {
   sum: __webpack_require__(229),
   symmetricDifference: __webpack_require__(440),
   symmetricDifferenceWith: __webpack_require__(441),
-  tail: __webpack_require__(63),
+  tail: __webpack_require__(64),
   take: __webpack_require__(230),
   takeLast: __webpack_require__(442),
   takeLastWhile: __webpack_require__(443),
@@ -4705,16 +4705,16 @@ module.exports = {
   traverse: __webpack_require__(453),
   trim: __webpack_require__(454),
   tryCatch: __webpack_require__(455),
-  type: __webpack_require__(64),
+  type: __webpack_require__(65),
   unapply: __webpack_require__(456),
   unary: __webpack_require__(457),
   uncurryN: __webpack_require__(458),
   unfold: __webpack_require__(459),
   union: __webpack_require__(460),
   unionWith: __webpack_require__(461),
-  uniq: __webpack_require__(65),
+  uniq: __webpack_require__(66),
   uniqBy: __webpack_require__(232),
-  uniqWith: __webpack_require__(66),
+  uniqWith: __webpack_require__(67),
   unless: __webpack_require__(462),
   unnest: __webpack_require__(463),
   until: __webpack_require__(464),
@@ -4775,7 +4775,7 @@ exports.default = {
 /***/ (function(module, exports, __webpack_require__) {
 
 var _isArray = __webpack_require__(19);
-var _isTransformer = __webpack_require__(61);
+var _isTransformer = __webpack_require__(62);
 
 
 /**
@@ -5487,7 +5487,7 @@ module.exports = _curry2(function max(a, b) { return b > a ? b : a; });
 "use strict";
 
 var actionCreatorsFor_1 = __webpack_require__(474);
-var actionTypesFor_1 = __webpack_require__(67);
+var actionTypesFor_1 = __webpack_require__(68);
 var constants_1 = __webpack_require__(5);
 var list_1 = __webpack_require__(477);
 var map_1 = __webpack_require__(491);
@@ -5707,7 +5707,7 @@ module.exports = _curry2(function path(paths, obj) {
 
 var _curry2 = __webpack_require__(0);
 var map = __webpack_require__(10);
-var prop = __webpack_require__(62);
+var prop = __webpack_require__(63);
 
 
 /**
@@ -6236,7 +6236,7 @@ module.exports = _curryN(4, [], _dispatchable([], _xreduceBy,
 
 var _complement = __webpack_require__(199);
 var _curry2 = __webpack_require__(0);
-var filter = __webpack_require__(56);
+var filter = __webpack_require__(57);
 
 
 /**
@@ -6327,6 +6327,28 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_51__;
 
 /***/ }),
 /* 52 */
+/***/ (function(module, exports) {
+
+Object.defineProperty(exports,"__esModule",{value:true});exports.
+
+
+
+
+
+
+
+
+
+
+
+
+
+validateUser=validateUser;var VALIDATE_USER=exports.VALIDATE_USER='VALIDATE_USER';var NO_OP=function NO_OP(f){return f;};function _validateUser(brandibble,email,success,fail){return{type:VALIDATE_USER,payload:brandibble.customers.validateCustomer({email:email}).then(function(_ref){var data=_ref.data;success(data);return data;}).catch(function(_ref2){var errors=_ref2.errors;return fail(errors);})};}function validateUser(brandibble,email){var success=arguments.length>2&&arguments[2]!==undefined?arguments[2]:NO_OP;var fail=arguments.length>3&&arguments[3]!==undefined?arguments[3]:NO_OP;
+return function(dispatch){return dispatch(_validateUser(brandibble,email,success,fail));};
+}
+
+/***/ }),
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _concat = __webpack_require__(12);
@@ -6369,7 +6391,7 @@ module.exports = _curry2(function ap(applicative, fn) {
 
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -6410,7 +6432,7 @@ module.exports = _curry2(_dispatchable(['chain'], _xchain, function chain(fn, mo
 
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var pipe = __webpack_require__(224);
@@ -6450,7 +6472,7 @@ module.exports = function compose() {
 
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -6497,7 +6519,7 @@ module.exports = _curry2(function concat(a, b) {
 
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -6551,11 +6573,11 @@ module.exports = _curry2(_dispatchable(['filter'], _xfilter, function(pred, filt
 
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
-var _identity = __webpack_require__(60);
+var _identity = __webpack_require__(61);
 
 
 /**
@@ -6581,7 +6603,7 @@ module.exports = _curry1(_identity);
 
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _objectAssign = __webpack_require__(347);
@@ -6591,7 +6613,7 @@ module.exports =
 
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports) {
 
 module.exports = function _containsWith(pred, x, list) {
@@ -6609,14 +6631,14 @@ module.exports = function _containsWith(pred, x, list) {
 
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports) {
 
 module.exports = function _identity(x) { return x; };
 
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports) {
 
 module.exports = function _isTransformer(obj) {
@@ -6625,7 +6647,7 @@ module.exports = function _isTransformer(obj) {
 
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -6653,7 +6675,7 @@ module.exports = _curry2(function prop(p, obj) { return obj[p]; });
 
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _checkForMethod = __webpack_require__(28);
@@ -6692,7 +6714,7 @@ module.exports = _curry1(_checkForMethod('tail', slice(1, Infinity)));
 
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -6729,10 +6751,10 @@ module.exports = _curry1(function type(val) {
 
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var identity = __webpack_require__(57);
+var identity = __webpack_require__(58);
 var uniqBy = __webpack_require__(232);
 
 
@@ -6757,10 +6779,10 @@ module.exports = uniqBy(identity);
 
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _containsWith = __webpack_require__(59);
+var _containsWith = __webpack_require__(60);
 var _curry2 = __webpack_require__(0);
 
 
@@ -6803,7 +6825,7 @@ module.exports = _curry2(function uniqWith(pred, list) {
 
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6814,7 +6836,7 @@ exports.default = actionTypesFor;
 
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6831,7 +6853,7 @@ exports.default = findByKey;
 
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -6857,28 +6879,6 @@ module.exports = function(module) {
 	return module;
 };
 
-
-/***/ }),
-/* 70 */
-/***/ (function(module, exports) {
-
-Object.defineProperty(exports,"__esModule",{value:true});exports.
-
-
-
-
-
-
-
-
-
-
-
-
-
-validateUser=validateUser;var VALIDATE_USER=exports.VALIDATE_USER='VALIDATE_USER';var NO_OP=function NO_OP(f){return f;};function _validateUser(brandibble,email,success,fail){return{type:VALIDATE_USER,payload:brandibble.customers.validateCustomer({email:email}).then(function(_ref){var data=_ref.data;success(data);return data;}).catch(function(_ref2){var errors=_ref2.errors;return fail(errors);})};}function validateUser(brandibble,email){var success=arguments.length>2&&arguments[2]!==undefined?arguments[2]:NO_OP;var fail=arguments.length>3&&arguments[3]!==undefined?arguments[3]:NO_OP;
-return function(dispatch){return dispatch(_validateUser(brandibble,email,success,fail));};
-}
 
 /***/ }),
 /* 71 */
@@ -6944,7 +6944,7 @@ function checkGlobal(value) {
 
 module.exports = root;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(69)(module), __webpack_require__(247)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(70)(module), __webpack_require__(247)))
 
 /***/ }),
 /* 72 */
@@ -17535,8 +17535,8 @@ module.exports = _curry2(function bind(fn, thisObj) {
 /* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var chain = __webpack_require__(53);
-var compose = __webpack_require__(54);
+var chain = __webpack_require__(54);
+var compose = __webpack_require__(55);
 var map = __webpack_require__(10);
 
 
@@ -17778,7 +17778,7 @@ module.exports = _curry2(function difference(first, second) {
 /* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _containsWith = __webpack_require__(59);
+var _containsWith = __webpack_require__(60);
 var _curry3 = __webpack_require__(3);
 
 
@@ -18040,7 +18040,7 @@ module.exports = _curry2(function identical(a, b) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var _cloneRegExp = __webpack_require__(198);
-var type = __webpack_require__(64);
+var type = __webpack_require__(65);
 
 
 /**
@@ -18509,7 +18509,7 @@ module.exports = _curry1(function length(list) {
 
 var _curry2 = __webpack_require__(0);
 var _reduce = __webpack_require__(11);
-var ap = __webpack_require__(52);
+var ap = __webpack_require__(53);
 var curryN = __webpack_require__(8);
 var map = __webpack_require__(10);
 
@@ -18839,7 +18839,7 @@ module.exports = _curry2(function pickAll(names, obj) {
 var _arity = __webpack_require__(14);
 var _pipe = __webpack_require__(349);
 var reduce = __webpack_require__(16);
-var tail = __webpack_require__(63);
+var tail = __webpack_require__(64);
 
 
 /**
@@ -18881,7 +18881,7 @@ module.exports = function pipe() {
 var _arity = __webpack_require__(14);
 var _pipeP = __webpack_require__(350);
 var reduce = __webpack_require__(16);
-var tail = __webpack_require__(63);
+var tail = __webpack_require__(64);
 
 
 /**
@@ -19005,7 +19005,7 @@ module.exports = _curry3(function reduceRight(fn, acc, list) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
-var ap = __webpack_require__(52);
+var ap = __webpack_require__(53);
 var map = __webpack_require__(10);
 var prepend = __webpack_require__(226);
 var reduceRight = __webpack_require__(227);
@@ -19434,7 +19434,7 @@ exports.prepareRecord = prepareRecord;
 "use strict";
 
 var r = __webpack_require__(4);
-var actionTypesFor_1 = __webpack_require__(67);
+var actionTypesFor_1 = __webpack_require__(68);
 var constants_1 = __webpack_require__(5);
 function reducersFor(resourceName, args, emptyState, reducers) {
     if (args === void 0) { args = {}; }
@@ -19652,8 +19652,7 @@ var _reduxPromiseMiddleware=__webpack_require__(506);var _reduxPromiseMiddleware
 
 [_reduxThunk2.default,
 
-(0,_reduxPromiseMiddleware2.default)({
-promiseTypeSuffixes:['START','SUCCESS','ERROR']})];
+(0,_reduxPromiseMiddleware2.default)()];
 
 /***/ }),
 /* 250 */
@@ -41392,12 +41391,12 @@ fetchLocations=fetchLocations;exports.
 
 
 
-findLocationByAddress=findLocationByAddress;var _lodash=__webpack_require__(275);var _lodash2=_interopRequireDefault(_lodash);var _reduxCrud=__webpack_require__(27);var _reduxCrud2=_interopRequireDefault(_reduxCrud);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var _reduxCrud$actionCrea=_reduxCrud2.default.actionCreatorsFor('locations'),fetchStart=_reduxCrud$actionCrea.fetchStart,fetchSuccess=_reduxCrud$actionCrea.fetchSuccess,fetchError=_reduxCrud$actionCrea.fetchError;function fetchLocations(brandibbleRef){var lat=arguments.length>1&&arguments[1]!==undefined?arguments[1]:null;var lng=arguments.length>2&&arguments[2]!==undefined?arguments[2]:null;return function(dispatch){dispatch(fetchStart());return brandibbleRef.locations.index(lat,lng).then(function(res){return dispatch(fetchSuccess(res));}).catch(function(errors){return dispatch(fetchError(errors));});};}function findLocationByAddress(brandibbleRef,address){
+findLocationByAddress=findLocationByAddress;var _lodash=__webpack_require__(275);var _lodash2=_interopRequireDefault(_lodash);var _reduxCrud=__webpack_require__(27);var _reduxCrud2=_interopRequireDefault(_reduxCrud);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var _reduxCrud$actionCrea=_reduxCrud2.default.actionCreatorsFor('locations'),fetchStart=_reduxCrud$actionCrea.fetchStart,fetchSuccess=_reduxCrud$actionCrea.fetchSuccess,fetchError=_reduxCrud$actionCrea.fetchError;function fetchLocations(brandibbleRef){var lat=arguments.length>1&&arguments[1]!==undefined?arguments[1]:null;var lng=arguments.length>2&&arguments[2]!==undefined?arguments[2]:null;return function(dispatch){dispatch(fetchStart());return brandibbleRef.locations.index(lat,lng).then(function(_ref){var data=_ref.data;return dispatch(fetchSuccess(data));}).catch(function(_ref2){var errors=_ref2.errors;return dispatch(fetchError(errors));});};}function findLocationByAddress(brandibbleRef,address){
 return function(dispatch){var
 latitude=address.latitude,longitude=address.longitude;
 return dispatch(fetchLocations(brandibbleRef,latitude,longitude)).then(function(res){
 var locations=res.records;
-var deliverableLocation=(0,_lodash2.default)(locations.data||[],function(location){return location.in_delivery_zone;});
+var deliverableLocation=(0,_lodash2.default)(locations||[],function(location){return location.in_delivery_zone;});
 return deliverableLocation?deliverableLocation.location_id:null;
 });
 };
@@ -41407,7 +41406,7 @@ return deliverableLocation?deliverableLocation.location_id:null;
 /* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
-Object.defineProperty(exports,"__esModule",{value:true});var _menus=__webpack_require__(257);Object.defineProperty(exports,'fetchMenu',{enumerable:true,get:function get(){return _menus.fetchMenu;}});var _user=__webpack_require__(70);Object.defineProperty(exports,'validateUser',{enumerable:true,get:function get(){return _user.
+Object.defineProperty(exports,"__esModule",{value:true});var _menus=__webpack_require__(257);Object.defineProperty(exports,'fetchMenu',{enumerable:true,get:function get(){return _menus.fetchMenu;}});var _user=__webpack_require__(52);Object.defineProperty(exports,'validateUser',{enumerable:true,get:function get(){return _user.
 validateUser;}});
 
 /***/ }),
@@ -41533,7 +41532,7 @@ Object.defineProperty(exports,"__esModule",{value:true});var _extends=Object.ass
 
 
 
-status;var _user=__webpack_require__(70);var _constants=__webpack_require__(265);var _reduxCrud=__webpack_require__(27);var _reduxCrud2=_interopRequireDefault(_reduxCrud);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var FULFILLED=_constants.Status.FULFILLED,IDLE=_constants.Status.IDLE,PENDING=_constants.Status.PENDING,REJECTED=_constants.Status.REJECTED;var _reduxCrud$actionType=_reduxCrud2.default.actionTypesFor('allergens'),ALLERGENS_FETCH_START=_reduxCrud$actionType.ALLERGENS_FETCH_START,ALLERGENS_FETCH_SUCCESS=_reduxCrud$actionType.ALLERGENS_FETCH_SUCCESS,ALLERGENS_FETCH_ERROR=_reduxCrud$actionType.ALLERGENS_FETCH_ERROR;var _reduxCrud$actionType2=_reduxCrud2.default.actionTypesFor('locations'),LOCATIONS_FETCH_START=_reduxCrud$actionType2.LOCATIONS_FETCH_START,LOCATIONS_FETCH_SUCCESS=_reduxCrud$actionType2.LOCATIONS_FETCH_SUCCESS,LOCATIONS_FETCH_ERROR=_reduxCrud$actionType2.LOCATIONS_FETCH_ERROR;var _reduxCrud$actionType3=_reduxCrud2.default.actionTypesFor('menus'),MENUS_FETCH_START=_reduxCrud$actionType3.MENUS_FETCH_START,MENUS_FETCH_SUCCESS=_reduxCrud$actionType3.MENUS_FETCH_SUCCESS,MENUS_FETCH_ERROR=_reduxCrud$actionType3.MENUS_FETCH_ERROR;var initialState={fetchAllergens:IDLE,fetchLocations:IDLE,fetchMenu:IDLE,validateUser:IDLE};function status(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
+status;var _user=__webpack_require__(52);var _constants=__webpack_require__(265);var _reduxCrud=__webpack_require__(27);var _reduxCrud2=_interopRequireDefault(_reduxCrud);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var FULFILLED=_constants.Status.FULFILLED,IDLE=_constants.Status.IDLE,PENDING=_constants.Status.PENDING,REJECTED=_constants.Status.REJECTED;var _reduxCrud$actionType=_reduxCrud2.default.actionTypesFor('allergens'),ALLERGENS_FETCH_START=_reduxCrud$actionType.ALLERGENS_FETCH_START,ALLERGENS_FETCH_SUCCESS=_reduxCrud$actionType.ALLERGENS_FETCH_SUCCESS,ALLERGENS_FETCH_ERROR=_reduxCrud$actionType.ALLERGENS_FETCH_ERROR;var _reduxCrud$actionType2=_reduxCrud2.default.actionTypesFor('locations'),LOCATIONS_FETCH_START=_reduxCrud$actionType2.LOCATIONS_FETCH_START,LOCATIONS_FETCH_SUCCESS=_reduxCrud$actionType2.LOCATIONS_FETCH_SUCCESS,LOCATIONS_FETCH_ERROR=_reduxCrud$actionType2.LOCATIONS_FETCH_ERROR;var _reduxCrud$actionType3=_reduxCrud2.default.actionTypesFor('menus'),MENUS_FETCH_START=_reduxCrud$actionType3.MENUS_FETCH_START,MENUS_FETCH_SUCCESS=_reduxCrud$actionType3.MENUS_FETCH_SUCCESS,MENUS_FETCH_ERROR=_reduxCrud$actionType3.MENUS_FETCH_ERROR;var initialState={fetchAllergens:IDLE,fetchLocations:IDLE,fetchMenu:IDLE,validateUser:IDLE};function status(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
 switch(action.type){
 case ALLERGENS_FETCH_START:return _extends({},state,{fetchAllergens:PENDING});
 case ALLERGENS_FETCH_SUCCESS:return _extends({},state,{fetchAllergens:FULFILLED});
@@ -41547,9 +41546,9 @@ case MENUS_FETCH_START:return _extends({},state,{fetchMenu:PENDING});
 case MENUS_FETCH_SUCCESS:return _extends({},state,{fetchMenu:FULFILLED});
 case MENUS_FETCH_ERROR:return _extends({},state,{fetchMenu:REJECTED});
 
-case _user.VALIDATE_USER+'_START':return _extends({},state,{validateUser:PENDING});
-case _user.VALIDATE_USER+'_SUCCESS':return _extends({},state,{validateUser:FULFILLED});
-case _user.VALIDATE_USER+'_ERROR':return _extends({},state,{validateUser:REJECTED});
+case _user.VALIDATE_USER+'_PENDING':return _extends({},state,{validateUser:PENDING});
+case _user.VALIDATE_USER+'_FULFILLED':return _extends({},state,{validateUser:FULFILLED});
+case _user.VALIDATE_USER+'_REJECTED':return _extends({},state,{validateUser:REJECTED});
 
 default:return state;}
 
@@ -41567,13 +41566,14 @@ validations:_validations2.default});
 
 /***/ }),
 /* 264 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.default=
 
-validations;var initialState={};function validations(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
+
+validations;var _user=__webpack_require__(52);var initialState={};function validations(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
 switch(action.type){
-case'VALIDATE_USER_SUCCESS':
+case _user.VALIDATE_USER+'_FULFILLED':
 return action.payload;
 default:
 return state;}
@@ -44632,7 +44632,7 @@ function property(path) {
 
 module.exports = find;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(247), __webpack_require__(69)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(247), __webpack_require__(70)(module)))
 
 /***/ }),
 /* 276 */
@@ -47636,7 +47636,7 @@ var _functionName = __webpack_require__(345);
 var _has = __webpack_require__(9);
 var identical = __webpack_require__(196);
 var keys = __webpack_require__(15);
-var type = __webpack_require__(64);
+var type = __webpack_require__(65);
 
 
 module.exports = function _equals(a, b, stackA, stackB) {
@@ -47897,9 +47897,9 @@ module.exports = function _quote(s) {
 /* 352 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _assign = __webpack_require__(58);
-var _identity = __webpack_require__(60);
-var _isTransformer = __webpack_require__(61);
+var _assign = __webpack_require__(59);
+var _identity = __webpack_require__(61);
+var _isTransformer = __webpack_require__(62);
 var isArrayLike = __webpack_require__(30);
 var objOf = __webpack_require__(220);
 
@@ -48533,7 +48533,7 @@ var _contains = __webpack_require__(22);
 var _curry2 = __webpack_require__(0);
 var _filter = __webpack_require__(201);
 var flip = __webpack_require__(38);
-var uniq = __webpack_require__(65);
+var uniq = __webpack_require__(66);
 
 
 /**
@@ -48570,9 +48570,9 @@ module.exports = _curry2(function intersection(list1, list2) {
 /* 372 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _containsWith = __webpack_require__(59);
+var _containsWith = __webpack_require__(60);
 var _curry3 = __webpack_require__(3);
-var uniqWith = __webpack_require__(66);
+var uniqWith = __webpack_require__(67);
 
 
 /**
@@ -48678,7 +48678,7 @@ module.exports = _curry2(_checkForMethod('intersperse', function intersperse(sep
 
 var _clone = __webpack_require__(197);
 var _curry3 = __webpack_require__(3);
-var _isTransformer = __webpack_require__(61);
+var _isTransformer = __webpack_require__(62);
 var _reduce = __webpack_require__(11);
 var _stepCat = __webpack_require__(352);
 
@@ -49077,7 +49077,7 @@ module.exports = _curry1(function lensPath(p) {
 var _curry1 = __webpack_require__(2);
 var assoc = __webpack_require__(36);
 var lens = __webpack_require__(44);
-var prop = __webpack_require__(62);
+var prop = __webpack_require__(63);
 
 
 /**
@@ -49522,7 +49522,7 @@ module.exports = _curry1(function memoize(fn) {
 /* 395 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _assign = __webpack_require__(58);
+var _assign = __webpack_require__(59);
 var _curry2 = __webpack_require__(0);
 
 
@@ -49558,7 +49558,7 @@ module.exports = _curry2(function merge(l, r) {
 /* 396 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _assign = __webpack_require__(58);
+var _assign = __webpack_require__(59);
 var _curry1 = __webpack_require__(2);
 
 
@@ -50026,7 +50026,7 @@ module.exports = _createPartialApplicator(flip(_concat));
 /* 410 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var filter = __webpack_require__(56);
+var filter = __webpack_require__(57);
 var juxt = __webpack_require__(212);
 var reject = __webpack_require__(48);
 
@@ -50316,7 +50316,7 @@ module.exports = reduce(multiply, 1);
 /***/ (function(module, exports, __webpack_require__) {
 
 var _map = __webpack_require__(43);
-var identity = __webpack_require__(57);
+var identity = __webpack_require__(58);
 var pickAll = __webpack_require__(223);
 var useWith = __webpack_require__(234);
 
@@ -51129,7 +51129,7 @@ module.exports = _curry2(function subtract(a, b) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
-var concat = __webpack_require__(55);
+var concat = __webpack_require__(56);
 var difference = __webpack_require__(190);
 
 
@@ -51161,7 +51161,7 @@ module.exports = _curry2(function symmetricDifference(list1, list2) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
-var concat = __webpack_require__(55);
+var concat = __webpack_require__(56);
 var differenceWith = __webpack_require__(191);
 
 
@@ -51903,8 +51903,8 @@ module.exports = _curry2(function unfold(fn, seed) {
 
 var _concat = __webpack_require__(12);
 var _curry2 = __webpack_require__(0);
-var compose = __webpack_require__(54);
-var uniq = __webpack_require__(65);
+var compose = __webpack_require__(55);
+var uniq = __webpack_require__(66);
 
 
 /**
@@ -51933,7 +51933,7 @@ module.exports = _curry2(compose(uniq, _concat));
 
 var _concat = __webpack_require__(12);
 var _curry3 = __webpack_require__(3);
-var uniqWith = __webpack_require__(66);
+var uniqWith = __webpack_require__(67);
 
 
 /**
@@ -52004,8 +52004,8 @@ module.exports = _curry3(function unless(pred, whenFalseFn, x) {
 /* 463 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _identity = __webpack_require__(60);
-var chain = __webpack_require__(53);
+var _identity = __webpack_require__(61);
+var chain = __webpack_require__(54);
 
 
 /**
@@ -52426,7 +52426,7 @@ module.exports = _curry3(function zipWith(fn, a, b) {
 
 var r = __webpack_require__(4);
 var invariant = __webpack_require__(267);
-var actionTypesFor_1 = __webpack_require__(67);
+var actionTypesFor_1 = __webpack_require__(68);
 var assertNotArray_1 = __webpack_require__(245);
 var constants_1 = __webpack_require__(5);
 var getDefaultConfig_1 = __webpack_require__(475);
@@ -52715,7 +52715,7 @@ exports.default = success;
 
 var r = __webpack_require__(4);
 var constants_1 = __webpack_require__(5);
-var findByKey_1 = __webpack_require__(68);
+var findByKey_1 = __webpack_require__(69);
 var invariants_1 = __webpack_require__(17);
 var store_1 = __webpack_require__(21);
 var reducerName = constants_1.default.REDUCER_NAMES.DELETE_ERROR;
@@ -52743,7 +52743,7 @@ exports.default = error;
 
 var start_1 = __webpack_require__(238);
 var constants_1 = __webpack_require__(5);
-var findByKey_1 = __webpack_require__(68);
+var findByKey_1 = __webpack_require__(69);
 var invariants_1 = __webpack_require__(17);
 var store_1 = __webpack_require__(21);
 var reducerName = constants_1.default.REDUCER_NAMES.DELETE_START;
@@ -52921,7 +52921,7 @@ exports.default = merge;
 
 var error_1 = __webpack_require__(240);
 var constants_1 = __webpack_require__(5);
-var findByKey_1 = __webpack_require__(68);
+var findByKey_1 = __webpack_require__(69);
 var invariants_1 = __webpack_require__(17);
 var store_1 = __webpack_require__(21);
 var reducerName = constants_1.default.REDUCER_NAMES.UPDATE_ERROR;

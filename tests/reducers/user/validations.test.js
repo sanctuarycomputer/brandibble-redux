@@ -13,9 +13,9 @@ describe('reducers/user/validations', () => {
     ).to.equal(initialState);
   });
 
-  it('handles the VALIDATE_USER_SUCCESS action', () => {
+  it('handles the VALIDATE_USER_FULFILLED action', () => {
     let reduced = reducer(initialState, {
-      type: `${VALIDATE_USER}_SUCCESS`,
+      type: `${VALIDATE_USER}_FULFILLED`,
       payload,
     });
     expect(reduced).to.equal(payload);

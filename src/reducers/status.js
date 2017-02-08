@@ -49,9 +49,9 @@ export default function status(state=initialState, action) {
     case MENUS_FETCH_SUCCESS: return { ...state, fetchMenu: FULFILLED }
     case MENUS_FETCH_ERROR: return { ...state,  fetchMenu: REJECTED }
 
-    case `${VALIDATE_USER}_START`: return { ...state,   validateUser: PENDING }
-    case `${VALIDATE_USER}_SUCCESS`: return { ...state, validateUser: FULFILLED }
-    case `${VALIDATE_USER}_ERROR`: return { ...state,  validateUser: REJECTED }
+    case `${VALIDATE_USER}_PENDING`: return { ...state,   validateUser: PENDING }
+    case `${VALIDATE_USER}_FULFILLED`: return { ...state, validateUser: FULFILLED }
+    case `${VALIDATE_USER}_REJECTED`: return { ...state,  validateUser: REJECTED }
 
     default: return state;
   }

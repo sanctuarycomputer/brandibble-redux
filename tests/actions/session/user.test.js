@@ -26,13 +26,13 @@ describe('actions/session/user', () => {
         expect(actionsCalled).to.have.length.of.at.least(2);
       });
 
-      it('should have VALIDATE_USER_START action', () => {
-        action = find(actionsCalled, {type: 'VALIDATE_USER_START'});
+      it('should have VALIDATE_USER_PENDING action', () => {
+        action = find(actionsCalled, {type: 'VALIDATE_USER_PENDING'});
         expect(action).to.exist;
       });
 
-      it('should have VALIDATE_USER_SUCCESS action', () => {
-        action = find(actionsCalled, {type: 'VALIDATE_USER_SUCCESS'});
+      it('should have VALIDATE_USER_FULFILLED action', () => {
+        action = find(actionsCalled, {type: 'VALIDATE_USER_FULFILLED'});
         expect(action).to.exist;
       });
     });
@@ -52,7 +52,7 @@ describe('actions/session/user', () => {
       it('should handle fail callback', () => {
         validateUser(brandibble, null, success, fail)(store.dispatch).then(res => {
           actionsCalled = store.getActions();
-          action = find(actionsCalled, {type: 'VALIDATE_USER_ERROR'});
+          action = find(actionsCalled, {type: 'VALIDATE_USER_REJECTED'});
           expect(action).to.exist;
           expect(res).to.equal('fail');
         });

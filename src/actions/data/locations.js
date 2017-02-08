@@ -6,8 +6,8 @@ export function fetchLocations(brandibbleRef, lat=null, lng=null) {
   return dispatch => {
     dispatch(fetchStart());
     return brandibbleRef.locations.index(lat, lng)
-      .then(res => dispatch(fetchSuccess(res)))
-      .catch(errors => dispatch(fetchError(errors)));
+      .then(({data}) => dispatch(fetchSuccess(data)))
+      .catch(({errors}) => dispatch(fetchError(errors)));
   };
 }
 
@@ -16,7 +16,7 @@ export function findLocationByAddress(brandibbleRef, address) {
     const { latitude, longitude } = address;
     return dispatch(fetchLocations(brandibbleRef, latitude, longitude)).then(res => {
       const locations = res.records;
-      const deliverableLocation = find(locations.data || [], location => location.in_delivery_zone);
+      const deliverableLocation = find(locations || [], location => location.in_delivery_zone);
       return deliverableLocation ? deliverableLocation.location_id : null;
     });
   };

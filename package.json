@@ -35,7 +35,7 @@
     "webpack": "^2.2.0"
   },
   "dependencies": {
-    "brandibble": "https://github.com/sanctuarycomputer/brandibble.js#v1.3.1",
+    "brandibble": "https://github.com/sanctuarycomputer/brandibble.js#v1.3.2",
     "moment": "^2.17.1",
     "redux-crud": "^3.0.1",
     "redux-promise-middleware": "^4.2.0",

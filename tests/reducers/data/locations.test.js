@@ -1,13 +1,13 @@
 import { expect } from 'chai';
 import reduxCrud from 'redux-crud';
-import reducer from 'reducers/session/locations';
+import reducer from 'reducers/data/locations';
 import { locationsStub } from '../../config/stubs';
 
 const { LOCATIONS_FETCH_SUCCESS } = reduxCrud.actionTypesFor('locations');
 const initialState = [];
 const payload = locationsStub;
 
-describe('reducers/session/locations', () => {
+describe('reducers/data/locations', () => {
   it('should return the initial state', () => {
     expect(
       reducer(initialState, {})

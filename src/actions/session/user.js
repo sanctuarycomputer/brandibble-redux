@@ -12,7 +12,7 @@ function _validateUser(brandibble, email, success, fail) {
       success(data);
       return data;
     })
-    .catch(({errors}) => fail(errors)),
+    .catch(({errors}) => { throw new fail(errors) }),
   };
 }
 
@@ -23,14 +23,14 @@ function _authenticateUser(brandibble, loginData, success, fail) {
       success(data);
       return data;
     })
-    .catch(({errors}) => fail(errors)),
+    .catch(({errors}) => { throw new fail(errors) }),
   }
 }
 
 function _unauthenticateUser(brandibble, success, fail) {
   return {
     type: UNAUTHENTICATE_USER,
-    payload: brandibble.customers.invalidate().then(success).catch(({errors}) => fail(errors)),
+    payload: brandibble.customers.invalidate().then(success).catch(({errors}) =>  { throw new fail(errors) }),
   }
 }
 

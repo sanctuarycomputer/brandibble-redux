@@ -107,6 +107,33 @@ describe('actions/session/user', () => {
         });
       });
     });
+
+    describe('throws error on wrong credentials', () => {
+      let credentials;
+      before(done => {
+        credentials = validCredentialsStub;
+        credentials.password = 'SUPER WRONG PASSWORD';
+        store = mockStore();
+        authenticateUser(brandibble, credentials)(store.dispatch).catch(() => {
+          actionsCalled = store.getActions();
+          done();
+        });
+      });
+
+      it('should call at least 2 actions', () => {
+        expect(actionsCalled).to.have.length.of.at.least(2);
+      });
+
+      it('should have AUTHENTICATE_USER_PENDING action', () => {
+        action = find(actionsCalled, {type: 'AUTHENTICATE_USER_PENDING'});
+        expect(action).to.exist;
+      });
+
+      it('should have AUTHENTICATE_USER_REJECTED action', () => {
+        action = find(actionsCalled, {type: 'AUTHENTICATE_USER_REJECTED'});
+        expect(action).to.exist;
+      });
+    });
   });
 
   describe('unauthenticateUser', () => {
@@ -183,27 +210,6 @@ describe('actions/session/user', () => {
       it('should have RESOLVE_USER_FULFILLED action', () => {
         action = find(actionsCalled, {type: 'RESOLVE_USER_FULFILLED'});
         expect(action).to.exist;
-      });
-    });
-
-    describe('when authorized', () => {
-      before(done => {
-        store = mockStore();
-        authenticateUser(brandibble, validCredentialsStub)(store.dispatch).then(() => {
-          resolveUser(brandibble)(store.dispatch).then(() => {
-            actionsCalled = store.getActions();
-            action = find(actionsCalled, {type: 'RESOLVE_USER_FULFILLED'});
-            done();
-          });
-        });
-      });
-
-      it('should have RESOLVE_USER_FULFILLED action', () => {
-        expect(action).to.exist;
-      });
-
-      it('RESOLVE_USER_FULFILLED action should have an object with keys', () => {
-        expect(Object.keys(action.payload)).to.have.length.of.at.least(1);
       });
     });
 

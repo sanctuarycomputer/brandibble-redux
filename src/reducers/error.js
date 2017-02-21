@@ -17,6 +17,8 @@ import {
   RESOLVE_USER,
   UNAUTHENTICATE_USER,
   VALIDATE_USER,
+  ADD_ALLERGENS,
+  REMOVE_ALLERGENS,
 } from 'actions/session/user';
 const {
   USER_UPDATE_START,
@@ -69,6 +71,8 @@ export const initialState = {
   setupBrandibbleRedux: null,
   // allergens
   fetchAllergens: null,
+  addAllergens: null,
+  removeAllergens: null,
   // addresses
   fetchAddresses: null,
   createAddress: null,
@@ -142,6 +146,14 @@ export default function error(state=initialState, action) {
     // users
     case `${AUTHENTICATE_USER}_PENDING`: return { ...state, authenticateUser: null };
     case `${AUTHENTICATE_USER}_REJECTED`: return { ...state, authenticateUser: action.payload}
+
+    case `${ADD_ALLERGENS}_PENDING`: return { ...state,   addAllergens: null }
+    case `${ADD_ALLERGENS}_FULFILLED`: return { ...state, addAllergens: action.payload }
+    case `${ADD_ALLERGENS}_REJECTED`: return { ...state,  addAllergens: action.error }
+
+    case `${REMOVE_ALLERGENS}_PENDING`: return { ...state,   removeAllergens: null }
+    case `${REMOVE_ALLERGENS}_FULFILLED`: return { ...state, removeAllergens: action.payload }
+    case `${REMOVE_ALLERGENS}_REJECTED`: return { ...state,  removeAllergens: action.error }
 
     case `${RESOLVE_USER}_PENDING`: return { ...state, resolveUser: null };
     case `${RESOLVE_USER}_REJECTED`: return { ...state, resolveUser: action.payload}

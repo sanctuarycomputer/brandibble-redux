@@ -5386,7 +5386,31 @@ exports.default = {
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
-Object.defineProperty(exports,"__esModule",{value:true});exports.RESET_USER_PASSWORD=exports.FETCH_USER=exports.RESOLVE_USER=exports.UNAUTHENTICATE_USER=exports.AUTHENTICATE_USER=exports.VALIDATE_USER=undefined;var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};exports.
+Object.defineProperty(exports,"__esModule",{value:true});exports.REMOVE_ALLERGENS=exports.ADD_ALLERGENS=exports.RESET_USER_PASSWORD=exports.FETCH_USER=exports.RESOLVE_USER=exports.UNAUTHENTICATE_USER=exports.AUTHENTICATE_USER=exports.VALIDATE_USER=undefined;var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};exports.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -5461,6 +5485,14 @@ authenticateUser=authenticateUser;exports.
 
 
 
+addAllergens=addAllergens;exports.
+
+
+
+removeAllergens=removeAllergens;exports.
+
+
+
 unauthenticateUser=unauthenticateUser;exports.
 
 
@@ -5491,12 +5523,12 @@ createUser=createUser;exports.
 
 
 
-updateUser=updateUser;var _reduxCrud=__webpack_require__(8);var _reduxCrud2=_interopRequireDefault(_reduxCrud);var _generateUUID=__webpack_require__(38);var _generateUUID2=_interopRequireDefault(_generateUUID);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var _reduxCrud$actionCrea=_reduxCrud2.default.actionCreatorsFor('user'),updateStart=_reduxCrud$actionCrea.updateStart,updateSuccess=_reduxCrud$actionCrea.updateSuccess,updateError=_reduxCrud$actionCrea.updateError,createStart=_reduxCrud$actionCrea.createStart,createSuccess=_reduxCrud$actionCrea.createSuccess,createError=_reduxCrud$actionCrea.createError;var VALIDATE_USER=exports.VALIDATE_USER='VALIDATE_USER';var AUTHENTICATE_USER=exports.AUTHENTICATE_USER='AUTHENTICATE_USER';var UNAUTHENTICATE_USER=exports.UNAUTHENTICATE_USER='UNAUTHENTICATE_USER';var RESOLVE_USER=exports.RESOLVE_USER='RESOLVE_USER';var FETCH_USER=exports.FETCH_USER='FETCH_USER';var RESET_USER_PASSWORD=exports.RESET_USER_PASSWORD='RESET_USER_PASSWORD';var NO_OP=function NO_OP(f){return f;};function _validateUser(brandibble,email,success,fail){return{type:VALIDATE_USER,payload:brandibble.customers.validateCustomer({email:email}).then(function(_ref){var data=_ref.data;success(data);return data;}).catch(function(_ref2){var errors=_ref2.errors;throw fail(errors);})};}function _authenticateUser(brandibble,loginData,success,fail){return{type:AUTHENTICATE_USER,payload:brandibble.customers.authenticate(loginData).then(function(_ref3){var data=_ref3.data;success(data);return data;}).catch(function(_ref4){var errors=_ref4.errors;throw fail(errors);})};}function _unauthenticateUser(brandibble,success,fail){return{type:UNAUTHENTICATE_USER,payload:brandibble.customers.invalidate().then(success).catch(function(_ref5){var errors=_ref5.errors;throw fail(errors);})};}function _resolveUser(payload){return{type:RESOLVE_USER,payload:payload};}function _fetchUser(brandibble,id){return{type:FETCH_USER,payload:brandibble.customers.show(id).then(function(_ref6){var data=_ref6.data;return data;}).catch(function(_ref7){var errors=_ref7.errors;return errors;})};}function _resetUserPassword(brandibble,email,success,fail){return{type:RESET_USER_PASSWORD,payload:brandibble.customers.resetPassword(email).then(success).catch(function(_ref8){var errors=_ref8.errors;throw fail(errors);})};}function validateUser(brandibble,email){var success=arguments.length>2&&arguments[2]!==undefined?arguments[2]:NO_OP;var fail=arguments.length>3&&arguments[3]!==undefined?arguments[3]:NO_OP;return function(dispatch){return dispatch(_validateUser(brandibble,email,success,fail));};}function authenticateUser(brandibble,loginData){var success=arguments.length>2&&arguments[2]!==undefined?arguments[2]:NO_OP;var fail=arguments.length>3&&arguments[3]!==undefined?arguments[3]:NO_OP;return function(dispatch){return dispatch(_authenticateUser(brandibble,loginData,success,fail));};}function unauthenticateUser(brandibble){var success=arguments.length>1&&arguments[1]!==undefined?arguments[1]:NO_OP;var fail=arguments.length>2&&arguments[2]!==undefined?arguments[2]:NO_OP;return function(dispatch){return dispatch(_unauthenticateUser(brandibble,success,fail));};}function fetchUser(brandibble,id){return function(dispatch){return dispatch(_fetchUser(brandibble,id));};}function resetUserPassword(brandibble,email){var success=arguments.length>2&&arguments[2]!==undefined?arguments[2]:NO_OP;var fail=arguments.length>3&&arguments[3]!==undefined?arguments[3]:NO_OP;return function(dispatch){return dispatch(_resetUserPassword(brandibble,email,success,fail));};}function resolveUser(brandibble){var adapter=brandibble.adapter,customers=brandibble.customers;var payload=adapter.customerToken?customers.current().then(function(_ref9){var data=_ref9.data;return data;}):Promise.resolve({});return function(dispatch){return dispatch(_resolveUser(payload));};}function createUser(brandibble){var data=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};return function(dispatch){var id=(0,_generateUUID2.default)();dispatch(createStart({record:data,id:id}));return brandibble.customers.create(data).then(function(_ref10){var data=_ref10.data;return dispatch(createSuccess(_extends({id:id},data)));}).catch(function(_ref11){var errors=_ref11.errors;return dispatch(createError(errors,{id:id,data:data}));});};}function updateUser(brandibble,id){var data=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};
+updateUser=updateUser;var _reduxCrud=__webpack_require__(8);var _reduxCrud2=_interopRequireDefault(_reduxCrud);var _generateUUID=__webpack_require__(38);var _generateUUID2=_interopRequireDefault(_generateUUID);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var _reduxCrud$actionCrea=_reduxCrud2.default.actionCreatorsFor('user'),updateStart=_reduxCrud$actionCrea.updateStart,updateSuccess=_reduxCrud$actionCrea.updateSuccess,updateError=_reduxCrud$actionCrea.updateError,createStart=_reduxCrud$actionCrea.createStart,createSuccess=_reduxCrud$actionCrea.createSuccess,createError=_reduxCrud$actionCrea.createError;var VALIDATE_USER=exports.VALIDATE_USER='VALIDATE_USER';var AUTHENTICATE_USER=exports.AUTHENTICATE_USER='AUTHENTICATE_USER';var UNAUTHENTICATE_USER=exports.UNAUTHENTICATE_USER='UNAUTHENTICATE_USER';var RESOLVE_USER=exports.RESOLVE_USER='RESOLVE_USER';var FETCH_USER=exports.FETCH_USER='FETCH_USER';var RESET_USER_PASSWORD=exports.RESET_USER_PASSWORD='RESET_USER_PASSWORD';var ADD_ALLERGENS=exports.ADD_ALLERGENS='ADD_ALLERGENS';var REMOVE_ALLERGENS=exports.REMOVE_ALLERGENS='REMOVE_ALLERGENS';var NO_OP=function NO_OP(f){return f;};function _validateUser(brandibble,email,success,fail){return{type:VALIDATE_USER,payload:brandibble.customers.validateCustomer({email:email}).then(function(_ref){var data=_ref.data;success(data);return data;}).catch(function(_ref2){var errors=_ref2.errors;throw fail(errors);})};}function _authenticateUser(brandibble,loginData,success,fail){return{type:AUTHENTICATE_USER,payload:brandibble.customers.authenticate(loginData).then(function(_ref3){var data=_ref3.data;success(data);return data;}).catch(function(_ref4){var errors=_ref4.errors;throw fail(errors);})};}function _addAllergens(brandibble,allergens,success,fail){return{type:ADD_ALLERGENS,payload:brandibble.allergens.create(allergens).then(function(_ref5){var data=_ref5.data;success(data);return data;}).catch(function(_ref6){var errors=_ref6.errors;throw fail(errors);})};}function _removeAllergens(brandibble,allergens,success,fail){return{type:REMOVE_ALLERGENS,payload:brandibble.allergens.remove(allergens).then(function(_ref7){var data=_ref7.data;success(data);return data;}).catch(function(_ref8){var errors=_ref8.errors;throw fail(errors);})};}function _unauthenticateUser(brandibble,success,fail){return{type:UNAUTHENTICATE_USER,payload:brandibble.customers.invalidate().then(success).catch(function(_ref9){var errors=_ref9.errors;throw fail(errors);})};}function _resolveUser(payload){return{type:RESOLVE_USER,payload:payload};}function _fetchUser(brandibble,id){return{type:FETCH_USER,payload:brandibble.customers.show(id).then(function(_ref10){var data=_ref10.data;return data;}).catch(function(_ref11){var errors=_ref11.errors;return errors;})};}function _resetUserPassword(brandibble,email,success,fail){return{type:RESET_USER_PASSWORD,payload:brandibble.customers.resetPassword(email).then(success).catch(function(_ref12){var errors=_ref12.errors;throw fail(errors);})};}function validateUser(brandibble,email){var success=arguments.length>2&&arguments[2]!==undefined?arguments[2]:NO_OP;var fail=arguments.length>3&&arguments[3]!==undefined?arguments[3]:NO_OP;return function(dispatch){return dispatch(_validateUser(brandibble,email,success,fail));};}function authenticateUser(brandibble,loginData){var success=arguments.length>2&&arguments[2]!==undefined?arguments[2]:NO_OP;var fail=arguments.length>3&&arguments[3]!==undefined?arguments[3]:NO_OP;return function(dispatch){return dispatch(_authenticateUser(brandibble,loginData,success,fail));};}function addAllergens(brandibble,allergens){var success=arguments.length>2&&arguments[2]!==undefined?arguments[2]:NO_OP;var fail=arguments.length>3&&arguments[3]!==undefined?arguments[3]:NO_OP;return function(dispatch){return dispatch(_addAllergens(brandibble,allergens,success,fail));};}function removeAllergens(brandibble,allergens){var success=arguments.length>2&&arguments[2]!==undefined?arguments[2]:NO_OP;var fail=arguments.length>3&&arguments[3]!==undefined?arguments[3]:NO_OP;return function(dispatch){return dispatch(_removeAllergens(brandibble,allergens,success,fail));};}function unauthenticateUser(brandibble){var success=arguments.length>1&&arguments[1]!==undefined?arguments[1]:NO_OP;var fail=arguments.length>2&&arguments[2]!==undefined?arguments[2]:NO_OP;return function(dispatch){return dispatch(_unauthenticateUser(brandibble,success,fail));};}function fetchUser(brandibble,id){return function(dispatch){return dispatch(_fetchUser(brandibble,id));};}function resetUserPassword(brandibble,email){var success=arguments.length>2&&arguments[2]!==undefined?arguments[2]:NO_OP;var fail=arguments.length>3&&arguments[3]!==undefined?arguments[3]:NO_OP;return function(dispatch){return dispatch(_resetUserPassword(brandibble,email,success,fail));};}function resolveUser(brandibble){var adapter=brandibble.adapter,customers=brandibble.customers;var payload=adapter.customerToken?customers.current().then(function(_ref13){var data=_ref13.data;return data;}):Promise.resolve({});return function(dispatch){return dispatch(_resolveUser(payload));};}function createUser(brandibble){var data=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};return function(dispatch){var id=(0,_generateUUID2.default)();dispatch(createStart({record:data,id:id}));return brandibble.customers.create(data).then(function(_ref14){var data=_ref14.data;return dispatch(createSuccess(_extends({id:id},data)));}).catch(function(_ref15){var errors=_ref15.errors;return dispatch(createError(errors,{id:id,data:data}));});};}function updateUser(brandibble,id){var data=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};
 return function(dispatch){
 dispatch(updateStart({record:data,id:id}));
 return brandibble.customers.updateCurrent(data).
-then(function(_ref12){var data=_ref12.data;return dispatch(updateSuccess(_extends({id:id},data)));}).
-catch(function(_ref13){var errors=_ref13.errors;return dispatch(updateError(errors,{id:id,data:data}));});
+then(function(_ref16){var data=_ref16.data;return dispatch(updateSuccess(_extends({id:id},data)));}).
+catch(function(_ref17){var errors=_ref17.errors;return dispatch(updateError(errors,{id:id,data:data}));});
 };
 }
 
@@ -20039,6 +20071,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	    arrayBuffer: 'ArrayBuffer' in self
 	  }
 
+	  if (support.arrayBuffer) {
+	    var viewClasses = [
+	      '[object Int8Array]',
+	      '[object Uint8Array]',
+	      '[object Uint8ClampedArray]',
+	      '[object Int16Array]',
+	      '[object Uint16Array]',
+	      '[object Int32Array]',
+	      '[object Uint32Array]',
+	      '[object Float32Array]',
+	      '[object Float64Array]'
+	    ]
+
+	    var isDataView = function(obj) {
+	      return obj && DataView.prototype.isPrototypeOf(obj)
+	    }
+
+	    var isArrayBufferView = ArrayBuffer.isView || function(obj) {
+	      return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1
+	    }
+	  }
+
 	  function normalizeName(name) {
 	    if (typeof name !== 'string') {
 	      name = String(name)
@@ -20171,14 +20225,36 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function readBlobAsArrayBuffer(blob) {
 	    var reader = new FileReader()
+	    var promise = fileReaderReady(reader)
 	    reader.readAsArrayBuffer(blob)
-	    return fileReaderReady(reader)
+	    return promise
 	  }
 
 	  function readBlobAsText(blob) {
 	    var reader = new FileReader()
+	    var promise = fileReaderReady(reader)
 	    reader.readAsText(blob)
-	    return fileReaderReady(reader)
+	    return promise
+	  }
+
+	  function readArrayBufferAsText(buf) {
+	    var view = new Uint8Array(buf)
+	    var chars = new Array(view.length)
+
+	    for (var i = 0; i < view.length; i++) {
+	      chars[i] = String.fromCharCode(view[i])
+	    }
+	    return chars.join('')
+	  }
+
+	  function bufferClone(buf) {
+	    if (buf.slice) {
+	      return buf.slice(0)
+	    } else {
+	      var view = new Uint8Array(buf.byteLength)
+	      view.set(new Uint8Array(buf))
+	      return view.buffer
+	    }
 	  }
 
 	  function Body() {
@@ -20186,7 +20262,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this._initBody = function(body) {
 	      this._bodyInit = body
-	      if (typeof body === 'string') {
+	      if (!body) {
+	        this._bodyText = ''
+	      } else if (typeof body === 'string') {
 	        this._bodyText = body
 	      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
 	        this._bodyBlob = body
@@ -20194,11 +20272,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._bodyFormData = body
 	      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
 	        this._bodyText = body.toString()
-	      } else if (!body) {
-	        this._bodyText = ''
-	      } else if (support.arrayBuffer && ArrayBuffer.prototype.isPrototypeOf(body)) {
-	        // Only support ArrayBuffers for POST method.
-	        // Receiving ArrayBuffers happens via Blobs, instead.
+	      } else if (support.arrayBuffer && support.blob && isDataView(body)) {
+	        this._bodyArrayBuffer = bufferClone(body.buffer)
+	        // IE 10-11 can't handle a DataView body.
+	        this._bodyInit = new Blob([this._bodyArrayBuffer])
+	      } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
+	        this._bodyArrayBuffer = bufferClone(body)
 	      } else {
 	        throw new Error('unsupported BodyInit type')
 	      }
@@ -20223,6 +20302,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (this._bodyBlob) {
 	          return Promise.resolve(this._bodyBlob)
+	        } else if (this._bodyArrayBuffer) {
+	          return Promise.resolve(new Blob([this._bodyArrayBuffer]))
 	        } else if (this._bodyFormData) {
 	          throw new Error('could not read FormData body as blob')
 	        } else {
@@ -20231,27 +20312,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      this.arrayBuffer = function() {
-	        return this.blob().then(readBlobAsArrayBuffer)
-	      }
-
-	      this.text = function() {
-	        var rejected = consumed(this)
-	        if (rejected) {
-	          return rejected
-	        }
-
-	        if (this._bodyBlob) {
-	          return readBlobAsText(this._bodyBlob)
-	        } else if (this._bodyFormData) {
-	          throw new Error('could not read FormData body as text')
+	        if (this._bodyArrayBuffer) {
+	          return consumed(this) || Promise.resolve(this._bodyArrayBuffer)
 	        } else {
-	          return Promise.resolve(this._bodyText)
+	          return this.blob().then(readBlobAsArrayBuffer)
 	        }
 	      }
-	    } else {
-	      this.text = function() {
-	        var rejected = consumed(this)
-	        return rejected ? rejected : Promise.resolve(this._bodyText)
+	    }
+
+	    this.text = function() {
+	      var rejected = consumed(this)
+	      if (rejected) {
+	        return rejected
+	      }
+
+	      if (this._bodyBlob) {
+	        return readBlobAsText(this._bodyBlob)
+	      } else if (this._bodyArrayBuffer) {
+	        return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
+	      } else if (this._bodyFormData) {
+	        throw new Error('could not read FormData body as text')
+	      } else {
+	        return Promise.resolve(this._bodyText)
 	      }
 	    }
 
@@ -20279,7 +20361,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function Request(input, options) {
 	    options = options || {}
 	    var body = options.body
-	    if (Request.prototype.isPrototypeOf(input)) {
+
+	    if (typeof input === 'string') {
+	      this.url = input
+	    } else {
 	      if (input.bodyUsed) {
 	        throw new TypeError('Already read')
 	      }
@@ -20290,12 +20375,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	      this.method = input.method
 	      this.mode = input.mode
-	      if (!body) {
+	      if (!body && input._bodyInit != null) {
 	        body = input._bodyInit
 	        input.bodyUsed = true
 	      }
-	    } else {
-	      this.url = input
 	    }
 
 	    this.credentials = options.credentials || this.credentials || 'omit'
@@ -20313,7 +20396,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  Request.prototype.clone = function() {
-	    return new Request(this)
+	    return new Request(this, { body: this._bodyInit })
 	  }
 
 	  function decode(body) {
@@ -20329,16 +20412,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return form
 	  }
 
-	  function headers(xhr) {
-	    var head = new Headers()
-	    var pairs = (xhr.getAllResponseHeaders() || '').trim().split('\n')
-	    pairs.forEach(function(header) {
-	      var split = header.trim().split(':')
-	      var key = split.shift().trim()
-	      var value = split.join(':').trim()
-	      head.append(key, value)
+	  function parseHeaders(rawHeaders) {
+	    var headers = new Headers()
+	    rawHeaders.split('\r\n').forEach(function(line) {
+	      var parts = line.split(':')
+	      var key = parts.shift().trim()
+	      if (key) {
+	        var value = parts.join(':').trim()
+	        headers.append(key, value)
+	      }
 	    })
-	    return head
+	    return headers
 	  }
 
 	  Body.call(Request.prototype)
@@ -20349,10 +20433,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    this.type = 'default'
-	    this.status = options.status
+	    this.status = 'status' in options ? options.status : 200
 	    this.ok = this.status >= 200 && this.status < 300
-	    this.statusText = options.statusText
-	    this.headers = options.headers instanceof Headers ? options.headers : new Headers(options.headers)
+	    this.statusText = 'statusText' in options ? options.statusText : 'OK'
+	    this.headers = new Headers(options.headers)
 	    this.url = options.url || ''
 	    this._initBody(bodyInit)
 	  }
@@ -20390,35 +20474,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  self.fetch = function(input, init) {
 	    return new Promise(function(resolve, reject) {
-	      var request
-	      if (Request.prototype.isPrototypeOf(input) && !init) {
-	        request = input
-	      } else {
-	        request = new Request(input, init)
-	      }
-
+	      var request = new Request(input, init)
 	      var xhr = new XMLHttpRequest()
-
-	      function responseURL() {
-	        if ('responseURL' in xhr) {
-	          return xhr.responseURL
-	        }
-
-	        // Avoid security warnings on getResponseHeader when not allowed by CORS
-	        if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
-	          return xhr.getResponseHeader('X-Request-URL')
-	        }
-
-	        return
-	      }
 
 	      xhr.onload = function() {
 	        var options = {
 	          status: xhr.status,
 	          statusText: xhr.statusText,
-	          headers: headers(xhr),
-	          url: responseURL()
+	          headers: parseHeaders(xhr.getAllResponseHeaders() || '')
 	        }
+	        options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL')
 	        var body = 'response' in xhr ? xhr.response : xhr.responseText
 	        resolve(new Response(body, options))
 	      }
@@ -20549,13 +20614,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var Brandibble = function () {
 	  function Brandibble(_ref) {
-	    var apiKey = _ref.apiKey;
-	    var brandId = _ref.brandId;
-	    var apiEndpoint = _ref.apiEndpoint;
-	    var apiVersion = _ref.apiVersion;
-	    var _ref$origin = _ref.origin;
-	    var origin = _ref$origin === undefined ? null : _ref$origin;
-	    var storage = _ref.storage;
+	    var apiKey = _ref.apiKey,
+	        brandId = _ref.brandId,
+	        apiEndpoint = _ref.apiEndpoint,
+	        apiVersion = _ref.apiVersion,
+	        _ref$origin = _ref.origin,
+	        origin = _ref$origin === undefined ? null : _ref$origin,
+	        storage = _ref.storage;
 
 	    _classCallCheck(this, Brandibble);
 
@@ -20637,7 +20702,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function queryStringBuilder() {
-	  var queryObject = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	  var queryObject = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	  return Object.keys(queryObject).map(function (k) {
 	    return encodeURIComponent(k) + '=' + encodeURIComponent(queryObject[k]);
@@ -21945,25 +22010,40 @@ return /******/ (function(modules) { // webpackBootstrap
 	var cachedSetTimeout;
 	var cachedClearTimeout;
 
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout () {
+	    throw new Error('clearTimeout has not been defined');
+	}
 	(function () {
 	    try {
-	        cachedSetTimeout = setTimeout;
-	    } catch (e) {
-	        cachedSetTimeout = function () {
-	            throw new Error('setTimeout is not defined');
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
 	        }
+	    } catch (e) {
+	        cachedSetTimeout = defaultSetTimout;
 	    }
 	    try {
-	        cachedClearTimeout = clearTimeout;
-	    } catch (e) {
-	        cachedClearTimeout = function () {
-	            throw new Error('clearTimeout is not defined');
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
 	        }
+	    } catch (e) {
+	        cachedClearTimeout = defaultClearTimeout;
 	    }
 	} ())
 	function runTimeout(fun) {
 	    if (cachedSetTimeout === setTimeout) {
 	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
 	        return setTimeout(fun, 0);
 	    }
 	    try {
@@ -21984,6 +22064,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	function runClearTimeout(marker) {
 	    if (cachedClearTimeout === clearTimeout) {
 	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
 	        return clearTimeout(marker);
 	    }
 	    try {
@@ -23280,8 +23365,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _utils = __webpack_require__(3);
@@ -23321,29 +23404,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function handleResponse(response) {
-	  var status = response.status;
-	  var statusText = response.statusText;
+	  var status = response.status,
+	      statusText = response.statusText;
 
 	  if (status >= 200 && status < 300) {
 	    if (statusText === 'NO CONTENT') {
 	      return true;
 	    }
-	    return response.json();
+	    try {
+	      return response.json();
+	    } catch (e) {
+	      return 'Brandibble.js: Response body could not be parsed as JSON. (Status Code: ' + status + ')';
+	    }
 	  }
 	  if (status === 500) {
 	    throw FiveHundredError;
 	  }
-	  return response.json().then(function (error) {
-	    throw error;
-	  });
+	  try {
+	    return response.json().then(function (error) {
+	      throw error;
+	    });
+	  } catch (e) {
+	    throw 'Brandibble.js: Response body could not be parsed as JSON. (Status Code: ' + status + ')';
+	  }
 	}
 
 	var Adapter = function () {
 	  function Adapter(_ref) {
-	    var apiKey = _ref.apiKey;
-	    var apiBase = _ref.apiBase;
-	    var origin = _ref.origin;
-	    var storage = _ref.storage;
+	    var apiKey = _ref.apiKey,
+	        apiBase = _ref.apiBase,
+	        origin = _ref.origin,
+	        storage = _ref.storage;
 
 	    _classCallCheck(this, Adapter);
 
@@ -23385,18 +23476,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return this.storage.getItem('currentOrder').then(function (serializedOrder) {
 	        if (!serializedOrder) return;
 
-	        var _CircularJSON$parse = _circularJson2.default.parse(serializedOrder);
-
-	        var locationId = _CircularJSON$parse.locationId;
-	        var serviceType = _CircularJSON$parse.serviceType;
-	        var miscOptions = _CircularJSON$parse.miscOptions;
-	        var requestedAt = _CircularJSON$parse.requestedAt;
-	        var cart = _CircularJSON$parse.cart;
-	        var paymentType = _CircularJSON$parse.paymentType;
-	        var customer = _CircularJSON$parse.customer;
-	        var address = _CircularJSON$parse.address;
-	        var creditCard = _CircularJSON$parse.creditCard;
-
+	        var _CircularJSON$parse = _circularJson2.default.parse(serializedOrder),
+	            locationId = _CircularJSON$parse.locationId,
+	            serviceType = _CircularJSON$parse.serviceType,
+	            miscOptions = _CircularJSON$parse.miscOptions,
+	            requestedAt = _CircularJSON$parse.requestedAt,
+	            cart = _CircularJSON$parse.cart,
+	            paymentType = _CircularJSON$parse.paymentType,
+	            customer = _CircularJSON$parse.customer,
+	            address = _CircularJSON$parse.address,
+	            creditCard = _CircularJSON$parse.creditCard;
 
 	        var order = new _order2.default(_this2, locationId, serviceType, paymentType, miscOptions);
 	        if (address) {
@@ -23421,23 +23510,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'persistCurrentOrder',
 	    value: function persistCurrentOrder(order) {
-	      var _this3 = this;
-
 	      this.currentOrder = order;
 	      /* Ensure raw Credit Card data isn't persisted to this.storage */
 	      if (order.creditCard) {
-	        var _ret = function () {
-	          var creditCardData = Object.assign({}, order.creditCard);
+	        var creditCardData = Object.assign({}, order.creditCard);
 
-	          return {
-	            v: _this3.storage.setItem('currentOrder', _circularJson2.default.stringify(sanitizeCreditCard(order))).then(function () {
-	              order.creditCard = creditCardData;
-	              return order;
-	            })
-	          };
-	        }();
-
-	        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+	        return this.storage.setItem('currentOrder', _circularJson2.default.stringify(sanitizeCreditCard(order))).then(function () {
+	          order.creditCard = creditCardData;
+	          return order;
+	        });
 	      }
 	      return this.storage.setItem('currentOrder', _circularJson2.default.stringify(order)).then(function () {
 	        return order;
@@ -23446,30 +23527,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'flushCurrentOrder',
 	    value: function flushCurrentOrder() {
-	      var _this4 = this;
+	      var _this3 = this;
 
 	      return this.storage.removeItem('currentOrder').then(function (res) {
-	        _this4.currentOrder = null;
+	        _this3.currentOrder = null;
 	        return res;
 	      });
 	    }
 	  }, {
 	    key: 'restoreCustomerToken',
 	    value: function restoreCustomerToken() {
-	      var _this5 = this;
+	      var _this4 = this;
 
 	      return this.storage.getItem('customerToken').then(function (customerToken) {
-	        return _this5.customerToken = customerToken;
+	        return _this4.customerToken = customerToken;
 	      });
 	    }
 	  }, {
 	    key: 'persistCustomerToken',
 	    value: function persistCustomerToken(customerToken) {
-	      var _this6 = this;
+	      var _this5 = this;
 
 	      return this.storage.setItem('customerToken', customerToken).then(function () {
-	        return _this6.storage.getItem('customerToken').then(function (token) {
-	          return _this6.customerToken = token;
+	        return _this5.storage.getItem('customerToken').then(function (token) {
+	          return _this5.customerToken = token;
 	        });
 	      });
 	    }
@@ -23512,8 +23593,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _cart7 = __webpack_require__(12);
@@ -23542,9 +23621,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var Order = function () {
 	  function Order(adapter, location_id) {
-	    var serviceType = arguments.length <= 2 || arguments[2] === undefined ? 'delivery' : arguments[2];
-	    var paymentType = arguments.length <= 3 || arguments[3] === undefined ? _utils.PaymentTypes.CASH : arguments[3];
-	    var miscOptions = arguments.length <= 4 || arguments[4] === undefined ? defaultOptions : arguments[4];
+	    var serviceType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'delivery';
+	    var paymentType = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _utils.PaymentTypes.CASH;
+	    var miscOptions = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : defaultOptions;
 
 	    _classCallCheck(this, Order);
 
@@ -23563,15 +23642,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function rehydrateCart() {
 	      var _this = this;
 
-	      var serializedCart = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	      var serializedCart = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	      (serializedCart['lineItems'] || []).forEach(function (serializedLineItem) {
-	        var product = serializedLineItem.product;
-	        var quantity = serializedLineItem.quantity;
-	        var madeFor = serializedLineItem.madeFor;
-	        var instructions = serializedLineItem.instructions;
-	        var configuration = serializedLineItem.configuration;
-	        var uuid = serializedLineItem.uuid;
+	        var product = serializedLineItem.product,
+	            quantity = serializedLineItem.quantity,
+	            madeFor = serializedLineItem.madeFor,
+	            instructions = serializedLineItem.instructions,
+	            configuration = serializedLineItem.configuration,
+	            uuid = serializedLineItem.uuid;
 	        /* Important: add directly from cart to avoid new writes to localforage */
 
 	        var lineItem = _this.cart.addLineItem(product, quantity, uuid);
@@ -23586,7 +23665,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'setRequestedAt',
 	    value: function setRequestedAt() {
-	      var timestampOrAsap = arguments.length <= 0 || arguments[0] === undefined ? ASAP_STRING : arguments[0];
+	      var timestampOrAsap = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ASAP_STRING;
 
 	      if (timestampOrAsap === ASAP_STRING) {
 	        this.requestedAt = ASAP_STRING;
@@ -23621,7 +23700,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function setPaymentMethod() {
 	      var _this2 = this;
 
-	      var paymentType = arguments.length <= 0 || arguments[0] === undefined ? _utils.PaymentTypes.CASH : arguments[0];
+	      var paymentType = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _utils.PaymentTypes.CASH;
 	      var cardOrCashTip = arguments[1];
 
 	      this.paymentType = paymentType;
@@ -23679,7 +23758,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'setLocation',
 	    value: function setLocation() {
-	      var id = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+	      var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
 	      if (id) {
 	        this.locationId = id;
@@ -23695,22 +23774,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'addLineItem',
 	    value: function addLineItem() {
-	      var _this3 = this,
-	          _arguments = arguments;
-
 	      if (this.locationId) {
-	        var _ret = function () {
-	          var _cart;
+	        var _cart;
 
-	          var lineItem = (_cart = _this3.cart).addLineItem.apply(_cart, _arguments);
-	          return {
-	            v: _this3.adapter.persistCurrentOrder(_this3).then(function () {
-	              return lineItem;
-	            })
-	          };
-	        }();
-
-	        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+	        var lineItem = (_cart = this.cart).addLineItem.apply(_cart, arguments);
+	        return this.adapter.persistCurrentOrder(this).then(function () {
+	          return lineItem;
+	        });
 	      }
 	      return Promise.reject('Location ID cannot be blank');
 	    }
@@ -23793,18 +23863,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!this.address) {
 	        return {};
 	      }
-	      var _address = this.address;
-	      var customer_address_id = _address.customer_address_id;
-	      var city = _address.city;
-	      var longitude = _address.longitude;
-	      var latitude = _address.latitude;
-	      var state_code = _address.state_code;
-	      var street_address = _address.street_address;
-	      var zip_code = _address.zip_code;
-	      var unit = _address.unit;
-	      var company = _address.company;
-	      var contact_name = _address.contact_name;
-	      var contact_phone = _address.contact_phone;
+	      var _address = this.address,
+	          customer_address_id = _address.customer_address_id,
+	          city = _address.city,
+	          longitude = _address.longitude,
+	          latitude = _address.latitude,
+	          state_code = _address.state_code,
+	          street_address = _address.street_address,
+	          zip_code = _address.zip_code,
+	          unit = _address.unit,
+	          company = _address.company,
+	          contact_name = _address.contact_name,
+	          contact_phone = _address.contact_phone;
 
 	      if (customer_address_id) {
 	        return { customer_address_id: customer_address_id };
@@ -23819,12 +23889,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!this.creditCard) {
 	        return {};
 	      }
-	      var _creditCard = this.creditCard;
-	      var customer_card_id = _creditCard.customer_card_id;
-	      var cc_expiration = _creditCard.cc_expiration;
-	      var cc_number = _creditCard.cc_number;
-	      var cc_zip = _creditCard.cc_zip;
-	      var cc_cvv = _creditCard.cc_cvv;
+	      var _creditCard = this.creditCard,
+	          customer_card_id = _creditCard.customer_card_id,
+	          cc_expiration = _creditCard.cc_expiration,
+	          cc_number = _creditCard.cc_number,
+	          cc_zip = _creditCard.cc_zip,
+	          cc_cvv = _creditCard.cc_cvv;
 
 	      if (customer_card_id) {
 	        return { customer_card_id: customer_card_id };
@@ -23834,10 +23904,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'format',
 	    value: function format() {
-	      var _miscOptions = this.miscOptions;
-	      var include_utensils = _miscOptions.include_utensils;
-	      var notes_for_store = _miscOptions.notes_for_store;
-	      var tip = _miscOptions.tip;
+	      var _miscOptions = this.miscOptions,
+	          include_utensils = _miscOptions.include_utensils,
+	          notes_for_store = _miscOptions.notes_for_store,
+	          tip = _miscOptions.tip;
 
 
 	      var payload = {
@@ -23923,7 +23993,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'addLineItem',
 	    value: function addLineItem(product) {
-	      var quantity = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
+	      var quantity = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
 	      var uuid = arguments[2];
 
 	      var lineItem = new _lineItem2.default(product, quantity, uuid);
@@ -23960,7 +24030,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'setLineItemQuantity',
 	    value: function setLineItemQuantity(lineItem) {
-	      var quantity = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
+	      var quantity = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
 
 	      var match = (0, _lodash4.default)(this.lineItems, { uuid: lineItem.uuid });
 	      if (match) {
@@ -33638,7 +33708,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -33694,7 +33764,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var LineItem = function () {
 	  function LineItem(product) {
-	    var quantity = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
+	    var quantity = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
 	    var uuid = arguments[2];
 
 	    _classCallCheck(this, LineItem);
@@ -41792,7 +41862,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'orders',
 	    value: function orders(customerId) {
-	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	      var query = _querystring2.default.stringify(params);
 	      return this.adapter.request('GET', 'customers/' + customerId + '/orders?' + query);
@@ -42104,8 +42174,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(Menus, [{
 	    key: 'build',
 	    value: function build(location_id) {
-	      var service_type = arguments.length <= 1 || arguments[1] === undefined ? 'delivery' : arguments[1];
-	      var date = arguments.length <= 2 || arguments[2] === undefined ? new Date() : arguments[2];
+	      var service_type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'delivery';
+	      var date = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Date();
 
 	      var isISOString = (0, _validate2.default)({ timestamp: date }, { timestamp: { format: _utils.ISO8601_PATTERN } });
 	      var requested_at = isISOString ? date.toISOString().split('.')[0] + 'Z' : date;
@@ -42162,7 +42232,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'validate',
 	    value: function validate(orderObj) {
-	      var testChanges = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var testChanges = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	      var body = orderObj.formatForValidation();
 	      Object.assign(body, testChanges);
@@ -42254,6 +42324,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'all',
 	    value: function all() {
 	      return this.adapter.request('GET', 'allergens');
+	    }
+	  }, {
+	    key: 'create',
+	    value: function create(allergensArr) {
+	      var data = {
+	        allergens: allergensArr
+	      };
+	      return this.adapter.request('POST', 'customers/' + this.adapter.customerId() + '/allergens', data);
+	    }
+	  }, {
+	    key: 'remove',
+	    value: function remove(allergensArr) {
+	      var data = {
+	        allergens: allergensArr
+	      };
+	      return this.adapter.request('DELETE', 'customers/' + this.adapter.customerId() + '/allergens', data);
 	    }
 	  }]);
 
@@ -42427,7 +42513,9 @@ resetUserPassword;}});Object.defineProperty(exports,'resolveUser',{enumerable:tr
 resolveUser;}});Object.defineProperty(exports,'unauthenticateUser',{enumerable:true,get:function get(){return _user.
 unauthenticateUser;}});Object.defineProperty(exports,'updateUser',{enumerable:true,get:function get(){return _user.
 updateUser;}});Object.defineProperty(exports,'validateUser',{enumerable:true,get:function get(){return _user.
-validateUser;}});
+validateUser;}});Object.defineProperty(exports,'addAllergens',{enumerable:true,get:function get(){return _user.
+addAllergens;}});Object.defineProperty(exports,'removeAllergens',{enumerable:true,get:function get(){return _user.
+removeAllergens;}});
 
 /***/ }),
 /* 262 */
@@ -42666,7 +42754,11 @@ Object.defineProperty(exports,"__esModule",{value:true});exports.initialState=un
 
 
 
-error;var _reduxCrud=__webpack_require__(8);var _reduxCrud2=_interopRequireDefault(_reduxCrud);var _setup=__webpack_require__(37);var _order=__webpack_require__(29);var _user=__webpack_require__(23);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var _reduxCrud$actionType=_reduxCrud2.default.actionTypesFor('user'),USER_UPDATE_START=_reduxCrud$actionType.USER_UPDATE_START,USER_UPDATE_ERROR=_reduxCrud$actionType.USER_UPDATE_ERROR,USER_CREATE_START=_reduxCrud$actionType.USER_CREATE_START,USER_CREATE_ERROR=_reduxCrud$actionType.USER_CREATE_ERROR;var _reduxCrud$actionType2=_reduxCrud2.default.actionTypesFor('addresses'),ADDRESSES_FETCH_START=_reduxCrud$actionType2.ADDRESSES_FETCH_START,ADDRESSES_FETCH_ERROR=_reduxCrud$actionType2.ADDRESSES_FETCH_ERROR,ADDRESSES_CREATE_START=_reduxCrud$actionType2.ADDRESSES_CREATE_START,ADDRESSES_CREATE_ERROR=_reduxCrud$actionType2.ADDRESSES_CREATE_ERROR,ADDRESSES_DELETE_START=_reduxCrud$actionType2.ADDRESSES_DELETE_START,ADDRESSES_DELETE_ERROR=_reduxCrud$actionType2.ADDRESSES_DELETE_ERROR;var _reduxCrud$actionType3=_reduxCrud2.default.actionTypesFor('allergens'),ALLERGENS_FETCH_START=_reduxCrud$actionType3.ALLERGENS_FETCH_START,ALLERGENS_FETCH_ERROR=_reduxCrud$actionType3.ALLERGENS_FETCH_ERROR;var _reduxCrud$actionType4=_reduxCrud2.default.actionTypesFor('locations'),LOCATIONS_FETCH_START=_reduxCrud$actionType4.LOCATIONS_FETCH_START,LOCATIONS_FETCH_ERROR=_reduxCrud$actionType4.LOCATIONS_FETCH_ERROR;var _reduxCrud$actionType5=_reduxCrud2.default.actionTypesFor('menus'),MENUS_FETCH_START=_reduxCrud$actionType5.MENUS_FETCH_START,MENUS_FETCH_ERROR=_reduxCrud$actionType5.MENUS_FETCH_ERROR;var _reduxCrud$actionType6=_reduxCrud2.default.actionTypesFor('payments'),PAYMENTS_FETCH_START=_reduxCrud$actionType6.PAYMENTS_FETCH_START,PAYMENTS_FETCH_ERROR=_reduxCrud$actionType6.PAYMENTS_FETCH_ERROR,PAYMENTS_CREATE_START=_reduxCrud$actionType6.PAYMENTS_CREATE_START,PAYMENTS_CREATE_ERROR=_reduxCrud$actionType6.PAYMENTS_CREATE_ERROR,PAYMENTS_DELETE_START=_reduxCrud$actionType6.PAYMENTS_DELETE_START,PAYMENTS_DELETE_ERROR=_reduxCrud$actionType6.PAYMENTS_DELETE_ERROR;var initialState=exports.initialState={setupBrandibble:null,setupBrandibbleRedux:null,fetchAllergens:null,fetchAddresses:null,createAddress:null,deleteAddress:null,fetchLocations:null,fetchMenu:null,resolveOrder:null,fetchPayments:null,createPayment:null,deletePayment:null,authenticateUser:null,createUser:null,fetchUser:null,resetUserPassword:null,resolveUser:null,unauthenticateUser:null,updateUser:null,validateUser:null};function error(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
+
+
+
+
+error;var _reduxCrud=__webpack_require__(8);var _reduxCrud2=_interopRequireDefault(_reduxCrud);var _setup=__webpack_require__(37);var _order=__webpack_require__(29);var _user=__webpack_require__(23);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var _reduxCrud$actionType=_reduxCrud2.default.actionTypesFor('user'),USER_UPDATE_START=_reduxCrud$actionType.USER_UPDATE_START,USER_UPDATE_ERROR=_reduxCrud$actionType.USER_UPDATE_ERROR,USER_CREATE_START=_reduxCrud$actionType.USER_CREATE_START,USER_CREATE_ERROR=_reduxCrud$actionType.USER_CREATE_ERROR;var _reduxCrud$actionType2=_reduxCrud2.default.actionTypesFor('addresses'),ADDRESSES_FETCH_START=_reduxCrud$actionType2.ADDRESSES_FETCH_START,ADDRESSES_FETCH_ERROR=_reduxCrud$actionType2.ADDRESSES_FETCH_ERROR,ADDRESSES_CREATE_START=_reduxCrud$actionType2.ADDRESSES_CREATE_START,ADDRESSES_CREATE_ERROR=_reduxCrud$actionType2.ADDRESSES_CREATE_ERROR,ADDRESSES_DELETE_START=_reduxCrud$actionType2.ADDRESSES_DELETE_START,ADDRESSES_DELETE_ERROR=_reduxCrud$actionType2.ADDRESSES_DELETE_ERROR;var _reduxCrud$actionType3=_reduxCrud2.default.actionTypesFor('allergens'),ALLERGENS_FETCH_START=_reduxCrud$actionType3.ALLERGENS_FETCH_START,ALLERGENS_FETCH_ERROR=_reduxCrud$actionType3.ALLERGENS_FETCH_ERROR;var _reduxCrud$actionType4=_reduxCrud2.default.actionTypesFor('locations'),LOCATIONS_FETCH_START=_reduxCrud$actionType4.LOCATIONS_FETCH_START,LOCATIONS_FETCH_ERROR=_reduxCrud$actionType4.LOCATIONS_FETCH_ERROR;var _reduxCrud$actionType5=_reduxCrud2.default.actionTypesFor('menus'),MENUS_FETCH_START=_reduxCrud$actionType5.MENUS_FETCH_START,MENUS_FETCH_ERROR=_reduxCrud$actionType5.MENUS_FETCH_ERROR;var _reduxCrud$actionType6=_reduxCrud2.default.actionTypesFor('payments'),PAYMENTS_FETCH_START=_reduxCrud$actionType6.PAYMENTS_FETCH_START,PAYMENTS_FETCH_ERROR=_reduxCrud$actionType6.PAYMENTS_FETCH_ERROR,PAYMENTS_CREATE_START=_reduxCrud$actionType6.PAYMENTS_CREATE_START,PAYMENTS_CREATE_ERROR=_reduxCrud$actionType6.PAYMENTS_CREATE_ERROR,PAYMENTS_DELETE_START=_reduxCrud$actionType6.PAYMENTS_DELETE_START,PAYMENTS_DELETE_ERROR=_reduxCrud$actionType6.PAYMENTS_DELETE_ERROR;var initialState=exports.initialState={setupBrandibble:null,setupBrandibbleRedux:null,fetchAllergens:null,addAllergens:null,removeAllergens:null,fetchAddresses:null,createAddress:null,deleteAddress:null,fetchLocations:null,fetchMenu:null,resolveOrder:null,fetchPayments:null,createPayment:null,deletePayment:null,authenticateUser:null,createUser:null,fetchUser:null,resetUserPassword:null,resolveUser:null,unauthenticateUser:null,updateUser:null,validateUser:null};function error(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
 switch(action.type){
 
 case _setup.SETUP_BRANDIBBLE+'_PENDING':return _extends({},state,{setupBrandibble:null});
@@ -42714,6 +42806,14 @@ case PAYMENTS_DELETE_ERROR:return _extends({},state,{deletePayment:action.error}
 
 case _user.AUTHENTICATE_USER+'_PENDING':return _extends({},state,{authenticateUser:null});
 case _user.AUTHENTICATE_USER+'_REJECTED':return _extends({},state,{authenticateUser:action.payload});
+
+case _user.ADD_ALLERGENS+'_PENDING':return _extends({},state,{addAllergens:null});
+case _user.ADD_ALLERGENS+'_FULFILLED':return _extends({},state,{addAllergens:action.payload});
+case _user.ADD_ALLERGENS+'_REJECTED':return _extends({},state,{addAllergens:action.error});
+
+case _user.REMOVE_ALLERGENS+'_PENDING':return _extends({},state,{removeAllergens:null});
+case _user.REMOVE_ALLERGENS+'_FULFILLED':return _extends({},state,{removeAllergens:action.payload});
+case _user.REMOVE_ALLERGENS+'_REJECTED':return _extends({},state,{removeAllergens:action.error});
 
 case _user.RESOLVE_USER+'_PENDING':return _extends({},state,{resolveUser:null});
 case _user.RESOLVE_USER+'_REJECTED':return _extends({},state,{resolveUser:action.payload});
@@ -42979,7 +43079,11 @@ Object.defineProperty(exports,"__esModule",{value:true});var _extends=Object.ass
 
 
 
-status;var _setup=__webpack_require__(37);var _order=__webpack_require__(29);var _user=__webpack_require__(23);var _constants=__webpack_require__(279);var _reduxCrud=__webpack_require__(8);var _reduxCrud2=_interopRequireDefault(_reduxCrud);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var FULFILLED=_constants.Status.FULFILLED,IDLE=_constants.Status.IDLE,PENDING=_constants.Status.PENDING,REJECTED=_constants.Status.REJECTED;var _reduxCrud$actionType=_reduxCrud2.default.actionTypesFor('addresses'),ADDRESSES_FETCH_START=_reduxCrud$actionType.ADDRESSES_FETCH_START,ADDRESSES_FETCH_SUCCESS=_reduxCrud$actionType.ADDRESSES_FETCH_SUCCESS,ADDRESSES_FETCH_ERROR=_reduxCrud$actionType.ADDRESSES_FETCH_ERROR,ADDRESSES_CREATE_START=_reduxCrud$actionType.ADDRESSES_CREATE_START,ADDRESSES_CREATE_SUCCESS=_reduxCrud$actionType.ADDRESSES_CREATE_SUCCESS,ADDRESSES_CREATE_ERROR=_reduxCrud$actionType.ADDRESSES_CREATE_ERROR,ADDRESSES_DELETE_START=_reduxCrud$actionType.ADDRESSES_DELETE_START,ADDRESSES_DELETE_SUCCESS=_reduxCrud$actionType.ADDRESSES_DELETE_SUCCESS,ADDRESSES_DELETE_ERROR=_reduxCrud$actionType.ADDRESSES_DELETE_ERROR;var _reduxCrud$actionType2=_reduxCrud2.default.actionTypesFor('allergens'),ALLERGENS_FETCH_START=_reduxCrud$actionType2.ALLERGENS_FETCH_START,ALLERGENS_FETCH_SUCCESS=_reduxCrud$actionType2.ALLERGENS_FETCH_SUCCESS,ALLERGENS_FETCH_ERROR=_reduxCrud$actionType2.ALLERGENS_FETCH_ERROR;var _reduxCrud$actionType3=_reduxCrud2.default.actionTypesFor('locations'),LOCATIONS_FETCH_START=_reduxCrud$actionType3.LOCATIONS_FETCH_START,LOCATIONS_FETCH_SUCCESS=_reduxCrud$actionType3.LOCATIONS_FETCH_SUCCESS,LOCATIONS_FETCH_ERROR=_reduxCrud$actionType3.LOCATIONS_FETCH_ERROR;var _reduxCrud$actionType4=_reduxCrud2.default.actionTypesFor('menus'),MENUS_FETCH_START=_reduxCrud$actionType4.MENUS_FETCH_START,MENUS_FETCH_SUCCESS=_reduxCrud$actionType4.MENUS_FETCH_SUCCESS,MENUS_FETCH_ERROR=_reduxCrud$actionType4.MENUS_FETCH_ERROR;var _reduxCrud$actionType5=_reduxCrud2.default.actionTypesFor('payments'),PAYMENTS_FETCH_START=_reduxCrud$actionType5.PAYMENTS_FETCH_START,PAYMENTS_FETCH_SUCCESS=_reduxCrud$actionType5.PAYMENTS_FETCH_SUCCESS,PAYMENTS_FETCH_ERROR=_reduxCrud$actionType5.PAYMENTS_FETCH_ERROR,PAYMENTS_CREATE_START=_reduxCrud$actionType5.PAYMENTS_CREATE_START,PAYMENTS_CREATE_SUCCESS=_reduxCrud$actionType5.PAYMENTS_CREATE_SUCCESS,PAYMENTS_CREATE_ERROR=_reduxCrud$actionType5.PAYMENTS_CREATE_ERROR,PAYMENTS_DELETE_START=_reduxCrud$actionType5.PAYMENTS_DELETE_START,PAYMENTS_DELETE_SUCCESS=_reduxCrud$actionType5.PAYMENTS_DELETE_SUCCESS,PAYMENTS_DELETE_ERROR=_reduxCrud$actionType5.PAYMENTS_DELETE_ERROR;var _reduxCrud$actionType6=_reduxCrud2.default.actionTypesFor('user'),USER_UPDATE_START=_reduxCrud$actionType6.USER_UPDATE_START,USER_UPDATE_SUCCESS=_reduxCrud$actionType6.USER_UPDATE_SUCCESS,USER_UPDATE_ERROR=_reduxCrud$actionType6.USER_UPDATE_ERROR,USER_CREATE_START=_reduxCrud$actionType6.USER_CREATE_START,USER_CREATE_SUCCESS=_reduxCrud$actionType6.USER_CREATE_SUCCESS,USER_CREATE_ERROR=_reduxCrud$actionType6.USER_CREATE_ERROR;var initialState={setupBrandibble:IDLE,setupBrandibbleRedux:IDLE,fetchAddresses:IDLE,createAddress:IDLE,deleteAddress:IDLE,fetchAllergens:IDLE,fetchLocations:IDLE,fetchMenu:IDLE,resolveOrder:IDLE,fetchPayments:IDLE,createPayment:IDLE,deletePayment:IDLE,authenticateUser:IDLE,createUser:IDLE,fetchUser:IDLE,resetUserPassword:IDLE,resolveUser:IDLE,unauthenticateUser:IDLE,updateUser:IDLE,validateUser:IDLE};function status(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
+
+
+
+
+status;var _setup=__webpack_require__(37);var _order=__webpack_require__(29);var _user=__webpack_require__(23);var _constants=__webpack_require__(279);var _reduxCrud=__webpack_require__(8);var _reduxCrud2=_interopRequireDefault(_reduxCrud);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var FULFILLED=_constants.Status.FULFILLED,IDLE=_constants.Status.IDLE,PENDING=_constants.Status.PENDING,REJECTED=_constants.Status.REJECTED;var _reduxCrud$actionType=_reduxCrud2.default.actionTypesFor('addresses'),ADDRESSES_FETCH_START=_reduxCrud$actionType.ADDRESSES_FETCH_START,ADDRESSES_FETCH_SUCCESS=_reduxCrud$actionType.ADDRESSES_FETCH_SUCCESS,ADDRESSES_FETCH_ERROR=_reduxCrud$actionType.ADDRESSES_FETCH_ERROR,ADDRESSES_CREATE_START=_reduxCrud$actionType.ADDRESSES_CREATE_START,ADDRESSES_CREATE_SUCCESS=_reduxCrud$actionType.ADDRESSES_CREATE_SUCCESS,ADDRESSES_CREATE_ERROR=_reduxCrud$actionType.ADDRESSES_CREATE_ERROR,ADDRESSES_DELETE_START=_reduxCrud$actionType.ADDRESSES_DELETE_START,ADDRESSES_DELETE_SUCCESS=_reduxCrud$actionType.ADDRESSES_DELETE_SUCCESS,ADDRESSES_DELETE_ERROR=_reduxCrud$actionType.ADDRESSES_DELETE_ERROR;var _reduxCrud$actionType2=_reduxCrud2.default.actionTypesFor('allergens'),ALLERGENS_FETCH_START=_reduxCrud$actionType2.ALLERGENS_FETCH_START,ALLERGENS_FETCH_SUCCESS=_reduxCrud$actionType2.ALLERGENS_FETCH_SUCCESS,ALLERGENS_FETCH_ERROR=_reduxCrud$actionType2.ALLERGENS_FETCH_ERROR;var _reduxCrud$actionType3=_reduxCrud2.default.actionTypesFor('locations'),LOCATIONS_FETCH_START=_reduxCrud$actionType3.LOCATIONS_FETCH_START,LOCATIONS_FETCH_SUCCESS=_reduxCrud$actionType3.LOCATIONS_FETCH_SUCCESS,LOCATIONS_FETCH_ERROR=_reduxCrud$actionType3.LOCATIONS_FETCH_ERROR;var _reduxCrud$actionType4=_reduxCrud2.default.actionTypesFor('menus'),MENUS_FETCH_START=_reduxCrud$actionType4.MENUS_FETCH_START,MENUS_FETCH_SUCCESS=_reduxCrud$actionType4.MENUS_FETCH_SUCCESS,MENUS_FETCH_ERROR=_reduxCrud$actionType4.MENUS_FETCH_ERROR;var _reduxCrud$actionType5=_reduxCrud2.default.actionTypesFor('payments'),PAYMENTS_FETCH_START=_reduxCrud$actionType5.PAYMENTS_FETCH_START,PAYMENTS_FETCH_SUCCESS=_reduxCrud$actionType5.PAYMENTS_FETCH_SUCCESS,PAYMENTS_FETCH_ERROR=_reduxCrud$actionType5.PAYMENTS_FETCH_ERROR,PAYMENTS_CREATE_START=_reduxCrud$actionType5.PAYMENTS_CREATE_START,PAYMENTS_CREATE_SUCCESS=_reduxCrud$actionType5.PAYMENTS_CREATE_SUCCESS,PAYMENTS_CREATE_ERROR=_reduxCrud$actionType5.PAYMENTS_CREATE_ERROR,PAYMENTS_DELETE_START=_reduxCrud$actionType5.PAYMENTS_DELETE_START,PAYMENTS_DELETE_SUCCESS=_reduxCrud$actionType5.PAYMENTS_DELETE_SUCCESS,PAYMENTS_DELETE_ERROR=_reduxCrud$actionType5.PAYMENTS_DELETE_ERROR;var _reduxCrud$actionType6=_reduxCrud2.default.actionTypesFor('user'),USER_UPDATE_START=_reduxCrud$actionType6.USER_UPDATE_START,USER_UPDATE_SUCCESS=_reduxCrud$actionType6.USER_UPDATE_SUCCESS,USER_UPDATE_ERROR=_reduxCrud$actionType6.USER_UPDATE_ERROR,USER_CREATE_START=_reduxCrud$actionType6.USER_CREATE_START,USER_CREATE_SUCCESS=_reduxCrud$actionType6.USER_CREATE_SUCCESS,USER_CREATE_ERROR=_reduxCrud$actionType6.USER_CREATE_ERROR;var initialState={setupBrandibble:IDLE,setupBrandibbleRedux:IDLE,fetchAddresses:IDLE,createAddress:IDLE,deleteAddress:IDLE,fetchAllergens:IDLE,addAllergens:IDLE,removeAllergens:IDLE,fetchLocations:IDLE,fetchMenu:IDLE,resolveOrder:IDLE,fetchPayments:IDLE,createPayment:IDLE,deletePayment:IDLE,authenticateUser:IDLE,createUser:IDLE,fetchUser:IDLE,resetUserPassword:IDLE,resolveUser:IDLE,unauthenticateUser:IDLE,updateUser:IDLE,validateUser:IDLE};function status(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
 switch(action.type){
 case _setup.SETUP_BRANDIBBLE+'_PENDING':return _extends({},state,{setupBrandibble:PENDING});
 case _setup.SETUP_BRANDIBBLE+'_FULFILLED':return _extends({},state,{setupBrandibble:FULFILLED});
@@ -43033,6 +43137,14 @@ case _user.VALIDATE_USER+'_PENDING':return _extends({},state,{validateUser:PENDI
 case _user.VALIDATE_USER+'_FULFILLED':return _extends({},state,{validateUser:FULFILLED});
 case _user.VALIDATE_USER+'_REJECTED':return _extends({},state,{validateUser:REJECTED});
 
+case _user.ADD_ALLERGENS+'_PENDING':return _extends({},state,{addAllergens:PENDING});
+case _user.ADD_ALLERGENS+'_FULFILLED':return _extends({},state,{addAllergens:FULFILLED});
+case _user.ADD_ALLERGENS+'_REJECTED':return _extends({},state,{addAllergens:REJECTED});
+
+case _user.REMOVE_ALLERGENS+'_PENDING':return _extends({},state,{removeAllergens:PENDING});
+case _user.REMOVE_ALLERGENS+'_FULFILLED':return _extends({},state,{removeAllergens:FULFILLED});
+case _user.REMOVE_ALLERGENS+'_REJECTED':return _extends({},state,{removeAllergens:REJECTED});
+
 case _user.AUTHENTICATE_USER+'_PENDING':return _extends({},state,{authenticateUser:PENDING});
 case _user.AUTHENTICATE_USER+'_FULFILLED':return _extends({},state,{authenticateUser:FULFILLED});
 case _user.AUTHENTICATE_USER+'_REJECTED':return _extends({},state,{authenticateUser:REJECTED});
@@ -43069,7 +43181,7 @@ default:return state;}
 /* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
-Object.defineProperty(exports,"__esModule",{value:true});exports.default=
+Object.defineProperty(exports,"__esModule",{value:true});var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};exports.default=
 
 
 
@@ -43083,12 +43195,35 @@ Object.defineProperty(exports,"__esModule",{value:true});exports.default=
 
 
 
-attributes;var _reduxCrud=__webpack_require__(8);var _reduxCrud2=_interopRequireDefault(_reduxCrud);var _user=__webpack_require__(23);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var _reduxCrud$actionType=_reduxCrud2.default.actionTypesFor('user'),USER_CREATE_SUCCESS=_reduxCrud$actionType.USER_CREATE_SUCCESS,USER_UPDATE_SUCCESS=_reduxCrud$actionType.USER_UPDATE_SUCCESS;var initialState={};function attributes(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
+
+
+
+
+
+
+
+
+
+
+attributes;var _reduxCrud=__webpack_require__(8);var _reduxCrud2=_interopRequireDefault(_reduxCrud);var _user=__webpack_require__(23);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var _reduxCrud$actionType=_reduxCrud2.default.actionTypesFor('user'),USER_CREATE_SUCCESS=_reduxCrud$actionType.USER_CREATE_SUCCESS,USER_UPDATE_SUCCESS=_reduxCrud$actionType.USER_UPDATE_SUCCESS;var initialState={};function removeAllergens(removeArr,currentArr){var newArr=[];currentArr.forEach(function(item,i){if(removeArr.indexOf(item)<0)newArr.push(item);});return newArr;}function attributes(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
 switch(action.type){
 case _user.RESOLVE_USER+'_FULFILLED':
 case _user.AUTHENTICATE_USER+'_FULFILLED':
 case _user.FETCH_USER+'_FULFILLED':
 return action.payload;
+
+case _user.ADD_ALLERGENS+'_FULFILLED':
+return _extends({},
+state,{
+allergens:state.allergens.concat(action.payload.added)});
+
+
+case _user.REMOVE_ALLERGENS+'_FULFILLED':
+return _extends({},
+state,{
+allergens:removeAllergens(action.payload.removed,state.allergens)});
+
+
 case USER_CREATE_SUCCESS:
 case USER_UPDATE_SUCCESS:
 return action.record;

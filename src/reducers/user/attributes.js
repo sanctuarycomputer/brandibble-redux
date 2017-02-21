@@ -4,6 +4,8 @@ import {
   FETCH_USER,
   RESOLVE_USER,
   UNAUTHENTICATE_USER,
+  ADD_ALLERGENS,
+  REMOVE_ALLERGENS,
 } from 'actions/session/user';
 
 const {
@@ -12,12 +14,33 @@ const {
 } = reduxCrud.actionTypesFor('user');
 const initialState = {};
 
+function removeAllergens(removeArr, currentArr) {
+  let newArr = [];
+  currentArr.forEach((item, i) => {
+    if (removeArr.indexOf(item) < 0) newArr.push(item);
+  });
+  return newArr;
+}
+
 export default function attributes(state=initialState, action) {
   switch(action.type) {
     case `${RESOLVE_USER}_FULFILLED`:
     case `${AUTHENTICATE_USER}_FULFILLED`:
     case `${FETCH_USER}_FULFILLED`:
       return action.payload;
+
+    case `${ADD_ALLERGENS}_FULFILLED`:
+      return {
+        ...state,
+        allergens: state.allergens.concat(action.payload.added),
+      }
+
+    case `${REMOVE_ALLERGENS}_FULFILLED`:
+      return {
+        ...state,
+        allergens: removeAllergens(action.payload.removed, state.allergens),
+      }
+
     case USER_CREATE_SUCCESS:
     case USER_UPDATE_SUCCESS:
       return action.record;

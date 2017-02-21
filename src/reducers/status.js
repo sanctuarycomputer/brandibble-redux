@@ -8,6 +8,8 @@ import {
   RESET_USER_PASSWORD,
   RESOLVE_USER,
   VALIDATE_USER,
+  ADD_ALLERGENS,
+  REMOVE_ALLERGENS,
 } from 'actions/session/user';
 import { Status } from 'utils/constants';
 import reduxCrud from 'redux-crud';
@@ -77,6 +79,8 @@ const initialState = {
   createAddress: IDLE,
   deleteAddress: IDLE,
   fetchAllergens: IDLE,
+  addAllergens: IDLE,
+  removeAllergens: IDLE,
   fetchLocations: IDLE,
   fetchMenu: IDLE,
   resolveOrder: IDLE,
@@ -146,6 +150,14 @@ export default function status(state=initialState, action) {
     case `${VALIDATE_USER}_PENDING`: return { ...state,   validateUser: PENDING }
     case `${VALIDATE_USER}_FULFILLED`: return { ...state, validateUser: FULFILLED }
     case `${VALIDATE_USER}_REJECTED`: return { ...state,  validateUser: REJECTED }
+
+    case `${ADD_ALLERGENS}_PENDING`: return { ...state,   addAllergens: PENDING }
+    case `${ADD_ALLERGENS}_FULFILLED`: return { ...state, addAllergens: FULFILLED }
+    case `${ADD_ALLERGENS}_REJECTED`: return { ...state,  addAllergens: REJECTED }
+
+    case `${REMOVE_ALLERGENS}_PENDING`: return { ...state,   removeAllergens: PENDING }
+    case `${REMOVE_ALLERGENS}_FULFILLED`: return { ...state, removeAllergens: FULFILLED }
+    case `${REMOVE_ALLERGENS}_REJECTED`: return { ...state,  removeAllergens: REJECTED }
 
     case `${AUTHENTICATE_USER}_PENDING`: return { ...state,   authenticateUser: PENDING }
     case `${AUTHENTICATE_USER}_FULFILLED`: return { ...state, authenticateUser: FULFILLED }

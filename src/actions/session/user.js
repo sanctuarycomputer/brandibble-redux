@@ -15,6 +15,8 @@ export const UNAUTHENTICATE_USER = 'UNAUTHENTICATE_USER';
 export const RESOLVE_USER = 'RESOLVE_USER';
 export const FETCH_USER = 'FETCH_USER';
 export const RESET_USER_PASSWORD = 'RESET_USER_PASSWORD';
+export const ADD_ALLERGENS = 'ADD_ALLERGENS';
+export const REMOVE_ALLERGENS = 'REMOVE_ALLERGENS';
 
 const NO_OP = f => f;
 
@@ -33,6 +35,28 @@ function _authenticateUser(brandibble, loginData, success, fail) {
   return {
     type: AUTHENTICATE_USER,
     payload: brandibble.customers.authenticate(loginData).then(({data}) => {
+      success(data);
+      return data;
+    })
+    .catch(({errors}) => { throw fail(errors) }),
+  }
+}
+
+function _addAllergens(brandibble, allergens, success, fail) {
+  return {
+    type: ADD_ALLERGENS,
+    payload: brandibble.allergens.create(allergens).then(({data}) => {
+      success(data);
+      return data;
+    })
+    .catch(({errors}) => { throw fail(errors) }),
+  }
+}
+
+function _removeAllergens(brandibble, allergens, success, fail) {
+  return {
+    type: REMOVE_ALLERGENS,
+    payload: brandibble.allergens.remove(allergens).then(({data}) => {
       success(data);
       return data;
     })
@@ -71,6 +95,14 @@ export function validateUser(brandibble, email, success=NO_OP, fail=NO_OP) {
 
 export function authenticateUser(brandibble, loginData, success=NO_OP, fail=NO_OP) {
   return dispatch => dispatch(_authenticateUser(brandibble, loginData, success, fail));
+}
+
+export function addAllergens(brandibble, allergens, success=NO_OP, fail=NO_OP) {
+  return dispatch => dispatch(_addAllergens(brandibble, allergens, success, fail));
+}
+
+export function removeAllergens(brandibble, allergens, success=NO_OP, fail=NO_OP) {
+  return dispatch => dispatch(_removeAllergens(brandibble, allergens, success, fail));
 }
 
 export function unauthenticateUser(brandibble, success=NO_OP, fail=NO_OP) {

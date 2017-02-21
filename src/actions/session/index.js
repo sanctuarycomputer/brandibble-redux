@@ -11,4 +11,6 @@ export {
   unauthenticateUser,
   updateUser,
   validateUser,
+  addAllergens,
+  removeAllergens,
 } from './user';

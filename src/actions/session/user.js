@@ -97,10 +97,12 @@ export function authenticateUser(brandibble, loginData, success=NO_OP, fail=NO_O
   return dispatch => dispatch(_authenticateUser(brandibble, loginData, success, fail));
 }
 
+// TODO - untested
 export function addAllergens(brandibble, allergens, success=NO_OP, fail=NO_OP) {
   return dispatch => dispatch(_addAllergens(brandibble, allergens, success, fail));
 }
 
+// TODO - untested
 export function removeAllergens(brandibble, allergens, success=NO_OP, fail=NO_OP) {
   return dispatch => dispatch(_removeAllergens(brandibble, allergens, success, fail));
 }

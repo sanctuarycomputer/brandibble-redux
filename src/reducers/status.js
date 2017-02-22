@@ -46,6 +46,12 @@ const {
 } = reduxCrud.actionTypesFor('locations');
 
 const {
+  CUSTOMER_ORDERS_FETCH_START,
+  CUSTOMER_ORDERS_FETCH_SUCCESS,
+  CUSTOMER_ORDERS_FETCH_ERROR,
+} = reduxCrud.actionTypesFor('customerOrders');
+
+const {
   MENUS_FETCH_START,
   MENUS_FETCH_SUCCESS,
   MENUS_FETCH_ERROR,
@@ -82,6 +88,7 @@ const initialState = {
   addAllergens: IDLE,
   removeAllergens: IDLE,
   fetchLocations: IDLE,
+  fetchCustomerOrders: IDLE,
   fetchMenu: IDLE,
   resolveOrder: IDLE,
   fetchPayments: IDLE,
@@ -126,6 +133,10 @@ export default function status(state=initialState, action) {
     case LOCATIONS_FETCH_START: return { ...state,   fetchLocations: PENDING }
     case LOCATIONS_FETCH_SUCCESS: return { ...state, fetchLocations: FULFILLED }
     case LOCATIONS_FETCH_ERROR: return { ...state,  fetchLocations: REJECTED }
+
+    case CUSTOMER_ORDERS_FETCH_START: return { ...state,   fetchCustomerOrders: PENDING }
+    case CUSTOMER_ORDERS_FETCH_SUCCESS: return { ...state, fetchCustomerOrders: FULFILLED }
+    case CUSTOMER_ORDERS_FETCH_ERROR: return { ...state,  fetchCustomerOrders: REJECTED }
 
     case MENUS_FETCH_START: return { ...state,   fetchMenu: PENDING }
     case MENUS_FETCH_SUCCESS: return { ...state, fetchMenu: FULFILLED }

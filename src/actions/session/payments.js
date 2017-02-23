@@ -26,8 +26,8 @@ export function createPayment(brandibble, data={}) {
     const id = generateUUID();
     dispatch(createStart({record: data, customer_card_id: id}));
     return brandibble.payments.create(data)
-      .then(({data}) => dispatch(createSuccess({id, ...data[0]})))
-      .catch(({errors}) => dispatch(createError(errors, {id, data})));
+      .then(({data}) => dispatch(createSuccess({ customer_card_id: id, ...data[0] })))
+      .catch(({errors}) => dispatch(createError(errors, { customer_card_id: id, data })));
   };
 }
 
@@ -35,8 +35,8 @@ export function deletePayment(brandibble, id) {
   return dispatch => {
     dispatch(deleteStart({customer_card_id: id}));
     return brandibble.payments.delete(id)
-      .then(() => dispatch(deleteSuccess({customer_card_id: id})))
-      .catch(({errors}) => dispatch(fetchError(errors, {customer_card_id: id})));
+      .then(() => dispatch(deleteSuccess({ customer_card_id: id })))
+      .catch(({errors}) => dispatch(fetchError(errors, { customer_card_id: id })));
   };
 }
 

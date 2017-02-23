@@ -100,7 +100,6 @@ export const initialState = {
 
 export default function error(state=initialState, action) {
   switch (action.type) {
-
     // setup
     case `${SETUP_BRANDIBBLE}_PENDING`: return { ...state, setupBrandibble: null };
     case `${SETUP_BRANDIBBLE}_REJECTED`: return { ...state, setupBrandibble: action.payload}
@@ -139,9 +138,7 @@ export default function error(state=initialState, action) {
     case PAYMENTS_FETCH_ERROR: return { ...state, fetchPayments: action.error}
 
     case PAYMENTS_CREATE_START: return { ...state, createPayment: null };
-    case PAYMENTS_CREATE_ERROR:
-      console.log('wtf', action, action.error);
-      return { ...state, createPayment: action.error}
+    case PAYMENTS_CREATE_ERROR: return { ...state, createPayment: action.error};
 
     case PAYMENTS_DELETE_START: return { ...state, deletePayment: null };
     case PAYMENTS_DELETE_ERROR: return { ...state, deletePayment: action.error}

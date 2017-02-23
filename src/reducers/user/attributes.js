@@ -17,7 +17,7 @@ const initialState = {};
 function removeAllergens(removeArr, currentArr) {
   let newArr = [];
   for (let i = 0; i < currentArr.length; i++) {
-    if (removeArr.indexOf(currentArr[i]) < 0) newArr.push(currentArr[i]);
+    if (!removeArr.includes(currentArr[i])) newArr.push(currentArr[i]);
   }
   return newArr;
 }

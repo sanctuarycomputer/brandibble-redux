@@ -6,15 +6,16 @@ const initialState = {};
 import { SET_DEFAULT_PAYMENT } from 'actions/session/payments';
 
 function setDefault(state, id) {
-  let stringId = id.toString();
-  Object.keys(state).forEach((key, i) => {
-    if (key !== stringId) state[key].is_default = false;
-    else state[key].is_default = true;
+  let newState = {};
+  Object.keys(state).forEach((paymentId) => {
+    let payment = state[paymentId];
+    if (id.toString() === paymentId) newState[paymentId] = Object.assign({}, payment, { is_default: true });
+    else newState[paymentId] = Object.assign({}, payment, { is_default: false });
   })
-  return state;
+  return newState;
 }
 
-export default function addresses(state=initialState, action) {
+export default function payments(state=initialState, action) {
   switch(action.type) {
     case `${SET_DEFAULT_PAYMENT}_FULFILLED`:
       return setDefault(state, action.payload);

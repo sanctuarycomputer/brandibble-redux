@@ -43070,7 +43070,7 @@ return state;}
 /* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
-Object.defineProperty(exports,"__esModule",{value:true});exports.default=
+Object.defineProperty(exports,"__esModule",{value:true});var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};exports.default=
 
 
 
@@ -43086,7 +43086,10 @@ Object.defineProperty(exports,"__esModule",{value:true});exports.default=
 
 
 
-addresses;var _reduxCrud=__webpack_require__(10);var _reduxCrud2=_interopRequireDefault(_reduxCrud);var _payments=__webpack_require__(38);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var baseReducers=_reduxCrud2.default.Map.reducersFor('payments',{key:'customer_card_id'});var initialState={};function setDefault(state,id){var stringId=id.toString();Object.keys(state).forEach(function(key,i){if(key!==stringId)state[key].is_default=false;else state[key].is_default=true;});return state;}function addresses(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
+
+
+
+payments;var _reduxCrud=__webpack_require__(10);var _reduxCrud2=_interopRequireDefault(_reduxCrud);var _payments=__webpack_require__(38);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var baseReducers=_reduxCrud2.default.Map.reducersFor('payments',{key:'customer_card_id'});var initialState={};function setDefault(state,id){var newState={};console.log(state,'oldState');Object.keys(state).forEach(function(paymentId){var payment=state[paymentId];if(id.toString()===paymentId)newState[paymentId]=_extends({},payment,{is_default:true});else newState[paymentId]=_extends({},payment,{is_default:false});});console.log(newState,'newState');return newState;}function payments(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
 switch(action.type){
 case _payments.SET_DEFAULT_PAYMENT+'_FULFILLED':
 return setDefault(state,action.payload);

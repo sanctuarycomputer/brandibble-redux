@@ -12,6 +12,10 @@ const {
   deleteError,
 } = reduxCrud.actionCreatorsFor('payments', {key: 'customer_card_id'});
 
+export const SET_DEFAULT_PAYMENT = 'SET_DEFAULT_PAYMENT';
+
+const NO_OP = f => f;
+
 export function fetchPayments(brandibble) {
   return dispatch => {
     dispatch(fetchStart());
@@ -29,6 +33,22 @@ export function createPayment(brandibble, data={}) {
       .then(({data}) => dispatch(createSuccess({ customer_card_id: id, ...data[0] })))
       .catch(({errors}) => dispatch(createError(errors, { customer_card_id: id, data })));
   };
+}
+
+function _setDefaultPayment(brandibble, customer_card_id, success=NO_OP, fail=NO_OP) {
+  return {
+    type: SET_DEFAULT_PAYMENT,
+    payload: brandibble.payments.setDefault(customer_card_id)
+      .then((data) => {
+        success(data);
+        return customer_card_id;
+      })
+      .catch(({errors}) => { throw fail(errors) }),
+  };
+}
+
+export function setDefaultPayment(brandibble, customer_card_id) {
+  return dispatch => dispatch(_setDefaultPayment(brandibble, customer_card_id));
 }
 
 export function deletePayment(brandibble, id) {

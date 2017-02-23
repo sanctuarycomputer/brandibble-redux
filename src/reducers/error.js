@@ -64,6 +64,7 @@ const {
   PAYMENTS_DELETE_START,
   PAYMENTS_DELETE_ERROR,
 } = reduxCrud.actionTypesFor('payments');
+import { SET_DEFAULT_PAYMENT } from 'actions/session/payments';
 
 export const initialState = {
   // setup
@@ -87,6 +88,7 @@ export const initialState = {
   fetchPayments: null,
   createPayment: null,
   deletePayment: null,
+  setDefaultPayment: null,
   // user
   authenticateUser: null,
   createUser: null,
@@ -142,6 +144,9 @@ export default function error(state=initialState, action) {
 
     case PAYMENTS_DELETE_START: return { ...state, deletePayment: null };
     case PAYMENTS_DELETE_ERROR: return { ...state, deletePayment: action.error}
+
+    case `${SET_DEFAULT_PAYMENT}_PENDING`: return { ...state, setDefaultPayment: null }
+    case `${SET_DEFAULT_PAYMENT}_REJECTED`: return { ...state, setDefaultPayment: action.payload }
 
     // users
     case `${AUTHENTICATE_USER}_PENDING`: return { ...state, authenticateUser: null };

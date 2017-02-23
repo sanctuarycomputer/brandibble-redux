@@ -1,6 +1,7 @@
 // TODO: this reducer is untested
 import { SETUP_BRANDIBBLE, SETUP_BRANDIBBLE_REDUX } from 'actions/setup';
 import { RESOLVE_ORDER } from 'actions/session/order';
+import { SET_DEFAULT_PAYMENT } from 'actions/session/payments';
 import {
   AUTHENTICATE_USER,
   FETCH_USER,
@@ -93,6 +94,7 @@ const initialState = {
   resolveOrder: IDLE,
   fetchPayments: IDLE,
   createPayment: IDLE,
+  setDefaultPayment: IDLE,
   deletePayment: IDLE,
   authenticateUser: IDLE,
   createUser: IDLE,
@@ -157,6 +159,10 @@ export default function status(state=initialState, action) {
     case PAYMENTS_DELETE_START: return { ...state, deletePayment: PENDING }
     case PAYMENTS_DELETE_SUCCESS: return { ...state, deletePayment: FULFILLED }
     case PAYMENTS_DELETE_ERROR: return { ...state, deletePayment: REJECTED }
+
+    case `${SET_DEFAULT_PAYMENT}_PENDING`: return { ...state, setDefaultPayment: PENDING }
+    case `${SET_DEFAULT_PAYMENT}_FULFILLED`: return { ...state, setDefaultPayment: FULFILLED }
+    case `${SET_DEFAULT_PAYMENT}_REJECTED`: return { ...state, setDefaultPayment: REJECTED }
 
     case `${VALIDATE_USER}_PENDING`: return { ...state,   validateUser: PENDING }
     case `${VALIDATE_USER}_FULFILLED`: return { ...state, validateUser: FULFILLED }

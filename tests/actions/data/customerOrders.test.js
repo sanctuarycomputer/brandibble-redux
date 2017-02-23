@@ -1,7 +1,11 @@
 import { expect } from 'chai';
 import configureStore from 'redux-mock-store';
 import reduxMiddleware from 'config/middleware';
-import { fetchCustomerOrders } from 'actions/data/customerOrders';
+import {
+  fetchAllCustomerOrders,
+  fetchPastCustomerOrders,
+  fetchUpcomingCustomerOrders,
+} from 'actions/data/customerOrders';
 import { brandibble, validCredentialsStub } from '../../config/stubs';
 import { authenticateUser } from 'actions/session/user';
 
@@ -23,10 +27,10 @@ describe('actions/data/customerOrders', () => {
     store.clearActions();
   });
 
-  describe('fetchCustomerOrders', () => {
+  describe('fetchAllCustomerOrders', () => {
     before(() => {
       store = mockStore();
-      return fetchCustomerOrders(brandibble, customerId)(store.dispatch).then(() => {
+      return fetchAllCustomerOrders(brandibble, customerId)(store.dispatch).then(() => {
         actionsCalled = store.getActions();
         [first, last] = actionsCalled;
       });
@@ -36,12 +40,56 @@ describe('actions/data/customerOrders', () => {
       expect(actionsCalled).to.have.length.of(2);
     });
 
-    it('first action should be CUSTOMER_ORDERS_FETCH_START', () => {
-      expect(first).to.have.property('type', 'CUSTOMER_ORDERS_FETCH_START');
+    it('first action should be FETCH_ALL_CUSTOMER_ORDERS_PENDING', () => {
+      expect(first).to.have.property('type', 'FETCH_ALL_CUSTOMER_ORDERS_PENDING');
     });
 
-    it('last action should be CUSTOMER_ORDERS_FETCH_SUCCESS', () => {
-      expect(last).to.have.property('type', 'CUSTOMER_ORDERS_FETCH_SUCCESS');
+    it('last action should be FETCH_ALL_CUSTOMER_ORDERS_FULFILLED', () => {
+      expect(last).to.have.property('type', 'FETCH_ALL_CUSTOMER_ORDERS_FULFILLED');
+    });
+  });
+
+  describe('fetchPastCustomerOrders', () => {
+    before(() => {
+      store = mockStore();
+      return fetchPastCustomerOrders(brandibble, customerId)(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+        [first, last] = actionsCalled;
+      });
+    });
+
+    it('should call 2 actions', () => {
+      expect(actionsCalled).to.have.length.of(2);
+    });
+
+    it('first action should be FETCH_PAST_CUSTOMER_ORDERS_PENDING', () => {
+      expect(first).to.have.property('type', 'FETCH_PAST_CUSTOMER_ORDERS_PENDING');
+    });
+
+    it('last action should be FETCH_PAST_CUSTOMER_ORDERS_FULFILLED', () => {
+      expect(last).to.have.property('type', 'FETCH_PAST_CUSTOMER_ORDERS_FULFILLED');
+    });
+  });
+
+  describe('fetchUpcomingCustomerOrders', () => {
+    before(() => {
+      store = mockStore();
+      return fetchUpcomingCustomerOrders(brandibble, customerId)(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+        [first, last] = actionsCalled;
+      });
+    });
+
+    it('should call 2 actions', () => {
+      expect(actionsCalled).to.have.length.of(2);
+    });
+
+    it('first action should be FETCH_UPCOMING_CUSTOMER_ORDERS_PENDING', () => {
+      expect(first).to.have.property('type', 'FETCH_UPCOMING_CUSTOMER_ORDERS_PENDING');
+    });
+
+    it('last action should be FETCH_UPCOMING_CUSTOMER_ORDERS_FULFILLED', () => {
+      expect(last).to.have.property('type', 'FETCH_UPCOMING_CUSTOMER_ORDERS_FULFILLED');
     });
   });
 });

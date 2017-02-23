@@ -9,6 +9,13 @@ import {
 // orders
 import { RESOLVE_ORDER } from 'actions/session/order';
 
+// customerOrders
+import {
+  FETCH_ALL_CUSTOMER_ORDERS,
+  FETCH_PAST_CUSTOMER_ORDERS,
+  FETCH_UPCOMING_CUSTOMER_ORDERS,
+} from 'actions/data/customerOrders';
+
 // user
 import {
   AUTHENTICATE_USER,
@@ -74,6 +81,10 @@ export const initialState = {
   fetchAllergens: null,
   addAllergens: null,
   removeAllergens: null,
+  // customer orders
+  fetchAllCustomerOrders: null,
+  fetchPastCustomerOrders: null,
+  fetchUpcomingCustomerOrders: null,
   // addresses
   fetchAddresses: null,
   createAddress: null,
@@ -108,6 +119,16 @@ export default function error(state=initialState, action) {
 
     case `${SETUP_BRANDIBBLE_REDUX}_PENDING`: return { ...state, setupBrandibbleRedux: null };
     case `${SETUP_BRANDIBBLE_REDUX}_REJECTED`: return { ...state, setupBrandibbleRedux: action.payload}
+
+    // customer orders
+    case `${FETCH_ALL_CUSTOMER_ORDERS}_PENDING`: return { ...state, fetchAllCustomerOrders: null}
+    case `${FETCH_ALL_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchAllCustomerOrders: action.payload}
+
+    case `${FETCH_PAST_CUSTOMER_ORDERS}_PENDING`: return { ...state, fetchPastCustomerOrders: null}
+    case `${FETCH_PAST_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchPastCustomerOrders: action.payload}
+
+    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_PENDING`: return { ...state, fetchUpcomingCustomerOrders: null}
+    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchUpcomingCustomerOrders: action.payload}
 
     // allergens
     case ALLERGENS_FETCH_START: return { ...state, fetchAllergens: null };

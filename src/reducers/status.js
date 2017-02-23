@@ -12,6 +12,11 @@ import {
   ADD_ALLERGENS,
   REMOVE_ALLERGENS,
 } from 'actions/session/user';
+import {
+  FETCH_ALL_CUSTOMER_ORDERS,
+  FETCH_PAST_CUSTOMER_ORDERS,
+  FETCH_UPCOMING_CUSTOMER_ORDERS,
+} from 'actions/data/customerOrders';
 import { Status } from 'utils/constants';
 import reduxCrud from 'redux-crud';
 
@@ -45,12 +50,6 @@ const {
   LOCATIONS_FETCH_SUCCESS,
   LOCATIONS_FETCH_ERROR,
 } = reduxCrud.actionTypesFor('locations');
-
-const {
-  CUSTOMER_ORDERS_FETCH_START,
-  CUSTOMER_ORDERS_FETCH_SUCCESS,
-  CUSTOMER_ORDERS_FETCH_ERROR,
-} = reduxCrud.actionTypesFor('customerOrders');
 
 const {
   MENUS_FETCH_START,
@@ -89,7 +88,9 @@ const initialState = {
   addAllergens: IDLE,
   removeAllergens: IDLE,
   fetchLocations: IDLE,
-  fetchCustomerOrders: IDLE,
+  fetchAllCustomerOrders: IDLE,
+  fetchPastCustomerOrders: IDLE,
+  fetchUpcomingCustomerOrders: IDLE,
   fetchMenu: IDLE,
   resolveOrder: IDLE,
   fetchPayments: IDLE,
@@ -136,9 +137,17 @@ export default function status(state=initialState, action) {
     case LOCATIONS_FETCH_SUCCESS: return { ...state, fetchLocations: FULFILLED }
     case LOCATIONS_FETCH_ERROR: return { ...state,  fetchLocations: REJECTED }
 
-    case CUSTOMER_ORDERS_FETCH_START: return { ...state,   fetchCustomerOrders: PENDING }
-    case CUSTOMER_ORDERS_FETCH_SUCCESS: return { ...state, fetchCustomerOrders: FULFILLED }
-    case CUSTOMER_ORDERS_FETCH_ERROR: return { ...state,  fetchCustomerOrders: REJECTED }
+    case `${FETCH_ALL_CUSTOMER_ORDERS}_PENDING`: return { ...state,   fetchAllCustomerOrders: PENDING }
+    case `${FETCH_ALL_CUSTOMER_ORDERS}_FULFILLED`: return { ...state,   fetchAllCustomerOrders: FULFILLED }
+    case `${FETCH_ALL_CUSTOMER_ORDERS}_REJECTED`: return { ...state,   fetchAllCustomerOrders: REJECTED }
+
+    case `${FETCH_PAST_CUSTOMER_ORDERS}_PENDING`: return { ...state,   fetchPastCustomerOrders: PENDING }
+    case `${FETCH_PAST_CUSTOMER_ORDERS}_FULFILLED`: return { ...state,   fetchPastCustomerOrders: FULFILLED }
+    case `${FETCH_PAST_CUSTOMER_ORDERS}_REJECTED`: return { ...state,   fetchPastCustomerOrders: REJECTED }
+
+    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_PENDING`: return { ...state,   fetchUpcomingCustomerOrders: PENDING }
+    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_FULFILLED`: return { ...state,   fetchUpcomingCustomerOrders: FULFILLED }
+    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_REJECTED`: return { ...state,   fetchUpcomingCustomerOrders: REJECTED }
 
     case MENUS_FETCH_START: return { ...state,   fetchMenu: PENDING }
     case MENUS_FETCH_SUCCESS: return { ...state, fetchMenu: FULFILLED }

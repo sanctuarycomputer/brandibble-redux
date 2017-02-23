@@ -43086,7 +43086,7 @@ Object.defineProperty(exports,"__esModule",{value:true});exports.default=
 
 
 
-addresses;var _reduxCrud=__webpack_require__(10);var _reduxCrud2=_interopRequireDefault(_reduxCrud);var _payments=__webpack_require__(38);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var baseReducers=_reduxCrud2.default.Map.reducersFor('payments',{key:'customer_card_id'});var initialState={};function setDefault(state,id){var stringId=id.toString();Object.keys(state).map(function(key,i){if(key!==stringId)state[key].is_default=false;else state[key].is_default=true;});return state;}function addresses(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
+addresses;var _reduxCrud=__webpack_require__(10);var _reduxCrud2=_interopRequireDefault(_reduxCrud);var _payments=__webpack_require__(38);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var baseReducers=_reduxCrud2.default.Map.reducersFor('payments',{key:'customer_card_id'});var initialState={};function setDefault(state,id){var stringId=id.toString();Object.keys(state).forEach(function(key,i){if(key!==stringId)state[key].is_default=false;else state[key].is_default=true;});return state;}function addresses(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
 switch(action.type){
 case _payments.SET_DEFAULT_PAYMENT+'_FULFILLED':
 return setDefault(state,action.payload);

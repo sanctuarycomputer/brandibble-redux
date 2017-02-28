@@ -16,42 +16,42 @@ function _resolveOrder(payload) {
 function _addLineItem(order, product, quantity) {
   return {
     type: ADD_LINE_ITEM,
-    payload: order.addLineItem(product, quantity).then(lineItem => { order, lineItem })
+    payload: order.addLineItem(product, quantity).then(lineItem => ({ order, lineItem }))
   };
 }
 
 function _setLineItemQuantity(order, lineItem, newQuantity) {
   return {
     type: SET_LINE_ITEM_QUANTITY,
-    payload: order.setLineItemQuantity(lineItem, newQuantity).then(lineItem => { order, lineItem })
+    payload: order.setLineItemQuantity(lineItem, newQuantity).then(lineItem => ({ order, lineItem }))
   };
 }
 
 function _removeLineItem(order, lineItem) {
   return {
     type: REMOVE_LINE_ITEM,
-    payload: order.removeLineItem(lineItem).then(remainingLineItems => { order, remainingLineItems })
+    payload: order.removeLineItem(lineItem).then(remainingLineItems => ({ order, remainingLineItems }))
   };
 }
 
 function _addOptionToLineItem(order, lineItem, optionGroup, optionItem) {
   return {
     type: ADD_OPTION_TO_LINE_ITEM,
-    payload: order.addOptionToLineItem(lineItem, optionGroup, optionItem).then(lineItem => { order, lineItem })
+    payload: order.addOptionToLineItem(lineItem, optionGroup, optionItem).then(lineItem => ({ order, lineItem }))
   };
 }
 
 function _removeOptionFromLineItem(order, lineItem, optionItem) {
   return {
     type: REMOVE_OPTION_FROM_LINE_ITEM,
-    payload: order.removeOptionFromLineItem(lineItem, optionItem).then(lineItem => { order, lineItem })
+    payload: order.removeOptionFromLineItem(lineItem, optionItem).then(lineItem => ({ order, lineItem }))
   };
 }
 
 function _setOrderLocationId(order, locationId) {
   return {
     type: SET_ORDER_LOCATION_ID,
-    payload: order.setLocation(locationId).then(order => { order })
+    payload: order.setLocation(locationId).then(order => ({ order }))
   };
 }
 

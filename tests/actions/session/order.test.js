@@ -59,10 +59,10 @@ describe('actions/session/order', () => {
       expect(action).to.exist;
     });
 
-    it('should have SET_ORDER_LOCATION_ID_FULFILLED action', () => {
-      action = find(actionsCalled, {type: 'SET_ORDER_LOCATION_ID_FULFILLED'});
-      expect(action).to.exist;
-    });
+    it('should have a payload', () => {
+       action = find(actionsCalled, {type: 'SET_ORDER_LOCATION_ID_FULFILLED'});
+       expect(action).to.have.a.property('payload');
+     });
   });
 
   describe('addLineItem', () => {

@@ -1,6 +1,6 @@
 {
   "name": "brandibble-redux",
-  "version": "1.10.3",
+  "version": "1.10.4",
   "description": "",
   "main": "dist/brandibble-redux.min.js",
   "scripts": {

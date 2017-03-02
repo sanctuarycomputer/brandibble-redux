@@ -79,14 +79,11 @@ export default class Main extends Component {
 ```
 
 ### Working on Brandibble Redux
-
+**IMPORTANT:** Set an environment variable called `BRANDIBBLE_API_KEY` with your Brandibble API key before running tests.
 ```
 git clone https://github.com/sanctuarycomputer/brandibble-redux
 cd brandibble-redux
 npm install
-
-// Now you can run your build with:
-npm run build
 
 // Run tests (in chrome) with:
 npm test

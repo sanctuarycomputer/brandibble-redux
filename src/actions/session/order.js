@@ -60,8 +60,7 @@ function _setOrderLocationId(order, locationId) {
 export function resolveOrder(brandibble, locationId = null, serviceType = 'delivery') {
   const { orders } = brandibble;
   const order = orders.current();
-  const payload = order ? Promise.resolve({ order }) : orders.create(locationId, serviceType).then(({ data }) => ({ order: data }));
-
+  const payload = order ? Promise.resolve({ order }) : orders.create(locationId, serviceType).then(order => ({ order }));
   return dispatch => dispatch(_resolveOrder(payload));
 }
 

@@ -1,13 +1,13 @@
+/* global describe it */
 import { expect } from 'chai';
-import reduxCrud from 'redux-crud';
 import reducer from 'reducers/data/customerOrders';
-import { customerOrdersStub } from '../../config/stubs';
-
 import {
   FETCH_ALL_CUSTOMER_ORDERS,
   FETCH_PAST_CUSTOMER_ORDERS,
   FETCH_UPCOMING_CUSTOMER_ORDERS,
 } from 'actions/data/customerOrders';
+import { customerOrdersStub } from '../../config/stubs';
+
 const initialState = {
   all: null,
   past: null,
@@ -17,15 +17,13 @@ const payload = customerOrdersStub;
 
 describe('reducers/data/customerOrders', () => {
   it('should return the initial state', () => {
-    expect(
-      reducer(initialState, {})
-    ).to.equal(initialState);
+    expect(reducer(initialState, {})).to.equal(initialState);
   });
 
   it('handles the FETCH_ALL_CUSTOMER_ORDERS_FULFILLED action', () => {
-    let reduced = reducer(initialState, {
+    const reduced = reducer(initialState, {
       type: `${FETCH_ALL_CUSTOMER_ORDERS}_FULFILLED`,
-      payload: payload,
+      payload,
     });
 
     expect(reduced.all[0]).to.equal(payload[0]);
@@ -34,9 +32,9 @@ describe('reducers/data/customerOrders', () => {
   });
 
   it('handles the FETCH_PAST_CUSTOMER_ORDERS_FULFILLED action', () => {
-    let reduced = reducer(initialState, {
+    const reduced = reducer(initialState, {
       type: `${FETCH_PAST_CUSTOMER_ORDERS}_FULFILLED`,
-      payload: payload,
+      payload,
     });
 
     expect(reduced.all).to.equal(initialState.all);
@@ -45,9 +43,9 @@ describe('reducers/data/customerOrders', () => {
   });
 
   it('handles the FETCH_UPCOMING_CUSTOMER_ORDERS_FULFILLED action', () => {
-    let reduced = reducer(initialState, {
+    const reduced = reducer(initialState, {
       type: `${FETCH_UPCOMING_CUSTOMER_ORDERS}_FULFILLED`,
-      payload: payload,
+      payload,
     });
 
     expect(reduced.all).to.equal(initialState.all);

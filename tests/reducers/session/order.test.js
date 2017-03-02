@@ -1,25 +1,24 @@
+/* global describe it */
 import { expect } from 'chai';
 import {
   RESOLVE_ORDER,
   SET_ORDER_LOCATION_ID,
   ADD_LINE_ITEM,
-  ADD_OPTION_TO_LINE_ITEM
+  ADD_OPTION_TO_LINE_ITEM,
 } from 'actions/session/order';
 import reducer from 'reducers/session/order';
-import { brandibble, makeUnpersistedOrder, productStub } from '../../config/stubs';
+import { makeUnpersistedOrder, productStub } from '../../config/stubs';
 
 const initialState = {};
 
 describe('reducers/session/order', () => {
   it('should return the initial state', () => {
-    expect(
-      reducer(initialState, {})
-    ).to.equal(initialState);
+    expect(reducer(initialState, {})).to.equal(initialState);
   });
 
   it('handles the RESOLVE_ORDER_FULFILLED action', () => {
     const dummyOrder = makeUnpersistedOrder();
-    let reduced = reducer(initialState, {
+    const reduced = reducer(initialState, {
       type: `${RESOLVE_ORDER}_FULFILLED`,
       payload: { order: dummyOrder },
     });
@@ -30,7 +29,7 @@ describe('reducers/session/order', () => {
 
   it('handles the SET_CURRENT_ORDER_ID action', () => {
     const dummyOrder = makeUnpersistedOrder();
-    let reduced = reducer(initialState, {
+    const reduced = reducer(initialState, {
       type: `${SET_ORDER_LOCATION_ID}_FULFILLED`,
       payload: { order: dummyOrder },
     });
@@ -43,8 +42,8 @@ describe('reducers/session/order', () => {
   /* Note: The below all trigger the same case in the reducer, so no point testing them all. */
   it('handles the ADD_LINE_ITEM_FULFILLED action', () => {
     const dummyOrder = makeUnpersistedOrder();
-    let lineItem = dummyOrder.cart.addLineItem(productStub, 1);
-    let reduced = reducer(initialState, {
+    const lineItem = dummyOrder.cart.addLineItem(productStub, 1);
+    const reduced = reducer(initialState, {
       type: `${ADD_LINE_ITEM}_FULFILLED`,
       payload: { order: dummyOrder, lineItem },
     });
@@ -56,7 +55,7 @@ describe('reducers/session/order', () => {
 
   it('handles the ADD_OPTION_TO_LINE_ITEM_FULLFILLED action', () => {
     const dummyOrder = makeUnpersistedOrder();
-    let lineItem = dummyOrder.cart.addLineItem(productStub, 1);
+    const lineItem = dummyOrder.cart.addLineItem(productStub, 1);
 
     let reduced = reducer(initialState, {
       type: `${ADD_LINE_ITEM}_FULFILLED`,
@@ -71,14 +70,14 @@ describe('reducers/session/order', () => {
     expect(reduced.lineItemsData[0].optionGroupMappings[0].currentlySelectedCount).to.equal(0);
     expect(reduced.orderData.cart[0].option_groups.length).to.equal(0);
 
-    let optionGroup = reduced.lineItemsData[0].optionGroupMappings[0].optionGroupData;
-    let optionItem = reduced.lineItemsData[0].optionGroupMappings[0].optionItems[0].optionItemData;
+    const optionGroup = reduced.lineItemsData[0].optionGroupMappings[0].optionGroupData;
+    const optionItem = reduced.lineItemsData[0].optionGroupMappings[0].optionItems[0].optionItemData;
 
     dummyOrder.cart.addOptionToLineItem(lineItem, optionGroup, optionItem);
 
     reduced = reducer(initialState, {
       type: `${ADD_OPTION_TO_LINE_ITEM}_FULFILLED`,
-      payload: { order: dummyOrder, lineItem }
+      payload: { order: dummyOrder, lineItem },
     });
 
     expect(reduced.ref).to.deep.equal(dummyOrder);
@@ -89,5 +88,4 @@ describe('reducers/session/order', () => {
     expect(reduced.lineItemsData[0].optionGroupMappings[0].currentlySelectedCount).to.equal(1);
     expect(reduced.orderData.cart[0].option_groups.length).to.equal(1);
   });
-
 });

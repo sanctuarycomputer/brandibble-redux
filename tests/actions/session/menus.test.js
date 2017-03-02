@@ -1,9 +1,11 @@
+/* global describe afterEach before beforeEach it */
+/* eslint one-var-declaration-per-line:1, one-var:1 */
 import { expect } from 'chai';
 import find from 'lodash.find';
 import configureStore from 'redux-mock-store';
 import reduxMiddleware from 'config/middleware';
-import { brandibble, SAMPLE_MENU_LOCATION_ID } from '../../config/stubs';
 import { fetchMenu } from 'actions/session/menus';
+import { brandibble, SAMPLE_MENU_LOCATION_ID } from '../../config/stubs';
 
 const mockStore = configureStore(reduxMiddleware);
 const NOW = new Date();
@@ -15,11 +17,10 @@ describe('actions/session/menus', () => {
     let store, actionsCalled, action;
 
     describe('calls actions', () => {
-      before(done => {
+      before(() => {
         store = mockStore();
-        fetchMenu(brandibble, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(() => {
+        return fetchMenu(brandibble, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(() => {
           actionsCalled = store.getActions();
-          done();
         });
       });
 
@@ -28,32 +29,29 @@ describe('actions/session/menus', () => {
       });
 
       it('should have MENUS_FETCH_START action', () => {
-        action = find(actionsCalled, {type: 'MENUS_FETCH_START'});
+        action = find(actionsCalled, { type: 'MENUS_FETCH_START' });
         expect(action).to.exist;
       });
 
       it('should have MENUS_FETCH_SUCCESS action', () => {
-        action = find(actionsCalled, {type: 'MENUS_FETCH_SUCCESS'});
+        action = find(actionsCalled, { type: 'MENUS_FETCH_SUCCESS' });
         expect(action).to.exist;
       });
     });
 
     describe('handles callbacks', () => {
-      beforeEach(done => {
-        store = mockStore();
-        done();
-      });
+      beforeEach(() => store = mockStore());
 
       it('should handle success callback', () => {
-        fetchMenu(brandibble, SAMPLE_MENU_LOCATION_ID, 'delivery', NOW, success)(store.dispatch).then(res => {
+        fetchMenu(brandibble, SAMPLE_MENU_LOCATION_ID, 'delivery', NOW, success)(store.dispatch).then((res) => {
           expect(res).to.equal('success');
         });
       });
 
       it('should handle fail callback', () => {
-        fetchMenu(brandibble, null, 'delivery', NOW, success, fail)(store.dispatch).then(res => {
+        fetchMenu(brandibble, null, 'delivery', NOW, success, fail)(store.dispatch).then((res) => {
           actionsCalled = store.getActions();
-          action = find(actionsCalled, {type: 'MENUS_FETCH_ERROR'});
+          action = find(actionsCalled, { type: 'MENUS_FETCH_ERROR' });
           expect(action).to.exist;
           expect(res).to.equal('fail');
         });

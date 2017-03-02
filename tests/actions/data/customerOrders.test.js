@@ -1,3 +1,5 @@
+/* global describe afterEach before it */
+/* eslint one-var-declaration-per-line:1, one-var:1 */
 import { expect } from 'chai';
 import configureStore from 'redux-mock-store';
 import reduxMiddleware from 'config/middleware';
@@ -6,26 +8,23 @@ import {
   fetchPastCustomerOrders,
   fetchUpcomingCustomerOrders,
 } from 'actions/data/customerOrders';
-import { brandibble, validCredentialsStub } from '../../config/stubs';
 import { authenticateUser } from 'actions/session/user';
+import { brandibble, validCredentialsStub } from '../../config/stubs';
 
 const mockStore = configureStore(reduxMiddleware);
 
 describe('actions/data/customerOrders', () => {
   let store, actionsCalled, first, last, customerId;
 
-  before(done => {
+  before(() => {
     store = mockStore();
-    authenticateUser(brandibble, validCredentialsStub)(store.dispatch).then(res => {
+    return authenticateUser(brandibble, validCredentialsStub)(store.dispatch).then((res) => {
       customerId = res.value.customer_id;
       store.clearActions();
-      done();
     });
   });
 
-  afterEach(() => {
-    store.clearActions();
-  });
+  afterEach(() => store.clearActions());
 
   describe('fetchAllCustomerOrders', () => {
     before(() => {
@@ -36,9 +35,7 @@ describe('actions/data/customerOrders', () => {
       });
     });
 
-    it('should call 2 actions', () => {
-      expect(actionsCalled).to.have.length.of(2);
-    });
+    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
 
     it('first action should be FETCH_ALL_CUSTOMER_ORDERS_PENDING', () => {
       expect(first).to.have.property('type', 'FETCH_ALL_CUSTOMER_ORDERS_PENDING');
@@ -58,9 +55,7 @@ describe('actions/data/customerOrders', () => {
       });
     });
 
-    it('should call 2 actions', () => {
-      expect(actionsCalled).to.have.length.of(2);
-    });
+    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
 
     it('first action should be FETCH_PAST_CUSTOMER_ORDERS_PENDING', () => {
       expect(first).to.have.property('type', 'FETCH_PAST_CUSTOMER_ORDERS_PENDING');
@@ -80,9 +75,7 @@ describe('actions/data/customerOrders', () => {
       });
     });
 
-    it('should call 2 actions', () => {
-      expect(actionsCalled).to.have.length.of(2);
-    });
+    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
 
     it('first action should be FETCH_UPCOMING_CUSTOMER_ORDERS_PENDING', () => {
       expect(first).to.have.property('type', 'FETCH_UPCOMING_CUSTOMER_ORDERS_PENDING');

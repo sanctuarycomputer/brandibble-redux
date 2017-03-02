@@ -1,11 +1,13 @@
+/* global describe afterEach before it */
+/* eslint one-var-declaration-per-line:1, one-var:1 */
 import { expect } from 'chai';
 import find from 'lodash.find';
 import reduxCrud from 'redux-crud';
 import configureStore from 'redux-mock-store';
 import reduxMiddleware from 'config/middleware';
-import { brandibble, addressStub, validCredentialsStub } from '../../config/stubs';
 import { createAddress, deleteAddress, fetchAddresses } from 'actions/session/addresses';
 import { authenticateUser } from 'actions/session/user';
+import { brandibble, addressStub, validCredentialsStub } from '../../config/stubs';
 
 const {
   ADDRESSES_CREATE_START,
@@ -20,39 +22,33 @@ const mockStore = configureStore(reduxMiddleware);
 describe('actions/session/addresses', () => {
   let store;
 
-  before(done => {
+  before(() => {
     store = mockStore();
-    authenticateUser(brandibble, validCredentialsStub)(store.dispatch).then(() => {
+    return authenticateUser(brandibble, validCredentialsStub)(store.dispatch).then(() => {
       store.clearActions();
-      done();
     });
   });
 
-  afterEach(() => {
-    store.clearActions();
-  });
+  afterEach(() => store.clearActions());
 
   describe('fetchAddresses', () => {
     let action, actionsCalled;
 
-    before(done => {
-      fetchAddresses(brandibble)(store.dispatch).then(() => {
+    before(() => {
+      return fetchAddresses(brandibble)(store.dispatch).then(() => {
         actionsCalled = store.getActions();
-        done();
       });
     });
 
-    it('should call 2 actions', () => {
-      expect(actionsCalled).to.have.length.of(2);
-    });
+    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
 
     it('should have ADDRESSES_FETCH_START action', () => {
-      action = find(actionsCalled, {type: ADDRESSES_FETCH_START});
+      action = find(actionsCalled, { type: ADDRESSES_FETCH_START });
       expect(action).to.exist;
     });
 
     it('should have ADDRESSES_FETCH_SUCCESS action', () => {
-      action = find(actionsCalled, {type: ADDRESSES_FETCH_SUCCESS});
+      action = find(actionsCalled, { type: ADDRESSES_FETCH_SUCCESS });
       expect(action).to.exist;
     });
   });
@@ -60,49 +56,43 @@ describe('actions/session/addresses', () => {
   describe('createAddress', () => {
     let action, actionsCalled, id;
 
-    before(done => {
-      createAddress(brandibble, addressStub)(store.dispatch).then(() => {
+    before(() => {
+      return createAddress(brandibble, addressStub)(store.dispatch).then(() => {
         actionsCalled = store.getActions();
-        action = find(actionsCalled, {type: ADDRESSES_CREATE_SUCCESS});
+        action = find(actionsCalled, { type: ADDRESSES_CREATE_SUCCESS });
         id = action.record.customer_address_id;
-        done();
       });
     });
 
-    it('should call 2 actions', () => {
-      expect(actionsCalled).to.have.length.of(2);
-    });
+    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
 
     it('should have ADDRESSES_CREATE_START action', () => {
-      action = find(actionsCalled, {type: ADDRESSES_CREATE_START});
+      action = find(actionsCalled, { type: ADDRESSES_CREATE_START });
       expect(action).to.exist;
     });
 
     it('should have ADDRESSES_CREATE_SUCCESS action', () => {
-      action = find(actionsCalled, {type: ADDRESSES_CREATE_SUCCESS});
+      action = find(actionsCalled, { type: ADDRESSES_CREATE_SUCCESS });
       expect(action).to.exist;
     });
 
     describe('deleteAddress', () => {
-      before(done => {
+      before(() => {
         store.clearActions();
-        deleteAddress(brandibble, id)(store.dispatch).then(() => {
+        return deleteAddress(brandibble, id)(store.dispatch).then(() => {
           actionsCalled = store.getActions();
-          done();
         });
       });
 
-      it('should call 2 actions', () => {
-        expect(actionsCalled).to.have.length.of(2);
-      });
+      it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
 
       it('should have ADDRESSES_DELETE_START action', () => {
-        action = find(actionsCalled, {type: ADDRESSES_DELETE_START});
+        action = find(actionsCalled, { type: ADDRESSES_DELETE_START });
         expect(action).to.exist;
       });
 
       it('should have ADDRESSES_DELETE_SUCCESS action', () => {
-        action = find(actionsCalled, {type: ADDRESSES_DELETE_SUCCESS});
+        action = find(actionsCalled, { type: ADDRESSES_DELETE_SUCCESS });
         expect(action).to.exist;
       });
     });

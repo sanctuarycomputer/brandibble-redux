@@ -1,21 +1,21 @@
+/* global describe afterEach before beforeEach it */
+/* eslint one-var-declaration-per-line:1, one-var:1 */
 import { expect } from 'chai';
 import find from 'lodash.find';
 import configureStore from 'redux-mock-store';
 import reduxMiddleware from 'config/middleware';
-import { brandibble } from '../config/stubs';
 import { setupBrandibble, setupBrandibbleRedux } from 'actions/setup';
+import { brandibble } from '../config/stubs';
 
 const mockStore = configureStore(reduxMiddleware);
-
 
 describe('actions/setup', () => {
   let store, action, actionsCalled;
   describe('setupBrandibble', () => {
-    before(done => {
+    before(() => {
       store = mockStore();
-      setupBrandibble(brandibble)(store.dispatch).then(() => {
+      return setupBrandibble(brandibble)(store.dispatch).then(() => {
         actionsCalled = store.getActions();
-        done();
       });
     });
 
@@ -24,17 +24,16 @@ describe('actions/setup', () => {
     });
 
     it('brandbibble should be online', () => {
-      action = find(actionsCalled, {type: 'SETUP_BRANDIBBLE_FULFILLED'});
+      action = find(actionsCalled, { type: 'SETUP_BRANDIBBLE_FULFILLED' });
       expect(action).to.exist;
     });
   });
 
   describe('setupBrandibbleRedux', () => {
-    before(done => {
+    before(() => {
       store = mockStore();
-      setupBrandibbleRedux(brandibble)(store.dispatch).then(() => {
+      return setupBrandibbleRedux(brandibble)(store.dispatch).then(() => {
         actionsCalled = store.getActions();
-        done();
       });
     });
 
@@ -43,12 +42,12 @@ describe('actions/setup', () => {
     });
 
     it('should have SETUP_BRANDIBBLE_REDUX_PENDING action', () => {
-      action = find(actionsCalled, {type: 'SETUP_BRANDIBBLE_REDUX_PENDING'});
+      action = find(actionsCalled, { type: 'SETUP_BRANDIBBLE_REDUX_PENDING' });
       expect(action).to.exist;
     });
 
     it('should have SETUP_BRANDIBBLE_REDUX_FULFILLED action', () => {
-      action = find(actionsCalled, {type: 'SETUP_BRANDIBBLE_REDUX_FULFILLED'});
+      action = find(actionsCalled, { type: 'SETUP_BRANDIBBLE_REDUX_FULFILLED' });
       expect(action).to.exist;
     });
   });

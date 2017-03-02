@@ -1,3 +1,5 @@
+/* global describe afterEach before it */
+/* eslint one-var-declaration-per-line:1, one-var:1 */
 import { expect } from 'chai';
 import configureStore from 'redux-mock-store';
 import reduxMiddleware from 'config/middleware';
@@ -17,9 +19,7 @@ describe('actions/data/locations', () => {
       });
     });
 
-    it('should call 2 actions', () => {
-      expect(actionsCalled).to.have.length.of(2);
-    });
+    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
 
     it('first action should be LOCATIONS_FETCH_START', () => {
       expect(first).to.have.property('type', 'LOCATIONS_FETCH_START');

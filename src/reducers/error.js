@@ -9,6 +9,9 @@ import {
 // orders
 import { RESOLVE_ORDER } from 'actions/session/order';
 
+//  payments
+import { SET_DEFAULT_PAYMENT } from 'actions/session/payments';
+
 // customerOrders
 import {
   FETCH_ALL_CUSTOMER_ORDERS,
@@ -27,6 +30,7 @@ import {
   ADD_ALLERGENS,
   REMOVE_ALLERGENS,
 } from 'actions/session/user';
+
 const {
   USER_UPDATE_START,
   USER_UPDATE_ERROR,
@@ -71,7 +75,6 @@ const {
   PAYMENTS_DELETE_START,
   PAYMENTS_DELETE_ERROR,
 } = reduxCrud.actionTypesFor('payments');
-import { SET_DEFAULT_PAYMENT } from 'actions/session/payments';
 
 export const initialState = {
   // setup
@@ -111,96 +114,96 @@ export const initialState = {
   validateUser: null,
 };
 
-export default function error(state=initialState, action) {
+export default function error(state = initialState, action) {
   switch (action.type) {
     // setup
     case `${SETUP_BRANDIBBLE}_PENDING`: return { ...state, setupBrandibble: null };
-    case `${SETUP_BRANDIBBLE}_REJECTED`: return { ...state, setupBrandibble: action.payload}
+    case `${SETUP_BRANDIBBLE}_REJECTED`: return { ...state, setupBrandibble: action.payload };
 
     case `${SETUP_BRANDIBBLE_REDUX}_PENDING`: return { ...state, setupBrandibbleRedux: null };
-    case `${SETUP_BRANDIBBLE_REDUX}_REJECTED`: return { ...state, setupBrandibbleRedux: action.payload}
+    case `${SETUP_BRANDIBBLE_REDUX}_REJECTED`: return { ...state, setupBrandibbleRedux: action.payload };
 
     // customer orders
-    case `${FETCH_ALL_CUSTOMER_ORDERS}_PENDING`: return { ...state, fetchAllCustomerOrders: null}
-    case `${FETCH_ALL_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchAllCustomerOrders: action.payload}
+    case `${FETCH_ALL_CUSTOMER_ORDERS}_PENDING`: return { ...state, fetchAllCustomerOrders: null };
+    case `${FETCH_ALL_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchAllCustomerOrders: action.payload };
 
-    case `${FETCH_PAST_CUSTOMER_ORDERS}_PENDING`: return { ...state, fetchPastCustomerOrders: null}
-    case `${FETCH_PAST_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchPastCustomerOrders: action.payload}
+    case `${FETCH_PAST_CUSTOMER_ORDERS}_PENDING`: return { ...state, fetchPastCustomerOrders: null };
+    case `${FETCH_PAST_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchPastCustomerOrders: action.payload };
 
-    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_PENDING`: return { ...state, fetchUpcomingCustomerOrders: null}
-    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchUpcomingCustomerOrders: action.payload}
+    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_PENDING`: return { ...state, fetchUpcomingCustomerOrders: null };
+    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchUpcomingCustomerOrders: action.payload };
 
     // allergens
     case ALLERGENS_FETCH_START: return { ...state, fetchAllergens: null };
-    case ALLERGENS_FETCH_ERROR: return { ...state, fetchAllergens: action.error}
+    case ALLERGENS_FETCH_ERROR: return { ...state, fetchAllergens: action.error };
 
     // addresses
     case ADDRESSES_FETCH_START: return { ...state, fetchAddresses: null };
-    case ADDRESSES_FETCH_ERROR: return { ...state, fetchAddresses: action.error}
+    case ADDRESSES_FETCH_ERROR: return { ...state, fetchAddresses: action.error };
 
     case ADDRESSES_CREATE_START: return { ...state, createAddress: null };
-    case ADDRESSES_CREATE_ERROR: return { ...state, createAddress: action.error}
+    case ADDRESSES_CREATE_ERROR: return { ...state, createAddress: action.error };
 
     case ADDRESSES_DELETE_START: return { ...state, deleteAddress: null };
-    case ADDRESSES_DELETE_ERROR: return { ...state, deleteAddress: action.error}
+    case ADDRESSES_DELETE_ERROR: return { ...state, deleteAddress: action.error };
 
     // locations
     case LOCATIONS_FETCH_START: return { ...state, fetchLocations: null };
-    case LOCATIONS_FETCH_ERROR: return { ...state, fetchLocations: action.error}
+    case LOCATIONS_FETCH_ERROR: return { ...state, fetchLocations: action.error };
 
     // menu
     case MENUS_FETCH_START: return { ...state, fetchMenu: null };
-    case MENUS_FETCH_ERROR: return { ...state, fetchMenu: action.error}
+    case MENUS_FETCH_ERROR: return { ...state, fetchMenu: action.error };
 
     // orders
     case `${RESOLVE_ORDER}_PENDING`: return { ...state, resolveOrder: null };
-    case `${RESOLVE_ORDER}_REJECTED`: return { ...state, resolveOrder: action.payload}
+    case `${RESOLVE_ORDER}_REJECTED`: return { ...state, resolveOrder: action.payload };
 
     // payments
     case PAYMENTS_FETCH_START: return { ...state, fetchPayments: null };
-    case PAYMENTS_FETCH_ERROR: return { ...state, fetchPayments: action.error}
+    case PAYMENTS_FETCH_ERROR: return { ...state, fetchPayments: action.error };
 
     case PAYMENTS_CREATE_START: return { ...state, createPayment: null };
-    case PAYMENTS_CREATE_ERROR: return { ...state, createPayment: action.error};
+    case PAYMENTS_CREATE_ERROR: return { ...state, createPayment: action.error };
 
     case PAYMENTS_DELETE_START: return { ...state, deletePayment: null };
-    case PAYMENTS_DELETE_ERROR: return { ...state, deletePayment: action.error}
+    case PAYMENTS_DELETE_ERROR: return { ...state, deletePayment: action.error };
 
-    case `${SET_DEFAULT_PAYMENT}_PENDING`: return { ...state, setDefaultPayment: null }
-    case `${SET_DEFAULT_PAYMENT}_REJECTED`: return { ...state, setDefaultPayment: action.payload }
+    case `${SET_DEFAULT_PAYMENT}_PENDING`: return { ...state, setDefaultPayment: null };
+    case `${SET_DEFAULT_PAYMENT}_REJECTED`: return { ...state, setDefaultPayment: action.payload };
 
     // users
     case `${AUTHENTICATE_USER}_PENDING`: return { ...state, authenticateUser: null };
-    case `${AUTHENTICATE_USER}_REJECTED`: return { ...state, authenticateUser: action.payload}
+    case `${AUTHENTICATE_USER}_REJECTED`: return { ...state, authenticateUser: action.payload };
 
-    case `${ADD_ALLERGENS}_PENDING`: return { ...state,   addAllergens: null }
-    case `${ADD_ALLERGENS}_FULFILLED`: return { ...state, addAllergens: action.payload }
-    case `${ADD_ALLERGENS}_REJECTED`: return { ...state,  addAllergens: action.error }
+    case `${ADD_ALLERGENS}_PENDING`: return { ...state, addAllergens: null };
+    case `${ADD_ALLERGENS}_FULFILLED`: return { ...state, addAllergens: action.payload };
+    case `${ADD_ALLERGENS}_REJECTED`: return { ...state, addAllergens: action.error };
 
-    case `${REMOVE_ALLERGENS}_PENDING`: return { ...state,   removeAllergens: null }
-    case `${REMOVE_ALLERGENS}_FULFILLED`: return { ...state, removeAllergens: action.payload }
-    case `${REMOVE_ALLERGENS}_REJECTED`: return { ...state,  removeAllergens: action.error }
+    case `${REMOVE_ALLERGENS}_PENDING`: return { ...state, removeAllergens: null };
+    case `${REMOVE_ALLERGENS}_FULFILLED`: return { ...state, removeAllergens: action.payload };
+    case `${REMOVE_ALLERGENS}_REJECTED`: return { ...state, removeAllergens: action.error };
 
     case `${RESOLVE_USER}_PENDING`: return { ...state, resolveUser: null };
-    case `${RESOLVE_USER}_REJECTED`: return { ...state, resolveUser: action.payload}
+    case `${RESOLVE_USER}_REJECTED`: return { ...state, resolveUser: action.payload };
 
     case `${UNAUTHENTICATE_USER}_PENDING`: return { ...state, unauthenticateUser: null };
-    case `${UNAUTHENTICATE_USER}_REJECTED`: return { ...state, unauthenticateUser: action.payload}
+    case `${UNAUTHENTICATE_USER}_REJECTED`: return { ...state, unauthenticateUser: action.payload };
 
     case `${VALIDATE_USER}_PENDING`: return { ...state, validateUser: null };
-    case `${VALIDATE_USER}_REJECTED`: return { ...state, validateUser: action.payload}
+    case `${VALIDATE_USER}_REJECTED`: return { ...state, validateUser: action.payload };
 
     case `${RESET_USER_PASSWORD}_PENDING`: return { ...state, resetUserPassword: null };
-    case `${RESET_USER_PASSWORD}_REJECTED`: return { ...state, resetUserPassword: action.payload}
+    case `${RESET_USER_PASSWORD}_REJECTED`: return { ...state, resetUserPassword: action.payload };
 
     case `${FETCH_USER}_PENDING`: return { ...state, fetchUser: null };
-    case `${FETCH_USER}_REJECTED`: return { ...state, fetchUser: action.payload}
+    case `${FETCH_USER}_REJECTED`: return { ...state, fetchUser: action.payload };
 
     case USER_UPDATE_START: return { ...state, updateUser: null };
-    case USER_UPDATE_ERROR: return { ...state, updateUser: action.error}
+    case USER_UPDATE_ERROR: return { ...state, updateUser: action.error };
 
     case USER_CREATE_START: return { ...state, createUser: null };
-    case USER_CREATE_ERROR: return { ...state, createUser: action.error}
+    case USER_CREATE_ERROR: return { ...state, createUser: action.error };
 
     default: return state;
   }

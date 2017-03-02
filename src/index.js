@@ -1,6 +1,6 @@
+import BrandibbleRef from 'brandibble';
 import middleware from './config/middleware';
 import reducers from './reducers';
-import BrandibbleRef from 'brandibble';
 
 export * from './utils/constants';
 export * from './actions';

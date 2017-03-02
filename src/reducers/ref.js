@@ -1,9 +1,9 @@
-import { AUTHENTICATE_USER } from 'actions/session/user';
 import { SETUP_BRANDIBBLE } from 'actions/setup';
+
 const initialState = {};
 
-export default function ref(state=initialState, action) {
-  switch(action.type) {
+export default function ref(state = initialState, action) {
+  switch (action.type) {
     case `${SETUP_BRANDIBBLE}_FULFILLED`:
       return action.payload;
     default:

@@ -1,3 +1,4 @@
+/* eslint no-plusplus:1 */
 import reduxCrud from 'redux-crud';
 import {
   AUTHENTICATE_USER,
@@ -15,15 +16,15 @@ const {
 const initialState = {};
 
 function removeAllergens(removeArr, currentArr) {
-  let newArr = [];
+  const newArr = [];
   for (let i = 0; i < currentArr.length; i++) {
     if (!removeArr.includes(currentArr[i])) newArr.push(currentArr[i]);
   }
   return newArr;
 }
 
-export default function attributes(state=initialState, action) {
-  switch(action.type) {
+export default function attributes(state = initialState, action) {
+  switch (action.type) {
     case `${RESOLVE_USER}_FULFILLED`:
     case `${AUTHENTICATE_USER}_FULFILLED`:
     case `${FETCH_USER}_FULFILLED`:
@@ -33,13 +34,13 @@ export default function attributes(state=initialState, action) {
       return {
         ...state,
         allergens: state.allergens.concat(action.payload.added),
-      }
+      };
 
     case `${REMOVE_ALLERGENS}_FULFILLED`:
       return {
         ...state,
         allergens: removeAllergens(action.payload.removed, state.allergens),
-      }
+      };
 
     case USER_CREATE_SUCCESS:
     case USER_UPDATE_SUCCESS:

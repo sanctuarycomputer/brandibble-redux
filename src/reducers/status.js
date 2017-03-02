@@ -111,115 +111,115 @@ const initialState = {
   validateUser: IDLE,
 };
 
-export default function status(state=initialState, action) {
+export default function status(state = initialState, action) {
   switch (action.type) {
-    case `${SETUP_BRANDIBBLE}_PENDING`: return { ...state,   setupBrandibble: PENDING }
-    case `${SETUP_BRANDIBBLE}_FULFILLED`: return { ...state, setupBrandibble: FULFILLED }
-    case `${SETUP_BRANDIBBLE}_REJECTED`: return { ...state,  setupBrandibble: REJECTED }
+    case `${SETUP_BRANDIBBLE}_PENDING`: return { ...state, setupBrandibble: PENDING };
+    case `${SETUP_BRANDIBBLE}_FULFILLED`: return { ...state, setupBrandibble: FULFILLED };
+    case `${SETUP_BRANDIBBLE}_REJECTED`: return { ...state, setupBrandibble: REJECTED };
 
-    case `${SETUP_BRANDIBBLE_REDUX}_PENDING`: return { ...state,   setupBrandibbleRedux: PENDING }
-    case `${SETUP_BRANDIBBLE_REDUX}_FULFILLED`: return { ...state, setupBrandibbleRedux: FULFILLED }
-    case `${SETUP_BRANDIBBLE_REDUX}_REJECTED`: return { ...state,  setupBrandibbleRedux: REJECTED }
+    case `${SETUP_BRANDIBBLE_REDUX}_PENDING`: return { ...state, setupBrandibbleRedux: PENDING };
+    case `${SETUP_BRANDIBBLE_REDUX}_FULFILLED`: return { ...state, setupBrandibbleRedux: FULFILLED };
+    case `${SETUP_BRANDIBBLE_REDUX}_REJECTED`: return { ...state, setupBrandibbleRedux: REJECTED };
 
-    case ALLERGENS_FETCH_START: return { ...state, fetchAllergens: PENDING }
-    case ALLERGENS_FETCH_SUCCESS: return { ...state, fetchAllergens: FULFILLED }
-    case ALLERGENS_FETCH_ERROR: return { ...state, fetchAllergens: REJECTED }
+    case ALLERGENS_FETCH_START: return { ...state, fetchAllergens: PENDING };
+    case ALLERGENS_FETCH_SUCCESS: return { ...state, fetchAllergens: FULFILLED };
+    case ALLERGENS_FETCH_ERROR: return { ...state, fetchAllergens: REJECTED };
 
-    case ADDRESSES_FETCH_START: return { ...state, fetchAddresses: PENDING }
-    case ADDRESSES_FETCH_SUCCESS: return { ...state, fetchAddresses: FULFILLED }
-    case ADDRESSES_FETCH_ERROR: return { ...state, fetchAddresses: REJECTED }
+    case ADDRESSES_FETCH_START: return { ...state, fetchAddresses: PENDING };
+    case ADDRESSES_FETCH_SUCCESS: return { ...state, fetchAddresses: FULFILLED };
+    case ADDRESSES_FETCH_ERROR: return { ...state, fetchAddresses: REJECTED };
 
-    case ADDRESSES_CREATE_START: return { ...state, createAddress: PENDING }
-    case ADDRESSES_CREATE_SUCCESS: return { ...state, createAddress: FULFILLED }
-    case ADDRESSES_CREATE_ERROR: return { ...state, createAddress: REJECTED }
+    case ADDRESSES_CREATE_START: return { ...state, createAddress: PENDING };
+    case ADDRESSES_CREATE_SUCCESS: return { ...state, createAddress: FULFILLED };
+    case ADDRESSES_CREATE_ERROR: return { ...state, createAddress: REJECTED };
 
-    case ADDRESSES_DELETE_START: return { ...state, deleteAddress: PENDING }
-    case ADDRESSES_DELETE_SUCCESS: return { ...state, deleteAddress: FULFILLED }
-    case ADDRESSES_DELETE_ERROR: return { ...state, deleteAddress: REJECTED }
+    case ADDRESSES_DELETE_START: return { ...state, deleteAddress: PENDING };
+    case ADDRESSES_DELETE_SUCCESS: return { ...state, deleteAddress: FULFILLED };
+    case ADDRESSES_DELETE_ERROR: return { ...state, deleteAddress: REJECTED };
 
-    case LOCATIONS_FETCH_START: return { ...state,   fetchLocations: PENDING }
-    case LOCATIONS_FETCH_SUCCESS: return { ...state, fetchLocations: FULFILLED }
-    case LOCATIONS_FETCH_ERROR: return { ...state,  fetchLocations: REJECTED }
+    case LOCATIONS_FETCH_START: return { ...state, fetchLocations: PENDING };
+    case LOCATIONS_FETCH_SUCCESS: return { ...state, fetchLocations: FULFILLED };
+    case LOCATIONS_FETCH_ERROR: return { ...state, fetchLocations: REJECTED };
 
-    case `${FETCH_ALL_CUSTOMER_ORDERS}_PENDING`: return { ...state,   fetchAllCustomerOrders: PENDING }
-    case `${FETCH_ALL_CUSTOMER_ORDERS}_FULFILLED`: return { ...state,   fetchAllCustomerOrders: FULFILLED }
-    case `${FETCH_ALL_CUSTOMER_ORDERS}_REJECTED`: return { ...state,   fetchAllCustomerOrders: REJECTED }
+    case `${FETCH_ALL_CUSTOMER_ORDERS}_PENDING`: return { ...state, fetchAllCustomerOrders: PENDING };
+    case `${FETCH_ALL_CUSTOMER_ORDERS}_FULFILLED`: return { ...state, fetchAllCustomerOrders: FULFILLED };
+    case `${FETCH_ALL_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchAllCustomerOrders: REJECTED };
 
-    case `${FETCH_PAST_CUSTOMER_ORDERS}_PENDING`: return { ...state,   fetchPastCustomerOrders: PENDING }
-    case `${FETCH_PAST_CUSTOMER_ORDERS}_FULFILLED`: return { ...state,   fetchPastCustomerOrders: FULFILLED }
-    case `${FETCH_PAST_CUSTOMER_ORDERS}_REJECTED`: return { ...state,   fetchPastCustomerOrders: REJECTED }
+    case `${FETCH_PAST_CUSTOMER_ORDERS}_PENDING`: return { ...state, fetchPastCustomerOrders: PENDING };
+    case `${FETCH_PAST_CUSTOMER_ORDERS}_FULFILLED`: return { ...state, fetchPastCustomerOrders: FULFILLED };
+    case `${FETCH_PAST_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchPastCustomerOrders: REJECTED };
 
-    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_PENDING`: return { ...state,   fetchUpcomingCustomerOrders: PENDING }
-    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_FULFILLED`: return { ...state,   fetchUpcomingCustomerOrders: FULFILLED }
-    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_REJECTED`: return { ...state,   fetchUpcomingCustomerOrders: REJECTED }
+    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_PENDING`: return { ...state, fetchUpcomingCustomerOrders: PENDING };
+    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_FULFILLED`: return { ...state, fetchUpcomingCustomerOrders: FULFILLED };
+    case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchUpcomingCustomerOrders: REJECTED };
 
-    case MENUS_FETCH_START: return { ...state,   fetchMenu: PENDING }
-    case MENUS_FETCH_SUCCESS: return { ...state, fetchMenu: FULFILLED }
-    case MENUS_FETCH_ERROR: return { ...state,  fetchMenu: REJECTED }
+    case MENUS_FETCH_START: return { ...state, fetchMenu: PENDING };
+    case MENUS_FETCH_SUCCESS: return { ...state, fetchMenu: FULFILLED };
+    case MENUS_FETCH_ERROR: return { ...state, fetchMenu: REJECTED };
 
-    case `${RESOLVE_ORDER}_PENDING`: return { ...state,   resolveOrder: PENDING }
-    case `${RESOLVE_ORDER}_FULFILLED`: return { ...state, resolveOrder: FULFILLED }
-    case `${RESOLVE_ORDER}_REJECTED`: return { ...state,  resolveOrder: REJECTED }
+    case `${RESOLVE_ORDER}_PENDING`: return { ...state, resolveOrder: PENDING };
+    case `${RESOLVE_ORDER}_FULFILLED`: return { ...state, resolveOrder: FULFILLED };
+    case `${RESOLVE_ORDER}_REJECTED`: return { ...state, resolveOrder: REJECTED };
 
-    case `${SET_ORDER_LOCATION_ID}_PENDING`: return { ...state,   setOrderLocationId: PENDING }
-    case `${SET_ORDER_LOCATION_ID}_FULFILLED`: return { ...state, setOrderLocationId: FULFILLED }
-    case `${SET_ORDER_LOCATION_ID}_REJECTED`: return { ...state,  setOrderLocationId: REJECTED }
+    case `${SET_ORDER_LOCATION_ID}_PENDING`: return { ...state, setOrderLocationId: PENDING };
+    case `${SET_ORDER_LOCATION_ID}_FULFILLED`: return { ...state, setOrderLocationId: FULFILLED };
+    case `${SET_ORDER_LOCATION_ID}_REJECTED`: return { ...state, setOrderLocationId: REJECTED };
 
-    case PAYMENTS_FETCH_START: return { ...state, fetchPayments: PENDING }
-    case PAYMENTS_FETCH_SUCCESS: return { ...state, fetchPayments: FULFILLED }
-    case PAYMENTS_FETCH_ERROR: return { ...state, fetchPayments: REJECTED }
+    case PAYMENTS_FETCH_START: return { ...state, fetchPayments: PENDING };
+    case PAYMENTS_FETCH_SUCCESS: return { ...state, fetchPayments: FULFILLED };
+    case PAYMENTS_FETCH_ERROR: return { ...state, fetchPayments: REJECTED };
 
-    case PAYMENTS_CREATE_START: return { ...state, createPayment: PENDING }
-    case PAYMENTS_CREATE_SUCCESS: return { ...state, createPayment: FULFILLED }
-    case PAYMENTS_CREATE_ERROR: return { ...state, createPayment: REJECTED }
+    case PAYMENTS_CREATE_START: return { ...state, createPayment: PENDING };
+    case PAYMENTS_CREATE_SUCCESS: return { ...state, createPayment: FULFILLED };
+    case PAYMENTS_CREATE_ERROR: return { ...state, createPayment: REJECTED };
 
-    case PAYMENTS_DELETE_START: return { ...state, deletePayment: PENDING }
-    case PAYMENTS_DELETE_SUCCESS: return { ...state, deletePayment: FULFILLED }
-    case PAYMENTS_DELETE_ERROR: return { ...state, deletePayment: REJECTED }
+    case PAYMENTS_DELETE_START: return { ...state, deletePayment: PENDING };
+    case PAYMENTS_DELETE_SUCCESS: return { ...state, deletePayment: FULFILLED };
+    case PAYMENTS_DELETE_ERROR: return { ...state, deletePayment: REJECTED };
 
-    case `${SET_DEFAULT_PAYMENT}_PENDING`: return { ...state, setDefaultPayment: PENDING }
-    case `${SET_DEFAULT_PAYMENT}_FULFILLED`: return { ...state, setDefaultPayment: FULFILLED }
-    case `${SET_DEFAULT_PAYMENT}_REJECTED`: return { ...state, setDefaultPayment: REJECTED }
+    case `${SET_DEFAULT_PAYMENT}_PENDING`: return { ...state, setDefaultPayment: PENDING };
+    case `${SET_DEFAULT_PAYMENT}_FULFILLED`: return { ...state, setDefaultPayment: FULFILLED };
+    case `${SET_DEFAULT_PAYMENT}_REJECTED`: return { ...state, setDefaultPayment: REJECTED };
 
-    case `${VALIDATE_USER}_PENDING`: return { ...state,   validateUser: PENDING }
-    case `${VALIDATE_USER}_FULFILLED`: return { ...state, validateUser: FULFILLED }
-    case `${VALIDATE_USER}_REJECTED`: return { ...state,  validateUser: REJECTED }
+    case `${VALIDATE_USER}_PENDING`: return { ...state, validateUser: PENDING };
+    case `${VALIDATE_USER}_FULFILLED`: return { ...state, validateUser: FULFILLED };
+    case `${VALIDATE_USER}_REJECTED`: return { ...state, validateUser: REJECTED };
 
-    case `${ADD_ALLERGENS}_PENDING`: return { ...state,   addAllergens: PENDING }
-    case `${ADD_ALLERGENS}_FULFILLED`: return { ...state, addAllergens: FULFILLED }
-    case `${ADD_ALLERGENS}_REJECTED`: return { ...state,  addAllergens: REJECTED }
+    case `${ADD_ALLERGENS}_PENDING`: return { ...state, addAllergens: PENDING };
+    case `${ADD_ALLERGENS}_FULFILLED`: return { ...state, addAllergens: FULFILLED };
+    case `${ADD_ALLERGENS}_REJECTED`: return { ...state, addAllergens: REJECTED };
 
-    case `${REMOVE_ALLERGENS}_PENDING`: return { ...state,   removeAllergens: PENDING }
-    case `${REMOVE_ALLERGENS}_FULFILLED`: return { ...state, removeAllergens: FULFILLED }
-    case `${REMOVE_ALLERGENS}_REJECTED`: return { ...state,  removeAllergens: REJECTED }
+    case `${REMOVE_ALLERGENS}_PENDING`: return { ...state, removeAllergens: PENDING };
+    case `${REMOVE_ALLERGENS}_FULFILLED`: return { ...state, removeAllergens: FULFILLED };
+    case `${REMOVE_ALLERGENS}_REJECTED`: return { ...state, removeAllergens: REJECTED };
 
-    case `${AUTHENTICATE_USER}_PENDING`: return { ...state,   authenticateUser: PENDING }
-    case `${AUTHENTICATE_USER}_FULFILLED`: return { ...state, authenticateUser: FULFILLED }
-    case `${AUTHENTICATE_USER}_REJECTED`: return { ...state,  authenticateUser: REJECTED }
+    case `${AUTHENTICATE_USER}_PENDING`: return { ...state, authenticateUser: PENDING };
+    case `${AUTHENTICATE_USER}_FULFILLED`: return { ...state, authenticateUser: FULFILLED };
+    case `${AUTHENTICATE_USER}_REJECTED`: return { ...state, authenticateUser: REJECTED };
 
-    case `${RESOLVE_USER}_PENDING`: return { ...state,   resolveUser: PENDING }
-    case `${RESOLVE_USER}_FULFILLED`: return { ...state, resolveUser: FULFILLED }
-    case `${RESOLVE_USER}_REJECTED`: return { ...state,  resolveUser: REJECTED }
+    case `${RESOLVE_USER}_PENDING`: return { ...state, resolveUser: PENDING };
+    case `${RESOLVE_USER}_FULFILLED`: return { ...state, resolveUser: FULFILLED };
+    case `${RESOLVE_USER}_REJECTED`: return { ...state, resolveUser: REJECTED };
 
-    case `${UNAUTHENTICATE_USER}_PENDING`: return { ...state,   unauthenticateUser: PENDING }
-    case `${UNAUTHENTICATE_USER}_FULFILLED`: return { ...state, unauthenticateUser: FULFILLED }
-    case `${UNAUTHENTICATE_USER}_REJECTED`: return { ...state,  unauthenticateUser: REJECTED }
+    case `${UNAUTHENTICATE_USER}_PENDING`: return { ...state, unauthenticateUser: PENDING };
+    case `${UNAUTHENTICATE_USER}_FULFILLED`: return { ...state, unauthenticateUser: FULFILLED };
+    case `${UNAUTHENTICATE_USER}_REJECTED`: return { ...state, unauthenticateUser: REJECTED };
 
-    case `${RESET_USER_PASSWORD}_PENDING`: return { ...state,   resetUserPassword: PENDING }
-    case `${RESET_USER_PASSWORD}_FULFILLED`: return { ...state, resetUserPassword: FULFILLED }
-    case `${RESET_USER_PASSWORD}_REJECTED`: return { ...state,  resetUserPassword: REJECTED }
+    case `${RESET_USER_PASSWORD}_PENDING`: return { ...state, resetUserPassword: PENDING };
+    case `${RESET_USER_PASSWORD}_FULFILLED`: return { ...state, resetUserPassword: FULFILLED };
+    case `${RESET_USER_PASSWORD}_REJECTED`: return { ...state, resetUserPassword: REJECTED };
 
-    case `${FETCH_USER}_PENDING`: return { ...state,   fetchUser: PENDING }
-    case `${FETCH_USER}_FULFILLED`: return { ...state, fetchUser: FULFILLED }
-    case `${FETCH_USER}_REJECTED`: return { ...state,  fetchUser: REJECTED }
+    case `${FETCH_USER}_PENDING`: return { ...state, fetchUser: PENDING };
+    case `${FETCH_USER}_FULFILLED`: return { ...state, fetchUser: FULFILLED };
+    case `${FETCH_USER}_REJECTED`: return { ...state, fetchUser: REJECTED };
 
-    case USER_UPDATE_START: return { ...state,   updateUser: PENDING }
-    case USER_UPDATE_SUCCESS: return { ...state, updateUser: FULFILLED }
-    case USER_UPDATE_ERROR: return { ...state,  updateUser: REJECTED }
+    case USER_UPDATE_START: return { ...state, updateUser: PENDING };
+    case USER_UPDATE_SUCCESS: return { ...state, updateUser: FULFILLED };
+    case USER_UPDATE_ERROR: return { ...state, updateUser: REJECTED };
 
-    case USER_CREATE_START: return { ...state,   createUser: PENDING }
-    case USER_CREATE_SUCCESS: return { ...state, createUser: FULFILLED }
-    case USER_CREATE_ERROR: return { ...state,  createUser: REJECTED }
+    case USER_CREATE_START: return { ...state, createUser: PENDING };
+    case USER_CREATE_SUCCESS: return { ...state, createUser: FULFILLED };
+    case USER_CREATE_ERROR: return { ...state, createUser: REJECTED };
 
     default: return state;
   }

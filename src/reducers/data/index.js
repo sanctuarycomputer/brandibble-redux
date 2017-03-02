@@ -6,5 +6,5 @@ import customerOrders from './customerOrders';
 export default combineReducers({
   allergens,
   locations,
-  customerOrders
+  customerOrders,
 });

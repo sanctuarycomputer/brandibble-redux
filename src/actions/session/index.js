@@ -13,7 +13,7 @@ export {
   fetchPayments,
   createPayment,
   deletePayment,
-  setDefaultPayment
+  setDefaultPayment,
 } from './payments';
 export {
   authenticateUser,

@@ -8,20 +8,20 @@ function _setupBrandibble(brandibble) {
   return {
     type: SETUP_BRANDIBBLE,
     payload: brandibble.setup(),
-  }
+  };
 }
 
 function _setupBrandibbleRedux(payload) {
-  return { type: SETUP_BRANDIBBLE_REDUX, payload }
+  return { type: SETUP_BRANDIBBLE_REDUX, payload };
 }
 
 export function setupBrandibble(Brandibble) {
   return dispatch => dispatch(_setupBrandibble(Brandibble));
 }
 
-export function setupBrandibbleRedux(Brandibble, defaultLocationId=null, defaultServiceType='delivery') {
-  return dispatch => {
-    const payload = dispatch(setupBrandibble(Brandibble)).then(({value}) => {
+export function setupBrandibbleRedux(Brandibble, defaultLocationId = null, defaultServiceType = 'delivery') {
+  return (dispatch) => {
+    const payload = dispatch(setupBrandibble(Brandibble)).then(({ value }) => {
       return Promise.all([
         dispatch(resolveUser(value)),
         dispatch(resolveOrder(value, defaultLocationId, defaultServiceType)),
@@ -29,5 +29,5 @@ export function setupBrandibbleRedux(Brandibble, defaultLocationId=null, default
     });
 
     return dispatch(_setupBrandibbleRedux(payload));
-  }
+  };
 }

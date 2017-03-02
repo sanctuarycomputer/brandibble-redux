@@ -36,8 +36,9 @@ describe('actions/session/order', () => {
     });
 
     it('should have RESOLVE_ORDER_FULFILLED action', () => {
-      action = find(actionsCalled, {type: 'RESOLVE_ORDER_FULFILLED'});
-      expect(action).to.exist;
+      action = find(actionsCalled, { type: 'RESOLVE_ORDER_FULFILLED' });
+      expect(action).to.have.property('payload');
+      expect(action.payload).to.have.property('order').is.not.undefined.and.is.not.null;
     });
   });
 

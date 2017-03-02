@@ -2,6 +2,10 @@
   "name": "brandibble-redux",
   "version": "1.10.6",
   "description": "",
+  "engines": {
+    "node": ">=7.6.0",
+    "npm": ">=4.3.0"
+  },
   "main": "dist/brandibble-redux.min.js",
   "scripts": {
     "lint": "eslint src",

@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
@@ -22,4 +23,7 @@ module.exports = {
   externals: {
     redux: 'redux',
   },
+  plugins: [
+    new webpack.EnvironmentPlugin(['BRANDIBBLE_API_KEY']),
+  ],
 };

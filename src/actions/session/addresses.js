@@ -36,6 +36,6 @@ export function deleteAddress(brandibble, id) {
     dispatch(deleteStart({customer_address_id: id}));
     return brandibble.addresses.delete(id)
       .then(() => dispatch(deleteSuccess({customer_address_id: id})))
-      .catch(({errors}) => dispatch(fetchError(errors, {customer_address_id: id})));
+      .catch(({ errors }) => dispatch(deleteError(errors, { customer_address_id: id })));
   };
 }

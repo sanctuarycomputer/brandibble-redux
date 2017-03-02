@@ -56,7 +56,7 @@ export function deletePayment(brandibble, id) {
     dispatch(deleteStart({customer_card_id: id}));
     return brandibble.payments.delete(id)
       .then(() => dispatch(deleteSuccess({ customer_card_id: id })))
-      .catch(({errors}) => dispatch(fetchError(errors, { customer_card_id: id })));
+      .catch(({ errors }) => dispatch(deleteError(errors, { customer_card_id: id })));
   };
 }
 

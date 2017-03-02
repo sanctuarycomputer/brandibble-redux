@@ -1,21 +1,21 @@
-var webpackConfig = require('./webpack.config.base');
+const webpackConfig = require('./webpack.config.base');
 
 webpackConfig.externals = {
-  'cheerio': 'window',
+  cheerio: 'window',
 };
 
-module.exports = function(config) {
+module.exports = (config) => {
   config.set({
     browsers: ['Chrome'],
     client: {
       mocha: {
         reporter: 'html',
-        timeout: `${process.env.CI ? '80000' : '20000'}`
-      }
+        timeout: `${process.env.CI ? '80000' : '20000'}`,
+      },
     },
     files: [
       'tests/setup.test.js',
-      'tests/**/*.test.js'
+      'tests/**/*.test.js',
     ],
     frameworks: ['mocha', 'chai'],
     plugins: [
@@ -26,10 +26,10 @@ module.exports = function(config) {
       'karma-webpack',
     ],
     preprocessors: {
-      'tests/**/*.test.js': [ 'webpack', 'sourcemap' ]
+      'tests/**/*.test.js': ['webpack', 'sourcemap'],
     },
     reporters: ['progress'],
     singleRun: !!process.env.CI,
-    webpack: webpackConfig
+    webpack: webpackConfig,
   });
 };

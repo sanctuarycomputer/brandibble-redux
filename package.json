@@ -17,8 +17,8 @@
     "prepare": "npm run build",
     "test": "node ./node_modules/karma/bin/karma start"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Sanctuary Computer <hello@sanctuary.computer> (http://sanctuary.computer/)",
+  "license": "MIT",
   "devDependencies": {
     "babel": "^6.5.2",
     "babel-cli": "^6.18.0",

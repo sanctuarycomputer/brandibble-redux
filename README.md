@@ -1,5 +1,9 @@
 # Brandibble Redux
 
+[![npm](https://img.shields.io/npm/v/brandibble-redux.svg?style=flat-square)](https://www.npmjs.com/package/brandibble-redux)
+[![CircleCI Status](https://img.shields.io/circleci/project/github/sanctuarycomputer/brandibble-redux/master.svg?label=circle&maxAge=43200&style=flat-square)](https://circleci.com/gh/sanctuarycomputer/brandibble-redux)
+[![Open Source Love](https://img.shields.io/npm/l/brandibble-redux.svg?style=flat-square)](https://en.wikipedia.org/wiki/MIT_License)
+
 A set of actions, reducers, and redux middleware for Brandibble.
 
 ### Configuration

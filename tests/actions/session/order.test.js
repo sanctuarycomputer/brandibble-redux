@@ -8,12 +8,13 @@ import {
   setOrderLocationId,
   resolveOrder,
   addLineItem,
+  bindCustomerToOrder,
   removeLineItem,
   setLineItemQuantity,
   addOptionToLineItem,
   removeOptionFromLineItem,
 } from 'actions/session/order';
-import { brandibble, makeUnpersistedOrder, productStub } from '../../config/stubs';
+import { authResponseStub, brandibble, makeUnpersistedOrder, productStub } from '../../config/stubs';
 
 const mockStore = configureStore(reduxMiddleware);
 
@@ -197,6 +198,22 @@ describe('actions/session/order', () => {
 
     it('should have SET_LINE_ITEM_QUANTITY_FULFILLED action', () => {
       action = find(actionsCalled, { type: 'SET_LINE_ITEM_QUANTITY_FULFILLED' });
+      expect(action).to.exist;
+    });
+  });
+
+  describe('bindCustomerToOrder', () => {
+    before(() => {
+      store = mockStore();
+      return bindCustomerToOrder(makeUnpersistedOrder(), authResponseStub)(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
+
+    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+
+    it('should have BIND_CUSTOMER_TO_ORDER_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'BIND_CUSTOMER_TO_ORDER_FULFILLED' });
       expect(action).to.exist;
     });
   });

@@ -9,6 +9,7 @@ export const ADD_OPTION_TO_LINE_ITEM = 'ADD_OPTION_TO_LINE_ITEM';
 export const REMOVE_OPTION_FROM_LINE_ITEM = 'REMOVE_OPTION_FROM_LINE_ITEM';
 export const SET_ORDER_LOCATION_ID = 'SET_ORDER_LOCATION_ID';
 export const BIND_CUSTOMER_TO_ORDER = 'BIND_CUSTOMER_TO_ORDER';
+export const SET_PAYMENT_METHOD = 'SET_PAYMENT_METHOD';
 
 /* Private Action Creators */
 function _resolveOrder(payload) {
@@ -64,6 +65,14 @@ function _bindCustomerToOrder(order, customer) {
   };
 }
 
+function _setPaymentMethod(order, type, card) {
+  return {
+    type: SET_PAYMENT_METHOD,
+    payload: order.setPaymentMethod(type, card).then(order => ({ order })),
+  };
+}
+
+
 /* Public Functions */
 export function resolveOrder(brandibble, locationId = null, serviceType = 'delivery') {
   const { orders } = brandibble;
@@ -94,6 +103,10 @@ export function setLineItemQuantity(currentOrder, lineItem, newQuantity = 1) {
     );
   }
   return dispatch => dispatch(_setLineItemQuantity(...arguments));
+}
+
+export function setPaymentMethod(currentOrder, type, card) {
+  return dispatch => dispatch(_setPaymentMethod(currentOrder, type, card));
 }
 
 export function removeLineItem(currentOrder, lineItem) {

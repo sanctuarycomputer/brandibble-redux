@@ -8,6 +8,7 @@ import {
   REMOVE_LINE_ITEM,
   ADD_OPTION_TO_LINE_ITEM,
   REMOVE_OPTION_FROM_LINE_ITEM,
+  SET_PAYMENT_METHOD,
 } from 'actions/session/order';
 
 const initialState = {
@@ -40,6 +41,7 @@ export default function order(state = initialState, action) {
     case `${SET_LINE_ITEM_QUANTITY}_FULFILLED`:
     case `${REMOVE_LINE_ITEM}_FULFILLED`:
     case `${ADD_OPTION_TO_LINE_ITEM}_FULFILLED`:
+    case `${SET_PAYMENT_METHOD}_FULFILLED`:
     case `${REMOVE_OPTION_FROM_LINE_ITEM}_FULFILLED`: {
       const ref = action.payload.order;
       return {

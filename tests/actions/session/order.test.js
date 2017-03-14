@@ -6,6 +6,7 @@ import configureStore from 'redux-mock-store';
 import reduxMiddleware from 'config/middleware';
 import {
   setOrderLocationId,
+  setPaymentMethod,
   resolveOrder,
   addLineItem,
   bindCustomerToOrder,
@@ -14,7 +15,13 @@ import {
   addOptionToLineItem,
   removeOptionFromLineItem,
 } from 'actions/session/order';
-import { authResponseStub, brandibble, makeUnpersistedOrder, productStub } from '../../config/stubs';
+import {
+  authResponseStub,
+  brandibble,
+  cardStub,
+  makeUnpersistedOrder,
+  productStub,
+} from '../../config/stubs';
 
 const mockStore = configureStore(reduxMiddleware);
 
@@ -62,6 +69,22 @@ describe('actions/session/order', () => {
     it('should have a payload', () => {
       action = find(actionsCalled, { type: 'SET_ORDER_LOCATION_ID_FULFILLED' });
       expect(action).to.have.a.property('payload');
+    });
+  });
+
+  describe('setPaymentMethod', () => {
+    before(() => {
+      store = mockStore();
+      return setPaymentMethod(makeUnpersistedOrder(), 'credit', cardStub)(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
+
+    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+
+    it('should have SET_PAYMENT_METHOD_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'SET_PAYMENT_METHOD_FULFILLED' });
+      expect(action).to.exist.and.have.property('payload').to.have.property('order');
     });
   });
 

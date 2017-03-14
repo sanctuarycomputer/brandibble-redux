@@ -8,6 +8,7 @@ export {
   resolveOrder,
   setLineItemQuantity,
   setOrderLocationId,
+  setPaymentMethod,
 } from './order';
 export {
   fetchPayments,

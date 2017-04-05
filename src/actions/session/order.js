@@ -112,10 +112,15 @@ function _createNewOrder(data) {
   };
 }
 
-export function createNewOrder(brandibble, locationId, serviceType) {
-  const { orders } = brandibble;
-  const payload = orders.create(locationId, serviceType).then(order => ({ order }));
-  return dispatch => dispatch(_createNewOrder(payload));
+export function createNewOrder(brandibble, location, serviceType) {
+  return (dispatch) => {
+    const { orders } = brandibble;
+    orders.create(location.location_id, serviceType)
+    .then((order) => {
+      dispatch(_createNewOrder({ order }));
+      dispatch(setOrderAddress(order, location));
+    });
+  };
 }
 
 /* Public Functions */

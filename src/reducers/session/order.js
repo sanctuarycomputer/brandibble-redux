@@ -13,12 +13,14 @@ import {
   SET_PROMO_CODE,
   SET_REQUESTED_AT,
   CREATE_NEW_ORDER,
+  VALIDATE_ORDER,
 } from 'actions/session/order';
 
 const initialState = {
   ref: null,
   orderData: null,
   lineItemsData: null,
+  validated: null,
 };
 
 function _buildFormattedLineItemsHash(ref) {
@@ -58,6 +60,13 @@ export default function order(state = initialState, action) {
         ref,
         orderData: ref.format(),
         lineItemsData: _buildFormattedLineItemsHash(ref),
+      };
+    }
+
+    case VALIDATE_ORDER: {
+      return {
+        ...state,
+        validated: action.payload,
       };
     }
 

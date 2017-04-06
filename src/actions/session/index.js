@@ -15,6 +15,7 @@ export {
   setPromoCode,
   setRequestedAt,
   createNewOrder,
+  validateOrder,
 } from './order';
 export {
   fetchPayments,

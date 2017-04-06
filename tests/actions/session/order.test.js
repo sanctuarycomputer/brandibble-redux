@@ -82,7 +82,7 @@ describe('actions/session/order', () => {
   describe('setPromoCode', () => {
     before(() => {
       store = mockStore();
-      return setPromoCode(makeUnpersistedOrder(), 'waow')(store.dispatch).then(() => {
+      return setPromoCode(makeUnpersistedOrder(), 'freedig')(store.dispatch).then(() => {
         actionsCalled = store.getActions();
       });
     });

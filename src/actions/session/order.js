@@ -141,8 +141,9 @@ export function resolveOrder(brandibble, locationId = null, serviceType = 'deliv
 
 export function validateCurrentOrder(brandibble, data = {}) {
   return (dispatch) => {
-    const ref = brandibble.session.order.ref;
-    const payload = brandibble.ref.orders.validate(ref, data).then(res => res);
+    const { orders } = brandibble;
+    const order = orders.current();
+    const payload = orders.validate(order, data).then(res => res);
     return dispatch(_validateCurrentOrder(payload));
   };
 }

@@ -10,6 +10,7 @@ import {
 import {
   RESOLVE_ORDER,
   SUBMIT_ORDER,
+  VALIDATE_CURRENT_ORDER,
 } from 'actions/session/order';
 
 //  payments
@@ -116,6 +117,7 @@ export const initialState = {
   unauthenticateUser: null,
   updateUser: null,
   validateUser: null,
+  validateCurrentOrder: null,
 };
 
 export default function error(state = initialState, action) {
@@ -165,6 +167,9 @@ export default function error(state = initialState, action) {
 
     case `${SUBMIT_ORDER}_PENDING`: return { ...state, submitOrder: null };
     case `${SUBMIT_ORDER}_REJECTED`: return { ...state, submitOrder: action.payload };
+
+    case `${VALIDATE_CURRENT_ORDER}_PENDING`: return { ...state, validateCurrentOrder: null };
+    case `${VALIDATE_CURRENT_ORDER}_REJECTED`: return { ...state, validateCurrentOrder: action.payload };
 
     // payments
     case PAYMENTS_FETCH_START: return { ...state, fetchPayments: null };

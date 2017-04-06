@@ -15,7 +15,7 @@ export const SET_ORDER_ADDRESS = 'SET_ORDER_ADDRESS';
 export const SET_PROMO_CODE = 'SET_PROMO_CODE';
 export const SET_REQUESTED_AT = 'SET_REQUESTED_AT';
 export const CREATE_NEW_ORDER = 'CREATE_NEW_ORDER';
-export const VALIDATE_ORDER = 'VALIDATE_ORDER';
+export const VALIDATE_CURRENT_ORDER = 'VALIDATE_CURRENT_ORDER';
 
 /* Private Action Creators */
 function _resolveOrder(payload) {
@@ -113,9 +113,9 @@ function _createNewOrder(data) {
   };
 }
 
-function _validateOrder(data) {
+function _validateCurrentOrder(data) {
   return {
-    type: VALIDATE_ORDER,
+    type: VALIDATE_CURRENT_ORDER,
     payload: data,
   };
 }
@@ -139,17 +139,11 @@ export function resolveOrder(brandibble, locationId = null, serviceType = 'deliv
   return dispatch => dispatch(_resolveOrder(payload));
 }
 
-export function validateOrder(brandibble) {
+export function validateCurrentOrder(brandibble, data = {}) {
   return (dispatch) => {
     const ref = brandibble.session.order.ref;
-    return brandibble.ref.orders.validate(ref)
-    .then((res) => {
-      dispatch(_validateOrder(res));
-      return res;
-    })
-    .catch((error) => {
-      return error;
-    });
+    const payload = brandibble.ref.orders.validate(ref, data).then(res => res);
+    return dispatch(_validateCurrentOrder(payload));
   };
 }
 

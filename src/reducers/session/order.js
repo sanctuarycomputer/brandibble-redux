@@ -13,7 +13,7 @@ import {
   SET_PROMO_CODE,
   SET_REQUESTED_AT,
   CREATE_NEW_ORDER,
-  VALIDATE_ORDER,
+  VALIDATE_CURRENT_ORDER,
 } from 'actions/session/order';
 
 const initialState = {
@@ -63,7 +63,7 @@ export default function order(state = initialState, action) {
       };
     }
 
-    case VALIDATE_ORDER: {
+    case `${VALIDATE_CURRENT_ORDER}_FULFILLED`: {
       return {
         ...state,
         validated: action.payload,

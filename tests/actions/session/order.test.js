@@ -120,8 +120,8 @@ describe('actions/session/order', () => {
 
   describe('validateCurrentOrder', () => {
     before(() => {
-    store = mockStore();
-    const order = makeUnpersistedOrder();
+      store = mockStore();
+      const order = makeUnpersistedOrder();
 
       return fetchMenu(brandibble, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(({ menu }) => {
         const product = menu[0].children[menu[0].children.length - 1].items[0];

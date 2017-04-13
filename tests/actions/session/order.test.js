@@ -153,6 +153,41 @@ describe('actions/session/order', () => {
     });
   });
 
+  describe('validateCurrentOrder', () => {
+    before(() => {
+      store = mockStore();
+      const order = makeUnpersistedOrder();
+
+      return fetchMenu(brandibble, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(({ menu }) => {
+        const product = menu[0].children[menu[0].children.length - 1].items[0];
+        order.cart.addLineItem(product, product.id);
+
+        return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(() => {
+          return setOrderAddress(order, addressStub)(store.dispatch).then(() => {
+            return bindCustomerToOrder(order, authResponseStub)(store.dispatch).then(() => {
+              return setPaymentMethod(order, 'credit', cardStub)(store.dispatch).then(() => {
+                store.clearActions();
+                return validateCurrentOrder(brandibble)(store.dispatch).then(() => {
+                  actionsCalled = store.getActions();
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+
+    it('should have VALIDATE_CURRENT_ORDER_PENDING action', () => {
+      action = find(actionsCalled, { type: 'VALIDATE_CURRENT_ORDER_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have a payload', () => {
+      action = find(actionsCalled, { type: 'VALIDATE_CURRENT_ORDER_FULFILLED' });
+      expect(action).to.have.a.property('payload');
+    });
+  });
+
   describe('setOrderAddress', () => {
     before(() => {
       store = mockStore();
@@ -356,10 +391,13 @@ describe('actions/session/order', () => {
           return setOrderAddress(order, addressStub)(store.dispatch).then(() => {
             return bindCustomerToOrder(order, authResponseStub)(store.dispatch).then(() => {
               return setPaymentMethod(order, 'credit', cardStub)(store.dispatch).then(() => {
-                store.clearActions();
+                // hack to reset any previously set promo codes
+                return setPromoCode(makeUnpersistedOrder(), '')(store.dispatch).then(() => {
+                  store.clearActions();
 
-                return submitOrder(brandibble, order)(store.dispatch).then(() => {
-                  actionsCalled = store.getActions();
+                  return submitOrder(brandibble, order)(store.dispatch).then(() => {
+                    actionsCalled = store.getActions();
+                  });
                 });
               });
             });

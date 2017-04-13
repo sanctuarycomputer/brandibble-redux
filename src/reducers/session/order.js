@@ -53,7 +53,7 @@ export default function order(state = initialState, action) {
     case `${SET_PROMO_CODE}_FULFILLED`:
     case `${SET_REQUESTED_AT}_FULFILLED`:
     case `${REMOVE_OPTION_FROM_LINE_ITEM}_FULFILLED`:
-    case CREATE_NEW_ORDER: {
+    case `${CREATE_NEW_ORDER}_FULFILLED`: {
       const ref = action.payload.order;
       return {
         ...state,

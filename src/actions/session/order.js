@@ -121,14 +121,13 @@ function _validateCurrentOrder(data) {
 }
 
 /* Public Functions */
-export function createNewOrder(brandibble, location, serviceType) {
+export function createNewOrder(brandibble, location = null, serviceType) {
   return (dispatch) => {
     const { orders } = brandibble;
-    orders.create(location.location_id, serviceType)
-    .then((order) => {
-      dispatch(_createNewOrder({ order }));
-      dispatch(setOrderAddress(order, location));
-    });
+    let locationId = null;
+    if (location) locationId = location.location_id;
+    const payload = orders.create(locationId, serviceType).then(order => ({ order }));
+    return dispatch(_createNewOrder(payload));
   };
 }
 

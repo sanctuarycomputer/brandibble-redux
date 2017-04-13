@@ -8,6 +8,7 @@ import {
   SET_PROMO_CODE,
   VALIDATE_CURRENT_ORDER,
   SET_REQUESTED_AT,
+  CREATE_NEW_ORDER,
 } from 'actions/session/order';
 import {
   AUTHENTICATE_USER,
@@ -117,6 +118,7 @@ const initialState = {
   updateUser: IDLE,
   validateUser: IDLE,
   validateCurrentOrder: IDLE,
+  createNewOrder: IDLE,
 };
 
 export default function status(state = initialState, action) {
@@ -168,6 +170,14 @@ export default function status(state = initialState, action) {
     case `${RESOLVE_ORDER}_PENDING`: return { ...state, resolveOrder: PENDING };
     case `${RESOLVE_ORDER}_FULFILLED`: return { ...state, resolveOrder: FULFILLED };
     case `${RESOLVE_ORDER}_REJECTED`: return { ...state, resolveOrder: REJECTED };
+
+    case `${SET_REQUESTED_AT}_PENDING`: return { ...state, setRequestedAt: PENDING };
+    case `${SET_REQUESTED_AT}_FULFILLED`: return { ...state, setRequestedAt: FULFILLED };
+    case `${SET_REQUESTED_AT}_REJECTED`: return { ...state, setRequestedAt: REJECTED };
+
+    case `${CREATE_NEW_ORDER}_PENDING`: return { ...state, createNewOrder: PENDING };
+    case `${CREATE_NEW_ORDER}_FULFILLED`: return { ...state, createNewOrder: FULFILLED };
+    case `${CREATE_NEW_ORDER}_REJECTED`: return { ...state, createNewOrder: REJECTED };
 
     case `${SET_ORDER_LOCATION_ID}_PENDING`: return { ...state, setOrderLocationId: PENDING };
     case `${SET_ORDER_LOCATION_ID}_FULFILLED`: return { ...state, setOrderLocationId: FULFILLED };

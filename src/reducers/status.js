@@ -11,6 +11,8 @@ import {
 } from 'actions/session/order';
 import {
   AUTHENTICATE_USER,
+  FETCH_LEVELUP_LOYALTY,
+  FETCH_LEVELUP_QR_CODE,
   FETCH_USER,
   UNAUTHENTICATE_USER,
   RESET_USER_PASSWORD,
@@ -94,6 +96,8 @@ const initialState = {
   fetchAllergens: IDLE,
   addAllergens: IDLE,
   removeAllergens: IDLE,
+  fetchLevelUpLoyalty: IDLE,
+  fetchLevelUpQRCode: IDLE,
   fetchLocations: IDLE,
   fetchAllCustomerOrders: IDLE,
   fetchPastCustomerOrders: IDLE,
@@ -216,6 +220,14 @@ export default function status(state = initialState, action) {
     case `${RESOLVE_USER}_PENDING`: return { ...state, resolveUser: PENDING };
     case `${RESOLVE_USER}_FULFILLED`: return { ...state, resolveUser: FULFILLED };
     case `${RESOLVE_USER}_REJECTED`: return { ...state, resolveUser: REJECTED };
+
+    case `${FETCH_LEVELUP_LOYALTY}_PENDING`: return { ...state, resolveUser: PENDING };
+    case `${FETCH_LEVELUP_LOYALTY}_FULFILLED`: return { ...state, resolveUser: FULFILLED };
+    case `${FETCH_LEVELUP_LOYALTY}_REJECTED`: return { ...state, resolveUser: REJECTED };
+
+    case `${FETCH_LEVELUP_QR_CODE}_PENDING`: return { ...state, resolveUser: PENDING };
+    case `${FETCH_LEVELUP_QR_CODE}_FULFILLED`: return { ...state, resolveUser: FULFILLED };
+    case `${FETCH_LEVELUP_QR_CODE}_REJECTED`: return { ...state, resolveUser: REJECTED };
 
     case `${VALIDATE_CURRENT_ORDER}_PENDING`: return { ...state, validateCurrentOrder: PENDING };
     case `${VALIDATE_CURRENT_ORDER}_FULFILLED`: return { ...state, validateCurrentOrder: FULFILLED };

@@ -26,6 +26,8 @@ import {
 // user
 import {
   AUTHENTICATE_USER,
+  FETCH_LEVELUP_LOYALTY,
+  FETCH_LEVELUP_QR_CODE,
   FETCH_USER,
   RESET_USER_PASSWORD,
   RESOLVE_USER,
@@ -111,6 +113,8 @@ export const initialState = {
   // user
   authenticateUser: null,
   createUser: null,
+  fetchLevelUpLoyalty: null,
+  fetchLevelUpQRCode: null,
   fetchUser: null,
   resetUserPassword: null,
   resolveUser: null,
@@ -201,6 +205,12 @@ export default function error(state = initialState, action) {
 
     case `${UNAUTHENTICATE_USER}_PENDING`: return { ...state, unauthenticateUser: null };
     case `${UNAUTHENTICATE_USER}_REJECTED`: return { ...state, unauthenticateUser: action.payload };
+
+    case `${FETCH_LEVELUP_LOYALTY}_PENDING`: return { ...state, authenticateUser: null };
+    case `${FETCH_LEVELUP_LOYALTY}_REJECTED`: return { ...state, authenticateUser: action.payload };
+
+    case `${FETCH_LEVELUP_QR_CODE}_PENDING`: return { ...state, authenticateUser: null };
+    case `${FETCH_LEVELUP_QR_CODE}_REJECTED`: return { ...state, authenticateUser: action.payload };
 
     case `${VALIDATE_USER}_PENDING`: return { ...state, validateUser: null };
     case `${VALIDATE_USER}_REJECTED`: return { ...state, validateUser: action.payload };

@@ -8,6 +8,8 @@ import reduxMiddleware from 'config/middleware';
 import {
   authenticateUser,
   createUser,
+  fetchLevelUpLoyalty,
+  fetchLevelUpQRCode,
   fetchUser,
   resolveUser,
   unauthenticateUser,
@@ -257,6 +259,38 @@ describe('actions/session/user', () => {
         it('should have AUTHENTICATE_USER_FULFILLED action', () => {
           action = find(actionsCalled, { type: 'AUTHENTICATE_USER_FULFILLED' });
           expect(action).to.exist;
+        });
+
+        describe('fetchLevelUpLoyalty', () => {
+          before(() => {
+            store.clearActions();
+            return fetchLevelUpLoyalty(brandibble)(store.dispatch).catch(() => {
+              actionsCalled = store.getActions();
+            });
+          });
+
+          it('should call at least 2 actions', () => expect(actionsCalled).to.have.length.of.at.least(2));
+
+          it('should have FETCH_LEVELUP_LOYALTY_PENDING action', () => {
+            action = find(actionsCalled, { type: 'FETCH_LEVELUP_LOYALTY_PENDING' });
+            expect(action).to.exist;
+          });
+        });
+
+        describe('fetchLevelUpQRCode', () => {
+          before(() => {
+            store.clearActions();
+            return fetchLevelUpQRCode(brandibble)(store.dispatch).catch(() => {
+              actionsCalled = store.getActions();
+            });
+          });
+
+          it('should call at least 2 actions', () => expect(actionsCalled).to.have.length.of.at.least(2));
+
+          it('should have FETCH_LEVELUP_QR_CODE_PENDING action', () => {
+            action = find(actionsCalled, { type: 'FETCH_LEVELUP_QR_CODE_PENDING' });
+            expect(action).to.exist;
+          });
         });
 
         describe('fetchUser', () => {

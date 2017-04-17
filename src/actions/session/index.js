@@ -26,6 +26,8 @@ export {
 export {
   authenticateUser,
   createUser,
+  fetchLevelUpLoyalty,
+  fetchLevelUpQRCode,
   fetchUser,
   resetUserPassword,
   resolveUser,

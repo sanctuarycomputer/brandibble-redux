@@ -19,6 +19,8 @@ export const FETCH_USER = 'FETCH_USER';
 export const RESET_USER_PASSWORD = 'RESET_USER_PASSWORD';
 export const ADD_ALLERGENS = 'ADD_ALLERGENS';
 export const REMOVE_ALLERGENS = 'REMOVE_ALLERGENS';
+export const FETCH_LEVELUP_QR_CODE = 'FETCH_LEVELUP_QR_CODE';
+export const FETCH_LEVELUP_LOYALTY = 'FETCH_LEVELUP_LOYALTY';
 
 const NO_OP = f => f;
 
@@ -91,6 +93,26 @@ function _resetUserPassword(brandibble, email, success, fail) {
   };
 }
 
+const _fetchLevelUpQRCode = (brandibble, body, success, fail) => {
+  return {
+    type: FETCH_LEVELUP_QR_CODE,
+    payload: brandibble.customers.currentLevelUpQRCode(body).then(({ data }) => {
+      success(data.qr_code);
+      return data.qr_code;
+    }).catch(({ errors }) => { throw fail(errors); }),
+  };
+};
+
+const _fetchLevelUpLoyalty = (brandibble, success, fail) => {
+  return {
+    type: FETCH_LEVELUP_LOYALTY,
+    payload: brandibble.customers.currentLevelUpLoyalty().then(({ data }) => {
+      success(data.loyalty);
+      return data.loyalty;
+    }).catch(({ errors }) => { throw fail(errors); }),
+  };
+};
+
 export function validateUser(brandibble, email, success = NO_OP, fail = NO_OP) {
   return dispatch => dispatch(_validateUser(brandibble, email, success, fail));
 }
@@ -116,6 +138,14 @@ export function unauthenticateUser(brandibble, success = NO_OP, fail = NO_OP) {
 export function fetchUser(brandibble, id) {
   return dispatch => dispatch(_fetchUser(brandibble, id));
 }
+
+export const fetchLevelUpQRCode = (brandibble, data = {}, success = NO_OP, fail = NO_OP) => {
+  return dispatch => dispatch(_fetchLevelUpQRCode(brandibble, data, success, fail));
+};
+
+export const fetchLevelUpLoyalty = (brandibble, success = NO_OP, fail = NO_OP) => {
+  return dispatch => dispatch(_fetchLevelUpLoyalty(brandibble, success, fail));
+};
 
 // TODO - untested
 export function resetUserPassword(brandibble, email, success = NO_OP, fail = NO_OP) {

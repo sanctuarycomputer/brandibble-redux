@@ -80,24 +80,24 @@ describe('actions/session/order', () => {
     });
   });
 
-  // describe('setPromoCode', () => {
-  //   before(() => {
-  //     store = mockStore();
-  //     return setPromoCode(makeUnpersistedOrder(), 'freedig')(store.dispatch).then(() => {
-  //       actionsCalled = store.getActions();
-  //     });
-  //   });
-  //
-  //   it('should have SET_PROMO_CODE_PENDING action', () => {
-  //     action = find(actionsCalled, { type: 'SET_PROMO_CODE_PENDING' });
-  //     expect(action).to.exist;
-  //   });
-  //
-  //   it('should have a payload', () => {
-  //     action = find(actionsCalled, { type: 'SET_PROMO_CODE_FULFILLED' });
-  //     expect(action).to.have.a.property('payload');
-  //   });
-  // });
+  describe('setPromoCode', () => {
+    before(() => {
+      store = mockStore();
+      return setPromoCode(makeUnpersistedOrder(), 'freedig')(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
+
+    it('should have SET_PROMO_CODE_PENDING action', () => {
+      action = find(actionsCalled, { type: 'SET_PROMO_CODE_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have a payload', () => {
+      action = find(actionsCalled, { type: 'SET_PROMO_CODE_FULFILLED' });
+      expect(action).to.have.a.property('payload');
+    });
+  });
 
   describe('setRequestedAt', () => {
     before(() => {
@@ -120,8 +120,8 @@ describe('actions/session/order', () => {
 
   describe('validateCurrentOrder', () => {
     before(() => {
-    store = mockStore();
-    const order = makeUnpersistedOrder();
+      store = mockStore();
+      const order = makeUnpersistedOrder();
 
       return fetchMenu(brandibble, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(({ menu }) => {
         const product = menu[0].children[menu[0].children.length - 1].items[0];

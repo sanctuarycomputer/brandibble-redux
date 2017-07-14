@@ -1,11 +1,11 @@
 /* global describe it */
 import { expect } from 'chai';
-import reducer from 'reducers/data/customerOrders';
+import reducer from 'reducers/user/orders';
 import {
   FETCH_ALL_CUSTOMER_ORDERS,
   FETCH_PAST_CUSTOMER_ORDERS,
   FETCH_UPCOMING_CUSTOMER_ORDERS,
-} from 'actions/data/customerOrders';
+} from 'actions/session/customerOrders';
 import { customerOrdersStub } from '../../config/stubs';
 
 const initialState = {
@@ -15,7 +15,7 @@ const initialState = {
 };
 const payload = customerOrdersStub;
 
-describe('reducers/data/customerOrders', () => {
+describe('reducers/user/orders', () => {
   it('should return the initial state', () => {
     expect(reducer(initialState, {})).to.equal(initialState);
   });

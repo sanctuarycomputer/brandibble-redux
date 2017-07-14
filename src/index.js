@@ -4,6 +4,7 @@ import reducers from './reducers';
 
 export * from './utils/constants';
 export * from './actions';
+export * from './selectors';
 export const Brandibble = BrandibbleRef;
 export const reducer = reducers;
 export const brandibbleMiddleware = middleware;

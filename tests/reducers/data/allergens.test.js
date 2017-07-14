@@ -1,21 +1,20 @@
 /* global describe it */
 import { expect } from 'chai';
-import reduxCrud from 'redux-crud';
-import reducer from 'reducers/data/allergens';
-
-const { ALLERGENS_FETCH_SUCCESS } = reduxCrud.actionTypesFor('allergens');
-const initialState = [];
+import { FETCH_ALLERGENS } from 'actions/data/allergens';
+import reducer, { initialState } from 'reducers/data/allergens';
 
 describe('reducers/data/allergens', () => {
   it('should return the initial state', () => {
-    expect(reducer(initialState, {})).to.equal(initialState);
+    const reduced = reducer(initialState, {});
+    expect(reduced).to.equal(initialState);
   });
 
   it('handles the ALLERGENS_FETCH_SUCCESS action', () => {
+    const payload = [{ id: 1, name: 'bird flu' }];
     const reduced = reducer(initialState, {
-      type: ALLERGENS_FETCH_SUCCESS,
-      records: [{ id: 1, name: 'bird flu' }],
+      type: `${FETCH_ALLERGENS}_FULFILLED`,
+      payload,
     });
-    expect(reduced);
+    expect(reduced.allergensById[payload[0].id]).to.exist;
   });
 });

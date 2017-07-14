@@ -7,6 +7,9 @@ import {
   SETUP_BRANDIBBLE_REDUX,
 } from 'actions/application';
 
+// allergens
+import { FETCH_ALLERGENS } from 'actions/data/allergens';
+
 // orders
 import {
   ADD_LINE_ITEM,
@@ -27,7 +30,7 @@ import {
   FETCH_ALL_CUSTOMER_ORDERS,
   FETCH_PAST_CUSTOMER_ORDERS,
   FETCH_UPCOMING_CUSTOMER_ORDERS,
-} from 'actions/data/customerOrders';
+} from 'actions/session/customerOrders';
 
 // user
 import {
@@ -65,12 +68,6 @@ const {
   ADDRESSES_DELETE_ERROR,
 } = reduxCrud.actionTypesFor('addresses');
 
-// allergens
-const {
-  ALLERGENS_FETCH_START,
-  ALLERGENS_FETCH_ERROR,
-} = reduxCrud.actionTypesFor('allergens');
-
 // locations
 const {
   LOCATIONS_FETCH_START,
@@ -82,12 +79,6 @@ const {
   MENUS_FETCH_START,
   MENUS_FETCH_ERROR,
 } = reduxCrud.actionTypesFor('menus');
-
-// display menu
-const {
-  DISPLAY_MENU_FETCH_START,
-  DISPLAY_MENU_FETCH_ERROR,
-} = reduxCrud.actionTypesFor('displayMenu');
 
 // payments
 const {
@@ -144,7 +135,6 @@ export const initialState = {
   fetchLocations: null,
   // menu
   fetchMenu: null,
-  fetchDisplayMenu: null,
   // orders
   addLineItem: null,
   resolveOrder: null,
@@ -213,8 +203,8 @@ export default function error(state = initialState, action) {
     case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchUpcomingCustomerOrders: action.payload };
 
     // allergens
-    case ALLERGENS_FETCH_START: return { ...state, fetchAllergens: null };
-    case ALLERGENS_FETCH_ERROR: return { ...state, fetchAllergens: action.error };
+    case `${FETCH_ALLERGENS}_PENDING`: return { ...state, fetchAllergens: null };
+    case `${FETCH_ALLERGENS}_REJECTED`: return { ...state, fetchAllergens: action.payload };
 
     // addresses
     case ADDRESSES_FETCH_START: return { ...state, fetchAddresses: null };
@@ -233,10 +223,6 @@ export default function error(state = initialState, action) {
     // menu
     case MENUS_FETCH_START: return { ...state, fetchMenu: null };
     case MENUS_FETCH_ERROR: return { ...state, fetchMenu: action.error };
-
-    // display menu
-    case DISPLAY_MENU_FETCH_START: return { ...state, fetchDisplayMenu: null };
-    case DISPLAY_MENU_FETCH_ERROR: return { ...state, fetchDisplayMenu: action.error };
 
     // orders
     case `${RESOLVE_ORDER}_PENDING`: return { ...state, resolveOrder: null };

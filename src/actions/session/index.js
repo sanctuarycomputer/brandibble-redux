@@ -1,6 +1,6 @@
 export { fetchAddresses, createAddress, deleteAddress } from './addresses';
+export { fetchAllCustomerOrders, fetchPastCustomerOrders, fetchUpcomingCustomerOrders } from './customerOrders';
 export { fetchMenu } from './menus';
-export { fetchDisplayMenu } from './displayMenu';
 export {
   addLineItem,
   pushLineItem,

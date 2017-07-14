@@ -7,13 +7,13 @@ import {
   fetchAllCustomerOrders,
   fetchPastCustomerOrders,
   fetchUpcomingCustomerOrders,
-} from 'actions/data/customerOrders';
+} from 'actions/session/customerOrders';
 import { authenticateUser } from 'actions/session/user';
 import { brandibble, validCredentialsStub } from '../../config/stubs';
 
 const mockStore = configureStore(reduxMiddleware);
 
-describe('actions/data/customerOrders', () => {
+describe('actions/session/customerOrders', () => {
   let store, actionsCalled, first, last, customerId;
 
   before(() => {

@@ -45,7 +45,7 @@ import {
   FETCH_ALL_CUSTOMER_ORDERS,
   FETCH_PAST_CUSTOMER_ORDERS,
   FETCH_UPCOMING_CUSTOMER_ORDERS,
-} from 'actions/data/customerOrders';
+} from 'actions/session/customerOrders';
 import { Status } from 'utils/constants';
 import reduxCrud from 'redux-crud';
 

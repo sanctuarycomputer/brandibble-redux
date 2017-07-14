@@ -2,11 +2,8 @@ import {
   FETCH_ALL_CUSTOMER_ORDERS,
   FETCH_PAST_CUSTOMER_ORDERS,
   FETCH_UPCOMING_CUSTOMER_ORDERS,
-} from 'actions/data/customerOrders';
-
-import {
-  UNAUTHENTICATE_USER
-} from 'actions/session/user';
+} from 'actions/session/customerOrders';
+import { UNAUTHENTICATE_USER } from 'actions/session/user';
 
 const initialState = {
   all: null,

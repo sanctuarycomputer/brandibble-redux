@@ -1,11 +1,11 @@
-/* global describe afterEach before beforeEach it */
+/* global describe afterEach before it */
 /* eslint one-var-declaration-per-line:1, one-var:1 */
 import { expect } from 'chai';
 import find from 'lodash.find';
 import configureStore from 'redux-mock-store';
 import reduxMiddleware from 'config/middleware';
 import { authenticateUser } from 'actions/session/user';
-import { fetchPastCustomerOrders } from 'actions/data/customerOrders';
+import { fetchPastCustomerOrders } from 'actions/session/customerOrders';
 import {
   createRating,
   deleteRating,

@@ -1,3 +1,5 @@
+import fireAction from 'utils/fireAction';
+import handleErrors from 'utils/handleErrors';
 import { resolveOrder } from 'actions/session/order';
 import { resolveUser } from 'actions/session/user';
 
@@ -5,42 +7,39 @@ export const SETUP_BRANDIBBLE = 'SETUP_BRANDIBBLE';
 export const SETUP_BRANDIBBLE_REDUX = 'SETUP_BRANDIBBLE_REDUX';
 export const SEND_SUPPORT_TICKET = 'SEND_SUPPORT_TICKET';
 
-const _setupBrandibble = (brandibble) => {
-  return {
-    type: SETUP_BRANDIBBLE,
-    payload: brandibble.setup(),
-  };
+// setupBrandibble
+export const setupBrandibble = brandibble => (dispatch) => {
+  const payload = brandibble.setup().catch(handleErrors);
+  return dispatch(fireAction(SETUP_BRANDIBBLE, payload));
 };
 
-const _setupBrandibbleRedux = (payload) => {
-  return { type: SETUP_BRANDIBBLE_REDUX, payload };
+// setupBrandibbleRedux
+const setupBrandibbleReduxDefaults = {
+  defaultLocationId: null,
+  defaultServiceType: 'delivery',
+};
+export const setupBrandibbleRedux = (brandibble, data = setupBrandibbleReduxDefaults) => (dispatch) => {
+  const { defaultLocationId, defaultServiceType } = Object.assign({}, setupBrandibbleReduxDefaults, data);
+  const payload = dispatch(setupBrandibble(brandibble)).then(({ value }) => {
+    return Promise.all([
+      dispatch(resolveUser(value)),
+      dispatch(resolveOrder(value, defaultLocationId, defaultServiceType)),
+    ]);
+  }).catch(handleErrors);
+
+  return dispatch(fireAction(SETUP_BRANDIBBLE_REDUX, payload));
 };
 
-const _sendSupportTicket = (brandibble, data) => {
-  return {
-    type: SEND_SUPPORT_TICKET,
-    payload: brandibble.sendSupportTicket(data),
-  };
+// sendSupportTicket
+const sendSupportTicketDefaults = {
+  body: null,
+  email: null,
+  name: null,
+  subject: null,
 };
-
-export const setupBrandibble = (Brandibble) => {
-  return dispatch => dispatch(_setupBrandibble(Brandibble));
-};
-
-export const setupBrandibbleRedux = (Brandibble, defaultLocationId = null, defaultServiceType = 'delivery') => {
-  return (dispatch) => {
-    const payload = dispatch(setupBrandibble(Brandibble)).then(({ value }) => {
-      return Promise.all([
-        dispatch(resolveUser(value)),
-        dispatch(resolveOrder(value, defaultLocationId, defaultServiceType)),
-      ]);
-    });
-
-    return dispatch(_setupBrandibbleRedux(payload));
-  };
-};
-
-// subject, body, email, name
-export const sendSupportTicket = (brandibble, data = {}) => {
-  return dispatch => dispatch(_sendSupportTicket(brandibble, data));
+export const sendSupportTicket = (brandibble, data = sendSupportTicketDefaults) => (dispatch) => {
+  const payload = brandibble
+    .sendSupportTicket(Object.assign({}, sendSupportTicketDefaults, data))
+    .catch(handleErrors);
+  return dispatch(fireAction(SEND_SUPPORT_TICKET, payload));
 };

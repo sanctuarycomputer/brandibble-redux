@@ -5,7 +5,7 @@ import {
 } from 'actions/data/customerOrders';
 
 import {
-  UNAUTHENTICATE_USER
+  UNAUTHENTICATE_USER,
 } from 'actions/session/user';
 
 const initialState = {

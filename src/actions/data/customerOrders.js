@@ -1,37 +1,25 @@
+import fireAction from 'utils/fireAction';
+import handleErrors from 'utils/handleErrors';
+
 export const FETCH_ALL_CUSTOMER_ORDERS = 'FETCH_ALL_CUSTOMER_ORDERS';
 export const FETCH_PAST_CUSTOMER_ORDERS = 'FETCH_PAST_CUSTOMER_ORDERS';
 export const FETCH_UPCOMING_CUSTOMER_ORDERS = 'FETCH_UPCOMING_CUSTOMER_ORDERS';
 
-function _fetchAllCustomerOrders(brandibble, customerId) {
-  return {
-    type: FETCH_ALL_CUSTOMER_ORDERS,
-    payload: brandibble.customers.orders(customerId, { status: 'both' }),
-  };
-}
+const _fetchCustomerOrders = (brandibble, customerId, status = 'both', limit = 10) => {
+  return brandibble.customers.orders(customerId, { status, limit }).catch(handleErrors);
+};
 
-function _fetchPastCustomerOrders(brandibble, customerId, limit = 10) {
-  return {
-    type: FETCH_PAST_CUSTOMER_ORDERS,
-    payload: brandibble.customers.orders(customerId, { status: 'past', limit }),
-  };
-}
+export const fetchAllCustomerOrders = (brandibble, customerId, limit = 20) => (dispatch) => {
+  const payload = _fetchCustomerOrders(brandibble, customerId, 'both', limit);
+  return dispatch(fireAction(FETCH_ALL_CUSTOMER_ORDERS, payload));
+};
 
-function _fetchUpcomingCustomerOrders(brandibble, customerId, limit = 10) {
-  return {
-    type: FETCH_UPCOMING_CUSTOMER_ORDERS,
-    payload: brandibble.customers.orders(customerId, { status: 'upcoming', limit }),
-  };
-}
+export const fetchPastCustomerOrders = (brandibble, customerId, limit = 10) => (dispatch) => {
+  const payload = _fetchCustomerOrders(brandibble, customerId, 'past', limit);
+  return dispatch(fireAction(FETCH_PAST_CUSTOMER_ORDERS, payload));
+};
 
-// Public
-export function fetchAllCustomerOrders(...args) {
-  return dispatch => dispatch(_fetchAllCustomerOrders(...args));
-}
-
-export function fetchPastCustomerOrders(...args) {
-  return dispatch => dispatch(_fetchPastCustomerOrders(...args));
-}
-
-export function fetchUpcomingCustomerOrders(...args) {
-  return dispatch => dispatch(_fetchUpcomingCustomerOrders(...args));
-}
+export const fetchUpcomingCustomerOrders = (brandibble, customerId, limit = 10) => (dispatch) => {
+  const payload = _fetchCustomerOrders(brandibble, customerId, 'upcoming', limit);
+  return dispatch(fireAction(FETCH_UPCOMING_CUSTOMER_ORDERS, payload));
+};

@@ -1,37 +1,28 @@
-import reduxCrud from 'redux-crud';
-import filter from 'lodash.filter';
+import fireAction from 'utils/fireAction';
+import handleErrors from 'utils/handleErrors';
 
-const { fetchStart, fetchSuccess, fetchError } = reduxCrud.actionCreatorsFor('locations', { key: 'location_id' });
+export const FETCH_LOCATIONS = 'FETCH_LOCATIONS';
+export const FETCH_LOCATION = 'FETCH_LOCATION';
 
-export function fetchLocations(brandibble, query = {}) {
+export const fetchLocation = (brandibble, locationId, lat, lng) => {
   return (dispatch) => {
-    dispatch(fetchStart());
-    return brandibble.locations.index(query)
-      .then(({ data }) => {
-        // TODO: This is a temporary fix that should be taken out
-        // when JC properly implements the orderable flag.
-        // Pls Note: is_closed does not correspond to opening hours,
-        // it's related to temporary & permanently closed locations.
-        let orderableLocations = filter(data, location => {
-          return (!location.is_closed && !location.is_coming_soon);
-        });
-        return dispatch(fetchSuccess(orderableLocations));
-      })
-      .catch(response => {
-        const { errors } = response;
-        return dispatch(fetchError(errors || response));
-      });
+    const payload = brandibble.locations.show(locationId, lat, lng)
+      .then(({ data }) => data).catch(handleErrors);
+    return dispatch(fireAction(FETCH_LOCATION, payload));
   };
-}
+};
 
-export function fetchLocation(brandibble, locationId, lat, lng) {
-  return (dispatch) => {
-    dispatch(fetchStart());
-    return brandibble.locations.show(locationId, lat, lng)
-      .then(({ data }) => dispatch(fetchSuccess(data)))
-      .catch(response => {
-        const { errors } = response;
-        return dispatch(fetchError(errors || response));
-      });
-  };
-}
+export const fetchLocations = (brandibble, query = {}) => (dispatch) => {
+  const payload = brandibble.locations.index(query).then(({ data }) => {
+    // TODO: This is a temporary fix that should be taken out
+    // when JC properly implements the orderable flag.
+    // Pls Note: is_closed does not correspond to opening hours,
+    // it's related to temporary & permanently closed locations.
+    const orderableLocations = data.filter((location) => {
+      return (!location.is_closed && !location.is_coming_soon);
+    });
+    return orderableLocations;
+  }).catch(handleErrors);
+
+  return dispatch(fireAction(FETCH_LOCATIONS, payload));
+};

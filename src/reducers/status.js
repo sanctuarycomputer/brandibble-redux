@@ -4,6 +4,7 @@ import {
   SETUP_BRANDIBBLE,
   SETUP_BRANDIBBLE_REDUX,
 } from 'actions/application';
+import { FETCH_ALLERGENS } from 'actions/data/allergens';
 import { SET_DEFAULT_PAYMENT } from 'actions/session/payments';
 import {
   ADD_LINE_ITEM,
@@ -41,6 +42,10 @@ import {
   FETCH_PAST_CUSTOMER_ORDERS,
   FETCH_UPCOMING_CUSTOMER_ORDERS,
 } from 'actions/data/customerOrders';
+import {
+  FETCH_LOCATIONS,
+  FETCH_LOCATION,
+} from 'actions/data/locations';
 import { Status } from 'utils/constants';
 import reduxCrud from 'redux-crud';
 
@@ -64,28 +69,10 @@ const {
 } = reduxCrud.actionTypesFor('addresses');
 
 const {
-  ALLERGENS_FETCH_START,
-  ALLERGENS_FETCH_SUCCESS,
-  ALLERGENS_FETCH_ERROR,
-} = reduxCrud.actionTypesFor('allergens');
-
-const {
-  LOCATIONS_FETCH_START,
-  LOCATIONS_FETCH_SUCCESS,
-  LOCATIONS_FETCH_ERROR,
-} = reduxCrud.actionTypesFor('locations');
-
-const {
   MENUS_FETCH_START,
   MENUS_FETCH_SUCCESS,
   MENUS_FETCH_ERROR,
 } = reduxCrud.actionTypesFor('menus');
-
-const {
-  DISPLAY_MENU_FETCH_START,
-  DISPLAY_MENU_FETCH_SUCCESS,
-  DISPLAY_MENU_FETCH_ERROR,
-} = reduxCrud.actionTypesFor('displayMenu');
 
 const {
   PAYMENTS_FETCH_START,
@@ -154,6 +141,7 @@ const initialState = {
   connectLevelUp: IDLE,
   disconnectLevelUp: IDLE,
   fetchLevelUpPaymentMethod: IDLE,
+  fetchLocation: IDLE,
   fetchLocations: IDLE,
   fetchAllCustomerOrders: IDLE,
   fetchPastCustomerOrders: IDLE,
@@ -209,9 +197,9 @@ export default function status(state = initialState, action) {
     case `${SEND_SUPPORT_TICKET}_FULFILLED`: return { ...state, sendSupportTicket: FULFILLED };
     case `${SEND_SUPPORT_TICKET}_REJECTED`: return { ...state, sendSupportTicket: REJECTED };
 
-    case ALLERGENS_FETCH_START: return { ...state, fetchAllergens: PENDING };
-    case ALLERGENS_FETCH_SUCCESS: return { ...state, fetchAllergens: FULFILLED };
-    case ALLERGENS_FETCH_ERROR: return { ...state, fetchAllergens: REJECTED };
+    case `${FETCH_ALLERGENS}_PENDING`: return { ...state, fetchAllergens: PENDING };
+    case `${FETCH_ALLERGENS}_FULFILLED`: return { ...state, fetchAllergens: FULFILLED };
+    case `${FETCH_ALLERGENS}_REJECTED`: return { ...state, fetchAllergens: REJECTED };
 
     case ADDRESSES_FETCH_START: return { ...state, fetchAddresses: PENDING };
     case ADDRESSES_FETCH_SUCCESS: return { ...state, fetchAddresses: FULFILLED };
@@ -225,9 +213,13 @@ export default function status(state = initialState, action) {
     case ADDRESSES_DELETE_SUCCESS: return { ...state, deleteAddress: FULFILLED };
     case ADDRESSES_DELETE_ERROR: return { ...state, deleteAddress: REJECTED };
 
-    case LOCATIONS_FETCH_START: return { ...state, fetchLocations: PENDING };
-    case LOCATIONS_FETCH_SUCCESS: return { ...state, fetchLocations: FULFILLED };
-    case LOCATIONS_FETCH_ERROR: return { ...state, fetchLocations: REJECTED };
+    case `${FETCH_LOCATIONS}_PENDING`: return { ...state, fetchLocations: PENDING };
+    case `${FETCH_LOCATIONS}_FULFILLED`: return { ...state, fetchLocations: FULFILLED };
+    case `${FETCH_LOCATIONS}_REJECTED`: return { ...state, fetchLocations: REJECTED };
+
+    case `${FETCH_LOCATION}_PENDING`: return { ...state, fetchLocation: PENDING };
+    case `${FETCH_LOCATION}_FULFILLED`: return { ...state, fetchLocation: FULFILLED };
+    case `${FETCH_LOCATION}_REJECTED`: return { ...state, fetchLocation: REJECTED };
 
     case `${SET_PAYMENT_METHOD}_PENDING`: return { ...state, setPaymentMethod: PENDING };
     case `${SET_PAYMENT_METHOD}_FULFILLED`: return { ...state, setPaymentMethod: FULFILLED };
@@ -248,10 +240,6 @@ export default function status(state = initialState, action) {
     case MENUS_FETCH_START: return { ...state, fetchMenu: PENDING };
     case MENUS_FETCH_SUCCESS: return { ...state, fetchMenu: FULFILLED };
     case MENUS_FETCH_ERROR: return { ...state, fetchMenu: REJECTED };
-
-    case DISPLAY_MENU_FETCH_START: return { ...state, fetchDisplayMenu: PENDING };
-    case DISPLAY_MENU_FETCH_SUCCESS: return { ...state, fetchDisplayMenu: FULFILLED };
-    case DISPLAY_MENU_FETCH_ERROR: return { ...state, fetchDisplayMenu: REJECTED };
 
     case `${RESOLVE_ORDER}_PENDING`: return { ...state, resolveOrder: PENDING };
     case `${RESOLVE_ORDER}_FULFILLED`: return { ...state, resolveOrder: FULFILLED };

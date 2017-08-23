@@ -4,6 +4,19 @@ import {
   SETUP_BRANDIBBLE,
   SETUP_BRANDIBBLE_REDUX,
 } from 'actions/application';
+import {
+  CREATE_ADDRESS,
+  DELETE_ADDRESS,
+  FETCH_ADDRESSES,
+} from 'actions/session/addresses';
+import { FETCH_ALLERGENS } from 'actions/data/allergens';
+import { FETCH_MENU } from 'actions/session/menus';
+import {
+  CREATE_FAVORITE,
+  DELETE_FAVORITE,
+  FETCH_FAVORITES,
+  UPDATE_FAVORITE,
+} from 'actions/session/favorites';
 import { SET_DEFAULT_PAYMENT } from 'actions/session/payments';
 import {
   ADD_LINE_ITEM,
@@ -19,6 +32,14 @@ import {
   SET_LINE_ITEM_INSTRUCTIONS,
   SET_PAYMENT_METHOD,
 } from 'actions/session/order';
+import {
+  FETCH_LOCATIONS,
+  FETCH_LOCATION,
+} from 'actions/data/locations';
+import {
+  FETCH_GEOLOCATIONS,
+  CLEAR_GEOLOCATIONS,
+} from 'actions/data/geolocations';
 import {
   AUTHENTICATE_USER,
   FETCH_LEVELUP_LOYALTY,
@@ -52,42 +73,6 @@ const {
 } = Status;
 
 const {
-  ADDRESSES_FETCH_START,
-  ADDRESSES_FETCH_SUCCESS,
-  ADDRESSES_FETCH_ERROR,
-  ADDRESSES_CREATE_START,
-  ADDRESSES_CREATE_SUCCESS,
-  ADDRESSES_CREATE_ERROR,
-  ADDRESSES_DELETE_START,
-  ADDRESSES_DELETE_SUCCESS,
-  ADDRESSES_DELETE_ERROR,
-} = reduxCrud.actionTypesFor('addresses');
-
-const {
-  ALLERGENS_FETCH_START,
-  ALLERGENS_FETCH_SUCCESS,
-  ALLERGENS_FETCH_ERROR,
-} = reduxCrud.actionTypesFor('allergens');
-
-const {
-  LOCATIONS_FETCH_START,
-  LOCATIONS_FETCH_SUCCESS,
-  LOCATIONS_FETCH_ERROR,
-} = reduxCrud.actionTypesFor('locations');
-
-const {
-  MENUS_FETCH_START,
-  MENUS_FETCH_SUCCESS,
-  MENUS_FETCH_ERROR,
-} = reduxCrud.actionTypesFor('menus');
-
-const {
-  DISPLAY_MENU_FETCH_START,
-  DISPLAY_MENU_FETCH_SUCCESS,
-  DISPLAY_MENU_FETCH_ERROR,
-} = reduxCrud.actionTypesFor('displayMenu');
-
-const {
   PAYMENTS_FETCH_START,
   PAYMENTS_FETCH_SUCCESS,
   PAYMENTS_FETCH_ERROR,
@@ -98,21 +83,6 @@ const {
   PAYMENTS_DELETE_SUCCESS,
   PAYMENTS_DELETE_ERROR,
 } = reduxCrud.actionTypesFor('payments');
-
-const {
-  FAVORITES_FETCH_START,
-  FAVORITES_FETCH_SUCCESS,
-  FAVORITES_FETCH_ERROR,
-  FAVORITES_CREATE_START,
-  FAVORITES_CREATE_SUCCESS,
-  FAVORITES_CREATE_ERROR,
-  FAVORITES_UPDATE_START,
-  FAVORITES_UPDATE_SUCCESS,
-  FAVORITES_UPDATE_ERROR,
-  FAVORITES_DELETE_START,
-  FAVORITES_DELETE_SUCCESS,
-  FAVORITES_DELETE_ERROR,
-} = reduxCrud.actionTypesFor('favorites');
 
 const {
   RATINGS_FETCH_START,
@@ -154,12 +124,13 @@ const initialState = {
   connectLevelUp: IDLE,
   disconnectLevelUp: IDLE,
   fetchLevelUpPaymentMethod: IDLE,
+  fetchLocation: IDLE,
   fetchLocations: IDLE,
+  fetchGeolocations: IDLE,
   fetchAllCustomerOrders: IDLE,
   fetchPastCustomerOrders: IDLE,
   fetchUpcomingCustomerOrders: IDLE,
   fetchMenu: IDLE,
-  fetchDisplayMenu: IDLE,
   resolveOrder: IDLE,
   setOrderLocationId: IDLE,
   submitOrder: IDLE,
@@ -209,25 +180,33 @@ export default function status(state = initialState, action) {
     case `${SEND_SUPPORT_TICKET}_FULFILLED`: return { ...state, sendSupportTicket: FULFILLED };
     case `${SEND_SUPPORT_TICKET}_REJECTED`: return { ...state, sendSupportTicket: REJECTED };
 
-    case ALLERGENS_FETCH_START: return { ...state, fetchAllergens: PENDING };
-    case ALLERGENS_FETCH_SUCCESS: return { ...state, fetchAllergens: FULFILLED };
-    case ALLERGENS_FETCH_ERROR: return { ...state, fetchAllergens: REJECTED };
+    case `${FETCH_ALLERGENS}_PENDING`: return { ...state, fetchAllergens: PENDING };
+    case `${FETCH_ALLERGENS}_FULFILLED`: return { ...state, fetchAllergens: FULFILLED };
+    case `${FETCH_ALLERGENS}_REJECTED`: return { ...state, fetchAllergens: REJECTED };
 
-    case ADDRESSES_FETCH_START: return { ...state, fetchAddresses: PENDING };
-    case ADDRESSES_FETCH_SUCCESS: return { ...state, fetchAddresses: FULFILLED };
-    case ADDRESSES_FETCH_ERROR: return { ...state, fetchAddresses: REJECTED };
+    case `${FETCH_ADDRESSES}_PENDING`: return { ...state, fetchAddresses: PENDING };
+    case `${FETCH_ADDRESSES}_FULFILLED`: return { ...state, fetchAddresses: FULFILLED };
+    case `${FETCH_ADDRESSES}_REJECTED`: return { ...state, fetchAddresses: REJECTED };
 
-    case ADDRESSES_CREATE_START: return { ...state, createAddress: PENDING };
-    case ADDRESSES_CREATE_SUCCESS: return { ...state, createAddress: FULFILLED };
-    case ADDRESSES_CREATE_ERROR: return { ...state, createAddress: REJECTED };
+    case `${CREATE_ADDRESS}_PENDING`: return { ...state, createAddress: PENDING };
+    case `${CREATE_ADDRESS}_FULFILLED`: return { ...state, createAddress: FULFILLED };
+    case `${CREATE_ADDRESS}_REJECTED`: return { ...state, createAddress: REJECTED };
 
-    case ADDRESSES_DELETE_START: return { ...state, deleteAddress: PENDING };
-    case ADDRESSES_DELETE_SUCCESS: return { ...state, deleteAddress: FULFILLED };
-    case ADDRESSES_DELETE_ERROR: return { ...state, deleteAddress: REJECTED };
+    case `${DELETE_ADDRESS}_PENDING`: return { ...state, deleteAddress: PENDING };
+    case `${DELETE_ADDRESS}_FULFILLED`: return { ...state, deleteAddress: FULFILLED };
+    case `${DELETE_ADDRESS}_REJECTED`: return { ...state, deleteAddress: REJECTED };
 
-    case LOCATIONS_FETCH_START: return { ...state, fetchLocations: PENDING };
-    case LOCATIONS_FETCH_SUCCESS: return { ...state, fetchLocations: FULFILLED };
-    case LOCATIONS_FETCH_ERROR: return { ...state, fetchLocations: REJECTED };
+    case `${FETCH_LOCATIONS}_PENDING`: return { ...state, fetchLocations: PENDING };
+    case `${FETCH_LOCATIONS}_FULFILLED`: return { ...state, fetchLocations: FULFILLED };
+    case `${FETCH_LOCATIONS}_REJECTED`: return { ...state, fetchLocations: REJECTED };
+
+    case `${FETCH_LOCATION}_PENDING`: return { ...state, fetchLocation: PENDING };
+    case `${FETCH_LOCATION}_FULFILLED`: return { ...state, fetchLocation: FULFILLED };
+    case `${FETCH_LOCATION}_REJECTED`: return { ...state, fetchLocation: REJECTED };
+
+    case `${FETCH_GEOLOCATIONS}_PENDING`: return { ...state, fetchGeolocations: PENDING };
+    case `${FETCH_GEOLOCATIONS}_FULFILLED`: return { ...state, fetchGeolocations: FULFILLED };
+    case `${FETCH_GEOLOCATIONS}_REJECTED`: return { ...state, fetchGeolocations: REJECTED };
 
     case `${SET_PAYMENT_METHOD}_PENDING`: return { ...state, setPaymentMethod: PENDING };
     case `${SET_PAYMENT_METHOD}_FULFILLED`: return { ...state, setPaymentMethod: FULFILLED };
@@ -245,13 +224,9 @@ export default function status(state = initialState, action) {
     case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_FULFILLED`: return { ...state, fetchUpcomingCustomerOrders: FULFILLED };
     case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchUpcomingCustomerOrders: REJECTED };
 
-    case MENUS_FETCH_START: return { ...state, fetchMenu: PENDING };
-    case MENUS_FETCH_SUCCESS: return { ...state, fetchMenu: FULFILLED };
-    case MENUS_FETCH_ERROR: return { ...state, fetchMenu: REJECTED };
-
-    case DISPLAY_MENU_FETCH_START: return { ...state, fetchDisplayMenu: PENDING };
-    case DISPLAY_MENU_FETCH_SUCCESS: return { ...state, fetchDisplayMenu: FULFILLED };
-    case DISPLAY_MENU_FETCH_ERROR: return { ...state, fetchDisplayMenu: REJECTED };
+    case `${FETCH_MENU}_PENDING`: return { ...state, fetchMenu: PENDING };
+    case `${FETCH_MENU}_FULFILLED`: return { ...state, fetchMenu: FULFILLED };
+    case `${FETCH_MENU}_REJECTED`: return { ...state, fetchMenu: REJECTED };
 
     case `${RESOLVE_ORDER}_PENDING`: return { ...state, resolveOrder: PENDING };
     case `${RESOLVE_ORDER}_FULFILLED`: return { ...state, resolveOrder: FULFILLED };
@@ -305,21 +280,21 @@ export default function status(state = initialState, action) {
     case `${SET_DEFAULT_PAYMENT}_FULFILLED`: return { ...state, setDefaultPayment: FULFILLED };
     case `${SET_DEFAULT_PAYMENT}_REJECTED`: return { ...state, setDefaultPayment: REJECTED };
 
-    case FAVORITES_FETCH_START: return { ...state, fetchFavorites: PENDING };
-    case FAVORITES_FETCH_SUCCESS: return { ...state, fetchFavorites: FULFILLED };
-    case FAVORITES_FETCH_ERROR: return { ...state, fetchFavorites: REJECTED };
+    case `${FETCH_FAVORITES}_PENDING`: return { ...state, fetchFavorites: PENDING };
+    case `${FETCH_FAVORITES}_FULFILLED`: return { ...state, fetchFavorites: FULFILLED };
+    case `${FETCH_FAVORITES}_REJECTED`: return { ...state, fetchFavorites: REJECTED };
 
-    case FAVORITES_CREATE_START: return { ...state, createFavorite: PENDING };
-    case FAVORITES_CREATE_SUCCESS: return { ...state, createFavorite: FULFILLED };
-    case FAVORITES_CREATE_ERROR: return { ...state, createFavorite: REJECTED };
+    case `${CREATE_FAVORITE}_PENDING`: return { ...state, createFavorite: PENDING };
+    case `${CREATE_FAVORITE}_FULFILLED`: return { ...state, createFavorite: FULFILLED };
+    case `${CREATE_FAVORITE}_REJECTED`: return { ...state, createFavorite: REJECTED };
 
-    case FAVORITES_UPDATE_START: return { ...state, updateFavorite: PENDING };
-    case FAVORITES_UPDATE_SUCCESS: return { ...state, updateFavorite: FULFILLED };
-    case FAVORITES_UPDATE_ERROR: return { ...state, updateFavorite: REJECTED };
+    case `${UPDATE_FAVORITE}_PENDING`: return { ...state, updateFavorite: PENDING };
+    case `${UPDATE_FAVORITE}_FULFILLED`: return { ...state, updateFavorite: FULFILLED };
+    case `${UPDATE_FAVORITE}_REJECTED`: return { ...state, updateFavorite: REJECTED };
 
-    case FAVORITES_DELETE_START: return { ...state, deleteFavorite: PENDING };
-    case FAVORITES_DELETE_SUCCESS: return { ...state, deleteFavorite: FULFILLED };
-    case FAVORITES_DELETE_ERROR: return { ...state, deleteFavorite: REJECTED };
+    case `${DELETE_FAVORITE}_PENDING`: return { ...state, deleteFavorite: PENDING };
+    case `${DELETE_FAVORITE}_FULFILLED`: return { ...state, deleteFavorite: FULFILLED };
+    case `${DELETE_FAVORITE}_REJECTED`: return { ...state, deleteFavorite: REJECTED };
 
     case RATINGS_FETCH_START: return { ...state, fetchRating: PENDING };
     case RATINGS_FETCH_SUCCESS: return { ...state, fetchRating: FULFILLED };

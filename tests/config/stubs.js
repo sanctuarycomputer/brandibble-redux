@@ -65,12 +65,16 @@ export const validatedCartStub = {
 
 export const addressStub = {
   city: 'New York',
+  company: 'Brandibble API Co.',
+  contact_name: 'Someone Else',
+  contact_phone: '212-555-5555',
+  customer_address_id: 155927,
   latitude: 40.755912,
-  longitude: -73.9709334,
+  longitude: -73.9079333,
   state_code: 'NY',
-  street_address: '150 East 52nd Street',
-  unit: '1001',
-  zip_code: '10022',
+  street_address: '175 East 50th Street',
+  unit: 'Suite 1201',
+  zip_code: 10022,
 };
 
 export const orderStub = {

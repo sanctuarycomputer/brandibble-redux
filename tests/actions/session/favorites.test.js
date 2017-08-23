@@ -1,24 +1,22 @@
-/* global describe afterEach before beforeEach it */
+/* global describe afterEach before it */
 /* eslint one-var-declaration-per-line:1, one-var:1 */
 import { expect } from 'chai';
 import find from 'lodash.find';
-import reduxCrud from 'redux-crud';
 import configureStore from 'redux-mock-store';
 import reduxMiddleware from 'config/middleware';
-import { fetchFavorites, createFavorite, updateFavorite, deleteFavorite } from 'actions/session/favorites';
+import {
+  FETCH_FAVORITES,
+  CREATE_FAVORITE,
+  UPDATE_FAVORITE,
+  DELETE_FAVORITE,
+  fetchFavorites,
+  createFavorite,
+  updateFavorite,
+  deleteFavorite,
+} from 'actions/session/favorites';
 import { authenticateUser } from 'actions/session/user';
 import { brandibble, buildLineItem, validCredentialsStub } from '../../config/stubs';
 
-const {
-  FAVORITES_CREATE_START,
-  FAVORITES_CREATE_SUCCESS,
-  FAVORITES_DELETE_START,
-  FAVORITES_DELETE_SUCCESS,
-  FAVORITES_UPDATE_START,
-  FAVORITES_UPDATE_SUCCESS,
-  FAVORITES_FETCH_START,
-  FAVORITES_FETCH_SUCCESS,
-} = reduxCrud.actionTypesFor('favorites');
 const mockStore = configureStore(reduxMiddleware);
 
 describe('actions/session/favorites', () => {
@@ -43,13 +41,13 @@ describe('actions/session/favorites', () => {
 
     it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
 
-    it('should have FAVORITES_FETCH_START action', () => {
-      action = find(actionsCalled, { type: FAVORITES_FETCH_START });
+    it(`should have ${FETCH_FAVORITES}_PENDING action`, () => {
+      action = find(actionsCalled, { type: `${FETCH_FAVORITES}_PENDING` });
       expect(action).to.exist;
     });
 
-    it('should have FAVORITES_FETCH_SUCCESS action', () => {
-      action = find(actionsCalled, { type: FAVORITES_FETCH_SUCCESS });
+    it(`should have ${FETCH_FAVORITES}_FULFILLED action`, () => {
+      action = find(actionsCalled, { type: `${FETCH_FAVORITES}_FULFILLED` });
       expect(action).to.exist;
     });
   });
@@ -57,42 +55,44 @@ describe('actions/session/favorites', () => {
     let id;
 
     before(() => {
-      return createFavorite(brandibble, 'my favorite', buildLineItem())(store.dispatch).then(() => {
+      const favorite = { name: 'my favorite', lineItem: buildLineItem() };
+      return createFavorite(brandibble, favorite)(store.dispatch).then(() => {
         actionsCalled = store.getActions();
-        action = find(actionsCalled, { type: FAVORITES_CREATE_SUCCESS });
-        id = action.record.favorite_item_id;
+        action = find(actionsCalled, { type: `${CREATE_FAVORITE}_FULFILLED` });
+        id = action.payload.favorite_item_id;
       });
     });
 
     it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
 
-    it('should have FAVORITES_CREATE_START action', () => {
-      action = find(actionsCalled, { type: FAVORITES_CREATE_START });
+    it(`should have ${CREATE_FAVORITE}_PENDING action`, () => {
+      action = find(actionsCalled, { type: `${CREATE_FAVORITE}_PENDING` });
       expect(action).to.exist;
     });
 
-    it('should have FAVORITES_CREATE_SUCCESS action', () => {
-      action = find(actionsCalled, { type: FAVORITES_CREATE_SUCCESS });
+    it(`should have ${CREATE_FAVORITE}_FULFILLED action`, () => {
+      action = find(actionsCalled, { type: `${CREATE_FAVORITE}_FULFILLED` });
       expect(action).to.exist;
     });
 
     describe('updateFavorite', () => {
       before(() => {
         store.clearActions();
-        return updateFavorite(brandibble, id, 'updated favorite', buildLineItem())(store.dispatch).then(() => {
+        const favorite = { id, name: 'updated favorite', lineItem: buildLineItem() };
+        return updateFavorite(brandibble, favorite)(store.dispatch).then(() => {
           actionsCalled = store.getActions();
         });
       });
 
       it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
 
-      it('should have FAVORITES_UPDATE_START action', () => {
-        action = find(actionsCalled, { type: FAVORITES_UPDATE_START });
+      it(`should have ${UPDATE_FAVORITE}_PENDING action`, () => {
+        action = find(actionsCalled, { type: `${UPDATE_FAVORITE}_PENDING` });
         expect(action).to.exist;
       });
 
-      it('should have FAVORITES_UPDATE_SUCCESS action', () => {
-        action = find(actionsCalled, { type: FAVORITES_UPDATE_SUCCESS });
+      it(`should have ${UPDATE_FAVORITE}_FULFILLED action`, () => {
+        action = find(actionsCalled, { type: `${UPDATE_FAVORITE}_FULFILLED` });
         expect(action).to.exist;
       });
     });
@@ -107,13 +107,13 @@ describe('actions/session/favorites', () => {
 
       it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
 
-      it('should have FAVORITES_DELETE_START action', () => {
-        action = find(actionsCalled, { type: FAVORITES_DELETE_START });
+      it(`should have ${DELETE_FAVORITE}_PENDING action`, () => {
+        action = find(actionsCalled, { type: `${DELETE_FAVORITE}_PENDING` });
         expect(action).to.exist;
       });
 
-      it('should have FAVORITES_DELETE_SUCCESS action', () => {
-        action = find(actionsCalled, { type: FAVORITES_DELETE_SUCCESS });
+      it(`should have ${DELETE_FAVORITE}_FULFILLED action`, () => {
+        action = find(actionsCalled, { type: `${DELETE_FAVORITE}_FULFILLED` });
         expect(action).to.exist;
       });
     });

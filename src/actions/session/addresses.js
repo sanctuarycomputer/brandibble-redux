@@ -1,52 +1,21 @@
-/* eslint no-shadow:1 */
-import reduxCrud from 'redux-crud';
-import generateUUID from 'utils/generateUUID';
+import fireAction from 'utils/fireAction';
+import handleErrors from 'utils/handleErrors';
 
-const {
-  createStart,
-  createSuccess,
-  createError,
-  deleteStart,
-  deleteSuccess,
-  deleteError,
-  fetchStart,
-  fetchSuccess,
-  fetchError,
-} = reduxCrud.actionCreatorsFor('addresses', { key: 'customer_address_id' });
+export const FETCH_ADDRESSES = 'FETCH_ADDRESSES';
+export const CREATE_ADDRESS = 'CREATE_ADDRESS';
+export const DELETE_ADDRESS = 'DELETE_ADDRESS';
 
-export function fetchAddresses(brandibble) {
-  return (dispatch) => {
-    dispatch(fetchStart());
-    return brandibble.addresses.all()
-      .then(({ data }) => dispatch(fetchSuccess(data)))
-      .catch(response => {
-        const { errors } = response;
-        return dispatch(fetchError(errors || response));
-      });
-  };
-}
+export const fetchAddresses = brandibble => (dispatch) => {
+  const payload = brandibble.addresses.all().then(({ data }) => data).catch(handleErrors);
+  return dispatch(fireAction(FETCH_ADDRESSES, payload));
+};
 
-export function createAddress(brandibble, data = {}) {
-  return (dispatch) => {
-    const id = generateUUID();
-    dispatch(createStart({ record: data, customer_address_id: id }));
-    return brandibble.addresses.create(data)
-      .then(({ data }) => dispatch(createSuccess({ customer_address_id: id, ...data[0] })))
-      .catch(response  => {
-        const { errors } = response;
-        return dispatch(createError(errors || response, { customer_address_id: id, data }));
-      });
-  };
-}
+export const createAddress = (brandibble, address = {}) => (dispatch) => {
+  const payload = brandibble.addresses.create(address).then(({ data }) => ({ ...data[0] })).catch(handleErrors);
+  return dispatch(fireAction(CREATE_ADDRESS, payload));
+};
 
-export function deleteAddress(brandibble, id) {
-  return (dispatch) => {
-    dispatch(deleteStart({ customer_address_id: id }));
-    return brandibble.addresses.delete(id)
-      .then(() => dispatch(deleteSuccess({ customer_address_id: id })))
-      .catch(response => {
-        const { errors } = response;
-        return dispatch(deleteError(errors || response, { customer_address_id: id }))
-      });
-  };
-}
+export const deleteAddress = (brandibble, id) => (dispatch) => {
+  const payload = brandibble.addresses.delete(id).then(() => id).catch(handleErrors);
+  return dispatch(fireAction(DELETE_ADDRESS, payload));
+};

@@ -1,16 +1,34 @@
-import reduxCrud from 'redux-crud';
+import Immutable from 'seamless-immutable';
 import {
-  UNAUTHENTICATE_USER
-} from 'actions/session/user';
+  CREATE_ADDRESS,
+  DELETE_ADDRESS,
+  FETCH_ADDRESSES,
+} from 'actions/session/addresses';
+import { UNAUTHENTICATE_USER } from 'actions/session/user';
 
-const baseReducers = reduxCrud.Map.reducersFor('addresses', { key: 'customer_address_id' });
-const initialState = {};
+export const initialState = Immutable({
+  addressesById: Immutable({}),
+});
 
 export default function addresses(state = initialState, action) {
-  switch (action.type) {
+  const { payload, type } = action;
+
+  switch (type) {
+    case `${FETCH_ADDRESSES}_FULFILLED`:
+      return state.merge({
+        addressesById: state.addressesById.replace(Immutable.asObject(payload, (address) => {
+          return [address.customer_address_id, address];
+        })),
+      });
+    case `${DELETE_ADDRESS}_FULFILLED`:
+      return state.merge({
+        addressesById: state.addressesById.without(payload),
+      });
+    case `${CREATE_ADDRESS}_FULFILLED`:
+      return state.setIn(['addressesById', payload.customer_address_id], payload);
     case `${UNAUTHENTICATE_USER}_FULFILLED`:
       return initialState;
     default:
-      return baseReducers(state, action);
+      return state;
   }
 }

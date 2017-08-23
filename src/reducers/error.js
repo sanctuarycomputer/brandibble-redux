@@ -7,6 +7,27 @@ import {
   SETUP_BRANDIBBLE_REDUX,
 } from 'actions/application';
 
+// addresses
+import {
+  CREATE_ADDRESS,
+  DELETE_ADDRESS,
+  FETCH_ADDRESSES,
+} from 'actions/session/addresses';
+
+// allergens
+import { FETCH_ALLERGENS } from 'actions/data/allergens';
+
+// menu
+import { FETCH_MENU } from 'actions/session/menus';
+
+// favorites
+import {
+  CREATE_FAVORITE,
+  DELETE_FAVORITE,
+  FETCH_FAVORITES,
+  UPDATE_FAVORITE,
+} from 'actions/session/favorites';
+
 // orders
 import {
   ADD_LINE_ITEM,
@@ -16,8 +37,20 @@ import {
   VALIDATE_CURRENT_ORDER,
   SET_LINE_ITEM_MADE_FOR,
   SET_PAYMENT_METHOD,
-  SET_LINE_ITEM_INSTRUCTIONS
+  SET_LINE_ITEM_INSTRUCTIONS,
 } from 'actions/session/order';
+
+// locations
+import {
+  FETCH_LOCATION,
+  FETCH_LOCATIONS,
+} from 'actions/data/locations';
+
+// geolocations
+import {
+  FETCH_GEOLOCATIONS,
+  CLEAR_GEOLOCATIONS,
+} from 'actions/data/geolocations';
 
 //  payments
 import { SET_DEFAULT_PAYMENT } from 'actions/session/payments';
@@ -55,40 +88,6 @@ const {
   USER_CREATE_ERROR,
 } = reduxCrud.actionTypesFor('user');
 
-// addresses
-const {
-  ADDRESSES_FETCH_START,
-  ADDRESSES_FETCH_ERROR,
-  ADDRESSES_CREATE_START,
-  ADDRESSES_CREATE_ERROR,
-  ADDRESSES_DELETE_START,
-  ADDRESSES_DELETE_ERROR,
-} = reduxCrud.actionTypesFor('addresses');
-
-// allergens
-const {
-  ALLERGENS_FETCH_START,
-  ALLERGENS_FETCH_ERROR,
-} = reduxCrud.actionTypesFor('allergens');
-
-// locations
-const {
-  LOCATIONS_FETCH_START,
-  LOCATIONS_FETCH_ERROR,
-} = reduxCrud.actionTypesFor('locations');
-
-// menu
-const {
-  MENUS_FETCH_START,
-  MENUS_FETCH_ERROR,
-} = reduxCrud.actionTypesFor('menus');
-
-// display menu
-const {
-  DISPLAY_MENU_FETCH_START,
-  DISPLAY_MENU_FETCH_ERROR,
-} = reduxCrud.actionTypesFor('displayMenu');
-
 // payments
 const {
   PAYMENTS_FETCH_START,
@@ -98,18 +97,6 @@ const {
   PAYMENTS_DELETE_START,
   PAYMENTS_DELETE_ERROR,
 } = reduxCrud.actionTypesFor('payments');
-
-// favorites
-const {
-  FAVORITES_FETCH_START,
-  FAVORITES_FETCH_ERROR,
-  FAVORITES_CREATE_START,
-  FAVORITES_CREATE_ERROR,
-  FAVORITES_UPDATE_START,
-  FAVORITES_UPDATE_ERROR,
-  FAVORITES_DELETE_START,
-  FAVORITES_DELETE_ERROR,
-} = reduxCrud.actionTypesFor('favorites');
 
 // ratings
 const {
@@ -141,10 +128,12 @@ export const initialState = {
   createAddress: null,
   deleteAddress: null,
   // locations
+  fetchLocation: null,
   fetchLocations: null,
+  // geolocations
+  fetchGeolocations: null,
   // menu
   fetchMenu: null,
-  fetchDisplayMenu: null,
   // orders
   addLineItem: null,
   resolveOrder: null,
@@ -213,30 +202,33 @@ export default function error(state = initialState, action) {
     case `${FETCH_UPCOMING_CUSTOMER_ORDERS}_REJECTED`: return { ...state, fetchUpcomingCustomerOrders: action.payload };
 
     // allergens
-    case ALLERGENS_FETCH_START: return { ...state, fetchAllergens: null };
-    case ALLERGENS_FETCH_ERROR: return { ...state, fetchAllergens: action.error };
+    case `${FETCH_ALLERGENS}_PENDING`: return { ...state, fetchAllergens: null };
+    case `${FETCH_ALLERGENS}_REJECTED`: return { ...state, fetchAllergens: action.payload };
 
     // addresses
-    case ADDRESSES_FETCH_START: return { ...state, fetchAddresses: null };
-    case ADDRESSES_FETCH_ERROR: return { ...state, fetchAddresses: action.error };
+    case `${FETCH_ADDRESSES}_PENDING`: return { ...state, fetchAddresses: null };
+    case `${FETCH_ADDRESSES}_REJECTED`: return { ...state, fetchAddresses: action.payload };
 
-    case ADDRESSES_CREATE_START: return { ...state, createAddress: null };
-    case ADDRESSES_CREATE_ERROR: return { ...state, createAddress: action.error };
+    case `${CREATE_ADDRESS}_PENDING`: return { ...state, createAddress: null };
+    case `${CREATE_ADDRESS}_REJECTED`: return { ...state, createAddress: action.payload };
 
-    case ADDRESSES_DELETE_START: return { ...state, deleteAddress: null };
-    case ADDRESSES_DELETE_ERROR: return { ...state, deleteAddress: action.error };
+    case `${DELETE_ADDRESS}_PENDING`: return { ...state, deleteAddress: null };
+    case `${DELETE_ADDRESS}_REJECTED`: return { ...state, deleteAddress: action.payload };
 
     // locations
-    case LOCATIONS_FETCH_START: return { ...state, fetchLocations: null };
-    case LOCATIONS_FETCH_ERROR: return { ...state, fetchLocations: action.error };
+    case `${FETCH_LOCATIONS}_PENDING`: return { ...state, fetchLocations: null };
+    case `${FETCH_LOCATIONS}_REJECTED`: return { ...state, fetchLocations: action.payload };
+
+    case `${FETCH_LOCATION}_PENDING`: return { ...state, fetchLocation: null };
+    case `${FETCH_LOCATION}_REJECTED`: return { ...state, fetchLocation: action.payload };
+
+    // geolocations
+    case `${FETCH_GEOLOCATIONS}_PENDING`: return { ...state, fetchGeolocations: null };
+    case `${FETCH_GEOLOCATIONS}_REJECTED`: return { ...state, fetchGeolocations: action.payload };
 
     // menu
-    case MENUS_FETCH_START: return { ...state, fetchMenu: null };
-    case MENUS_FETCH_ERROR: return { ...state, fetchMenu: action.error };
-
-    // display menu
-    case DISPLAY_MENU_FETCH_START: return { ...state, fetchDisplayMenu: null };
-    case DISPLAY_MENU_FETCH_ERROR: return { ...state, fetchDisplayMenu: action.error };
+    case `${FETCH_MENU}_PENDING`: return { ...state, fetchMenu: null };
+    case `${FETCH_MENU}_REJECTED`: return { ...state, fetchMenu: action.payload };
 
     // orders
     case `${RESOLVE_ORDER}_PENDING`: return { ...state, resolveOrder: null };
@@ -274,17 +266,17 @@ export default function error(state = initialState, action) {
     case `${SET_DEFAULT_PAYMENT}_REJECTED`: return { ...state, setDefaultPayment: action.payload };
 
     // favorites
-    case FAVORITES_FETCH_START: return { ...state, fetchFavorites: null };
-    case FAVORITES_FETCH_ERROR: return { ...state, fetchFavorites: action.error };
+    case `${FETCH_FAVORITES}_PENDING`: return { ...state, fetchFavorites: null };
+    case `${FETCH_FAVORITES}_REJECTED`: return { ...state, fetchFavorites: action.payload };
 
-    case FAVORITES_CREATE_START: return { ...state, createFavorite: null };
-    case FAVORITES_CREATE_ERROR: return { ...state, createFavorite: action.error };
+    case `${CREATE_FAVORITE}_PENDING`: return { ...state, createFavorite: null };
+    case `${CREATE_FAVORITE}_REJECTED`: return { ...state, createFavorite: action.payload };
 
-    case FAVORITES_UPDATE_START: return { ...state, updateFavorite: null };
-    case FAVORITES_UPDATE_ERROR: return { ...state, updateFavorite: action.error };
+    case `${UPDATE_FAVORITE}_PENDING`: return { ...state, updateFavorite: null };
+    case `${UPDATE_FAVORITE}_REJECTED`: return { ...state, updateFavorite: action.payload };
 
-    case FAVORITES_DELETE_START: return { ...state, deleteFavorite: null };
-    case FAVORITES_DELETE_ERROR: return { ...state, deleteFavorite: action.error };
+    case `${DELETE_FAVORITE}_PENDING`: return { ...state, deleteFavorite: null };
+    case `${DELETE_FAVORITE}_REJECTED`: return { ...state, deleteFavorite: action.payload };
 
     // ratings
     case RATINGS_FETCH_START: return { ...state, fetchRating: null };

@@ -1,50 +1,59 @@
-/* global describe it */
+/* global describe it beforeEach */
 import { expect } from 'chai';
-import reduxCrud from 'redux-crud';
-import reducer from 'reducers/session/favorites';
+import reducer, { initialState } from 'reducers/session/favorites';
+import {
+  CREATE_FAVORITE,
+  DELETE_FAVORITE,
+  FETCH_FAVORITES,
+  UPDATE_FAVORITE,
+} from 'actions/session/favorites';
 
-const {
-  FAVORITES_FETCH_SUCCESS,
-  FAVORITES_DELETE_SUCCESS,
-  FAVORITES_CREATE_SUCCESS,
-  FAVORITES_UPDATE_SUCCESS,
-} = reduxCrud.actionTypesFor('favorites');
-const initialState = {};
+const fetchPayload = [{ favorite_item_id: 1 }];
 
 describe('reducers/session/favorites', () => {
   it('should return the initial state', () => {
     expect(reducer(initialState, {})).to.equal(initialState);
   });
 
-  it('handles the FAVORITES_FETCH_SUCCESS action', () => {
-    const reduced = reducer(initialState, {
-      type: FAVORITES_FETCH_SUCCESS,
-      records: [{ favorite_item_id: 1 }],
-    });
-    expect(reduced);
-  });
+  describe('action handlers', () => {
+    let reduced;
 
-  it('handles the FAVORITES_DELETE_SUCCESS action', () => {
-    const reduced = reducer(initialState, {
-      type: FAVORITES_DELETE_SUCCESS,
-      record: { favorite_item_id: 1 },
+    beforeEach(() => {
+      reduced = reducer(initialState, {
+        type: `${FETCH_FAVORITES}_FULFILLED`,
+        payload: fetchPayload,
+      });
     });
-    expect(reduced);
-  });
 
-  it('handles the FAVORITES_CREATE_SUCCESS action', () => {
-    const reduced = reducer(initialState, {
-      type: FAVORITES_CREATE_SUCCESS,
-      record: { favorite_item_id: 1 },
+    it(`handles the ${FETCH_FAVORITES}_FULFILLED action`, () => {
+      expect(reduced.favoritesById[fetchPayload[0].favorite_item_id]).to.exist;
     });
-    expect(reduced);
-  });
 
-  it('handles the FAVORITES_UPDATE_SUCCESS action', () => {
-    const reduced = reducer(initialState, {
-      type: FAVORITES_UPDATE_SUCCESS,
-      record: { favorite_item_id: 1 },
+    it(`handles the ${DELETE_FAVORITE}_FULFILLED action`, () => {
+      const payload = 1;
+      reduced = reducer(reduced, {
+        type: `${DELETE_FAVORITE}_FULFILLED`,
+        payload,
+      });
+      expect(reduced.favoritesById[payload]).to.not.exist;
     });
-    expect(reduced);
+
+    it(`handles the ${CREATE_FAVORITE}_FULFILLED action`, () => {
+      const payload = { favorite_item_id: 'this-is-a-terrible-id' };
+      reduced = reducer(reduced, {
+        type: `${CREATE_FAVORITE}_FULFILLED`,
+        payload,
+      });
+      expect(reduced.favoritesById[payload.favorite_item_id]).to.exist;
+    });
+
+    it(`handles the ${UPDATE_FAVORITE}_FULFILLED action`, () => {
+      const payload = { favorite_item_id: fetchPayload[0].favorite_item_id, name: 'pb&j' };
+      reduced = reducer(reduced, {
+        type: `${UPDATE_FAVORITE}_FULFILLED`,
+        payload,
+      });
+      expect(reduced.favoritesById[payload.favorite_item_id]).to.have.property('name', payload.name);
+    });
   });
 });

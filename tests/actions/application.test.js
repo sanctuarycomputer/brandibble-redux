@@ -1,4 +1,4 @@
-/* global describe afterEach before beforeEach it */
+/* global describe before it */
 /* eslint one-var-declaration-per-line:1, one-var:1 */
 import { expect } from 'chai';
 import find from 'lodash.find';

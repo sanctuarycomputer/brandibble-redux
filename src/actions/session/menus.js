@@ -1,46 +1,27 @@
+import fireAction from 'utils/fireAction';
+import handleErrors from 'utils/handleErrors';
 import moment from 'moment';
-import reduxCrud from 'redux-crud';
-import generateUUID from 'utils/generateUUID';
 
-const { fetchStart, fetchSuccess, fetchError } = reduxCrud.actionCreatorsFor('menus');
+export const FETCH_MENU = 'FETCH_MENU';
 
-const NO_OP = f => f;
 const NOW = new Date();
 
-export function fetchMenu(brandibble, locationId, serviceType = 'delivery', requestedAt = NOW, success = NO_OP, fail = NO_OP) {
-  const requestedAtFormatted = new Date(moment(requestedAt));
-  return (dispatch) => {
-    dispatch(fetchStart());
-    return brandibble.menus.build(locationId, serviceType, requestedAtFormatted)
-      .then(({ data }) => {
-        const menuData = data;
-        menuData.id = generateUUID();
-        dispatch(fetchSuccess(menuData));
-        return success(menuData);
-      })
-      .catch((response) => {
-        const { errors } = response;
-        dispatch(fetchError(errors || response));
-        throw fail(errors || response);
-      });
-  };
-}
+const defaultMenuType = {
+  locationId: null,
+  requestedAt: NOW,
+  serviceType: 'delivery',
+};
 
-export function fetchDisplayMenu(brandibble, locationId, serviceType = 'delivery', requestedAt = NOW, success = NO_OP, fail = NO_OP) {
+export const fetchMenu = (brandibble, menuType = defaultMenuType) => (dispatch) => {
+  const {
+    locationId,
+    requestedAt,
+    serviceType,
+  } = menuType;
   const requestedAtFormatted = new Date(moment(requestedAt));
-  return (dispatch) => {
-    dispatch(fetchStart());
-    return brandibble.menus.display(locationId, serviceType, requestedAtFormatted)
-      .then(({ data }) => {
-        const menuData = data;
-        menuData.id = generateUUID();
-        dispatch(fetchSuccess(menuData));
-        return success(menuData);
-      })
-      .catch((response) => {
-        const { errors } = response;
-        dispatch(fetchError(errors || response));
-        throw fail(errors || response);
-      });
-  };
-}
+
+  const payload = brandibble.menus.build(locationId, serviceType, requestedAtFormatted)
+    .then(({ data }) => data).catch(handleErrors);
+
+  return dispatch(fireAction(FETCH_MENU, payload));
+};

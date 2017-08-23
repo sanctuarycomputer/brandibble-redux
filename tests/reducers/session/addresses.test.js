@@ -1,41 +1,45 @@
-/* global describe it */
+/* global describe it beforeEach */
 import { expect } from 'chai';
-import reduxCrud from 'redux-crud';
-import reducer from 'reducers/session/addresses';
-
-const {
-  ADDRESSES_FETCH_SUCCESS,
-  ADDRESSES_DELETE_SUCCESS,
-  ADDRESSES_CREATE_SUCCESS,
-} = reduxCrud.actionTypesFor('addresses');
-const initialState = {};
+import {
+  CREATE_ADDRESS,
+  DELETE_ADDRESS,
+  FETCH_ADDRESSES,
+} from 'actions/session/addresses';
+import reducer, { initialState } from 'reducers/session/addresses';
+import { addressStub } from '../../config/stubs';
 
 describe('reducers/session/addresses', () => {
   it('should return the initial state', () => {
     expect(reducer(initialState, {})).to.equal(initialState);
   });
 
-  it('handles the ADDRESSES_FETCH_SUCCESS action', () => {
+  it(`handles the ${FETCH_ADDRESSES}_FULFILLED action`, () => {
     const reduced = reducer(initialState, {
-      type: ADDRESSES_FETCH_SUCCESS,
-      records: [{ customer_address_id: 1, street_address: 'Dad Zone' }],
+      type: `${FETCH_ADDRESSES}_FULFILLED`,
+      payload: [addressStub],
     });
-    expect(reduced);
+    expect(reduced.addressesById[addressStub.customer_address_id]).to.exist;
   });
 
-  it('handles the ADDRESSES_DELETE_SUCCESS action', () => {
-    const reduced = reducer(initialState, {
-      type: ADDRESSES_DELETE_SUCCESS,
-      record: { customer_address_id: 1, street_address: 'Dad Zone' },
+  describe('create / delete', () => {
+    let reduced;
+    beforeEach(() => {
+      reduced = reducer(initialState, {
+        type: `${CREATE_ADDRESS}_FULFILLED`,
+        payload: addressStub,
+      });
     });
-    expect(reduced);
-  });
 
-  it('handles the ADDRESSES_CREATE_SUCCESS action', () => {
-    const reduced = reducer(initialState, {
-      type: ADDRESSES_CREATE_SUCCESS,
-      record: { customer_address_id: 1, street_address: 'Dad Zone' },
+    it(`handles the ${CREATE_ADDRESS}_FULFILLED action`, () => {
+      expect(reduced.addressesById[addressStub.customer_address_id]).to.exist;
     });
-    expect(reduced);
+
+    it(`handles the ${DELETE_ADDRESS}_FULFILLED action`, () => {
+      const reducedAfterDelete = reducer(reduced, {
+        type: `${DELETE_ADDRESS}_FULFILLED`,
+        payload: addressStub.customer_address_id,
+      });
+      expect(reducedAfterDelete.addressesById[addressStub.customer_address_id]).to.not.exist;
+    });
   });
 });

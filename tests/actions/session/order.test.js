@@ -11,6 +11,7 @@ import {
   setOrderLocationId,
   setPaymentMethod,
   resolveOrder,
+  resolveOrderLocation,
   addLineItem,
   pushLineItem,
   bindCustomerToOrder,
@@ -39,6 +40,8 @@ import {
 } from '../../config/stubs';
 
 const mockStore = configureStore(reduxMiddleware);
+// don't need this when creating a new address
+delete addressStub.customer_address_id;
 
 describe('actions/session/order', () => {
   let store, action, actionsCalled;
@@ -63,6 +66,29 @@ describe('actions/session/order', () => {
       action = find(actionsCalled, { type: 'RESOLVE_ORDER_FULFILLED' });
       expect(action).to.have.property('payload');
       expect(action.payload).to.have.property('order').is.not.undefined.and.is.not.null;
+    });
+  });
+
+  describe('resolveOrderLocation', () => {
+    before(() => {
+      store = mockStore();
+      return resolveOrderLocation(brandibble)(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
+
+    it('should call 2 actions', () => {
+      expect(actionsCalled).to.have.length.of(2);
+    });
+
+    it('should have RESOLVE_ORDER_LOCATION_PENDING action', () => {
+      action = find(actionsCalled, { type: 'RESOLVE_ORDER_LOCATION_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have RESOLVE_ORDER_LOCATION_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'RESOLVE_ORDER_LOCATION_FULFILLED' });
+      expect(action).to.exist;
     });
   });
 
@@ -130,7 +156,7 @@ describe('actions/session/order', () => {
       store = mockStore();
       const order = makeUnpersistedOrder();
 
-      return fetchMenu(brandibble, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(({ menu }) => {
+      return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(store.dispatch).then(({ value: { menu }}) => {
         const product = menu[0].children[menu[0].children.length - 1].items[0];
         order.cart.addLineItem(product, 1, product.id);
 
@@ -165,7 +191,7 @@ describe('actions/session/order', () => {
       store = mockStore();
       const order = makeUnpersistedOrder();
 
-      return fetchMenu(brandibble, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(({ menu }) => {
+      return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(store.dispatch).then(({ value: { menu }}) => {
         const product = menu[0].children[menu[0].children.length - 1].items[0];
         order.cart.addLineItem(product, 1, product.id);
 
@@ -461,7 +487,7 @@ describe('actions/session/order', () => {
       store = mockStore();
       const order = makeUnpersistedOrder();
 
-      return fetchMenu(brandibble, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(({ menu }) => {
+      return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(store.dispatch).then(({ value: { menu }}) => {
         const product = menu[0].children[menu[0].children.length - 1].items[0];
         order.cart.addLineItem(product, 1, product.id);
 

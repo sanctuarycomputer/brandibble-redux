@@ -1,17 +1,19 @@
-import reduxCrud from 'redux-crud';
-import {
-  UNAUTHENTICATE_USER
-} from 'actions/session/user';
+import Immutable from 'seamless-immutable';
+import { FETCH_ALLERGENS } from 'actions/data/allergens';
 
-const baseReducers = reduxCrud.List.reducersFor('allergens');
+export const initialState = Immutable({
+  allergensById: Immutable({}),
+});
 
-const initialState = [];
-
-export default function allergens(state = initialState, action) {
+export default (state = initialState, action) => {
   switch (action.type) {
-    case `${UNAUTHENTICATE_USER}_FULFILLED`:
-      return initialState;
+    case `${FETCH_ALLERGENS}_FULFILLED`:
+      return state.merge({
+        allergensById: state.allergensById.replace(Immutable.asObject(action.payload, (allergen) => {
+          return [allergen.id, allergen];
+        })),
+      });
     default:
-      return baseReducers(state, action);
+      return state;
   }
-}
+};

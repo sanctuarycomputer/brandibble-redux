@@ -1,15 +1,9 @@
-import reduxCrud from 'redux-crud';
+import fireAction from 'utils/fireAction';
+import handleErrors from 'utils/handleErrors';
 
-const { fetchStart, fetchSuccess, fetchError } = reduxCrud.actionCreatorsFor('allergens');
+export const FETCH_ALLERGENS = 'FETCH_ALLERGENS';
 
-export function fetchAllergens(brandibbleRef) {
-  return (dispatch) => {
-    dispatch(fetchStart());
-    return brandibbleRef.allergens.all()
-      .then(res => dispatch(fetchSuccess(res.data)))
-      .catch(response => {
-        const { errors } = response;
-        return dispatch(fetchError(errors || response));
-      });
-  };
-}
+export const fetchAllergens = brandibble => (dispatch) => {
+  const payload = brandibble.allergens.all().then(({ data }) => data).catch(handleErrors);
+  return dispatch(fireAction(FETCH_ALLERGENS, payload));
+};

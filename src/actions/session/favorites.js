@@ -1,67 +1,31 @@
-/* eslint no-shadow:1 */
-import reduxCrud from 'redux-crud';
-import generateUUID from 'utils/generateUUID';
+import fireAction from 'utils/fireAction';
+import handleErrors from 'utils/handleErrors';
 
-const {
-  fetchStart,
-  fetchSuccess,
-  fetchError,
-  createStart,
-  createSuccess,
-  createError,
-  updateStart,
-  updateSuccess,
-  updateError,
-  deleteStart,
-  deleteSuccess,
-  deleteError,
-} = reduxCrud.actionCreatorsFor('favorites', { key: 'favorite_item_id' });
+export const FETCH_FAVORITES = 'FETCH_FAVORITES';
+export const CREATE_FAVORITE = 'CREATE_FAVORITE';
+export const UPDATE_FAVORITE = 'UPDATE_FAVORITE';
+export const DELETE_FAVORITE = 'DELETE_FAVORITE';
 
-export function fetchFavorites(brandibble) {
-  return (dispatch) => {
-    dispatch(fetchStart());
-    return brandibble.favorites.all()
-      .then(({ data }) => dispatch(fetchSuccess(data)))
-      .catch(response => {
-        const { errors } = response;
-        return dispatch(fetchError(errors || response));
-      });
-  };
-}
+export const fetchFavorites = brandibble => (dispatch) => {
+  const payload = brandibble.favorites.all().then(({ data }) => data).catch(handleErrors);
+  return dispatch(fireAction(FETCH_FAVORITES, payload));
+};
 
-export function createFavorite(brandibble, name, lineItem) {
-  return (dispatch) => {
-    const id = generateUUID();
-    dispatch(createStart({ record: { name, lineItem }, favorite_item_id: id }));
-    return brandibble.favorites.create(name, lineItem)
-      .then(({ data }) => dispatch(createSuccess({ favorite_item_id: id, ...data })))
-      .catch(response => {
-        const { errors } = response;
-        return dispatch(createError(errors || response, { favorite_item_id: id, data: { name, lineItem } }));
-      });
-  };
-}
+export const createFavorite = (brandibble, favorite = {}) => (dispatch) => {
+  const { lineItem, name } = favorite;
+  const payload = brandibble.favorites.create(name, lineItem).then(({ data }) => data).catch(handleErrors);
+  return dispatch(fireAction(CREATE_FAVORITE, payload));
+};
 
-export function updateFavorite(brandibble, id, name, lineItem) {
-  return (dispatch) => {
-    dispatch(updateStart({ favorite_item_id: id, record: { name, lineItem } }));
-    return brandibble.favorites.update(id, name, lineItem)
-      .then(({ data }) => dispatch(updateSuccess({ favorite_item_id: id, ...data })))
-      .catch(response => {
-        const { errors } = response;
-        return dispatch(updateError(errors || response, { favorite_item_id: id, data: { name, lineItem } }))
-      });
-  };
-}
+export const updateFavorite = (brandibble, favorite = {}) => (dispatch) => {
+  const { id, name, lineItem } = favorite;
+  const payload = brandibble.favorites.update(id, name, lineItem)
+    .then(({ data }) => data)
+    .catch(handleErrors);
+  return dispatch(fireAction(UPDATE_FAVORITE, payload));
+};
 
-export function deleteFavorite(brandibble, id) {
-  return (dispatch) => {
-    dispatch(deleteStart({ favorite_item_id: id }));
-    return brandibble.favorites.delete(id)
-      .then(() => dispatch(deleteSuccess({ favorite_item_id: id })))
-      .catch(response => {
-        const { errors } = response;
-        return dispatch(deleteError(errors || response, { favorite_item_id: id }));
-      });
-  };
-}
+export const deleteFavorite = (brandibble, id) => (dispatch) => {
+  const payload = brandibble.favorites.delete(id).then(() => id).catch(handleErrors);
+  return dispatch(fireAction(DELETE_FAVORITE, payload));
+};

@@ -168,7 +168,7 @@ export function createNewOrder(brandibble, locationId = null, serviceType, payme
   };
 }
 
-export function resolveOrder(brandibble, locationId = null, serviceType = 'delivery', paymentType = null, miscOptions = Defaults.miscOptions) {
+export function resolveOrder(brandibble, locationId = null, serviceType = 'pickup', paymentType = null, miscOptions = Defaults.miscOptions) {
   const { orders } = brandibble;
   const order = orders.current();
   const payload = order ? Promise.resolve({ order }) : orders.create(locationId, serviceType, paymentType, miscOptions).then(res => ({ order: res }));

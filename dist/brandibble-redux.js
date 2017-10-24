@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 273);
+/******/ 	return __webpack_require__(__webpack_require__.s = 276);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -111,8 +111,8 @@ module.exports = function _curry2(fn) {
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {//! moment.js
-//! version : 2.18.1
+/* WEBPACK VAR INJECTION */(function(module) {var require;//! moment.js
+//! version : 2.19.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -146,12 +146,17 @@ function isObject(input) {
 }
 
 function isObjectEmpty(obj) {
-    var k;
-    for (k in obj) {
-        // even if its not own property I'd still call it non-empty
-        return false;
+    if (Object.getOwnPropertyNames) {
+        return (Object.getOwnPropertyNames(obj).length === 0);
+    } else {
+        var k;
+        for (k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                return false;
+            }
+        }
+        return true;
     }
-    return true;
 }
 
 function isUndefined(input) {
@@ -245,12 +250,10 @@ if (Array.prototype.some) {
     };
 }
 
-var some$1 = some;
-
 function isValid(m) {
     if (m._isValid == null) {
         var flags = getParsingFlags(m);
-        var parsedParts = some$1.call(flags.parsedDateParts, function (i) {
+        var parsedParts = some.call(flags.parsedDateParts, function (i) {
             return i != null;
         });
         var isNowValid = !isNaN(m._d.getTime()) &&
@@ -258,6 +261,7 @@ function isValid(m) {
             !flags.empty &&
             !flags.invalidMonth &&
             !flags.invalidWeekday &&
+            !flags.weekdayMismatch &&
             !flags.nullInput &&
             !flags.invalidFormat &&
             !flags.userInvalidated &&
@@ -523,8 +527,6 @@ if (Object.keys) {
     };
 }
 
-var keys$1 = keys;
-
 var defaultCalendar = {
     sameDay : '[Today at] LT',
     nextDay : '[Tomorrow at] LT',
@@ -648,56 +650,6 @@ function getPrioritizedUnits(unitsObj) {
         return a.priority - b.priority;
     });
     return units;
-}
-
-function makeGetSet (unit, keepTime) {
-    return function (value) {
-        if (value != null) {
-            set$1(this, unit, value);
-            hooks.updateOffset(this, keepTime);
-            return this;
-        } else {
-            return get(this, unit);
-        }
-    };
-}
-
-function get (mom, unit) {
-    return mom.isValid() ?
-        mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]() : NaN;
-}
-
-function set$1 (mom, unit, value) {
-    if (mom.isValid()) {
-        mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
-    }
-}
-
-// MOMENTS
-
-function stringGet (units) {
-    units = normalizeUnits(units);
-    if (isFunction(this[units])) {
-        return this[units]();
-    }
-    return this;
-}
-
-
-function stringSet (units, value) {
-    if (typeof units === 'object') {
-        units = normalizeObjectUnits(units);
-        var prioritized = getPrioritizedUnits(units);
-        for (var i = 0; i < prioritized.length; i++) {
-            this[prioritized[i].unit](units[prioritized[i].unit]);
-        }
-    } else {
-        units = normalizeUnits(units);
-        if (isFunction(this[units])) {
-            return this[units](value);
-        }
-    }
-    return this;
 }
 
 function zeroFill(number, targetLength, forceSign) {
@@ -890,6 +842,131 @@ var MILLISECOND = 6;
 var WEEK = 7;
 var WEEKDAY = 8;
 
+// FORMATTING
+
+addFormatToken('Y', 0, 0, function () {
+    var y = this.year();
+    return y <= 9999 ? '' + y : '+' + y;
+});
+
+addFormatToken(0, ['YY', 2], 0, function () {
+    return this.year() % 100;
+});
+
+addFormatToken(0, ['YYYY',   4],       0, 'year');
+addFormatToken(0, ['YYYYY',  5],       0, 'year');
+addFormatToken(0, ['YYYYYY', 6, true], 0, 'year');
+
+// ALIASES
+
+addUnitAlias('year', 'y');
+
+// PRIORITIES
+
+addUnitPriority('year', 1);
+
+// PARSING
+
+addRegexToken('Y',      matchSigned);
+addRegexToken('YY',     match1to2, match2);
+addRegexToken('YYYY',   match1to4, match4);
+addRegexToken('YYYYY',  match1to6, match6);
+addRegexToken('YYYYYY', match1to6, match6);
+
+addParseToken(['YYYYY', 'YYYYYY'], YEAR);
+addParseToken('YYYY', function (input, array) {
+    array[YEAR] = input.length === 2 ? hooks.parseTwoDigitYear(input) : toInt(input);
+});
+addParseToken('YY', function (input, array) {
+    array[YEAR] = hooks.parseTwoDigitYear(input);
+});
+addParseToken('Y', function (input, array) {
+    array[YEAR] = parseInt(input, 10);
+});
+
+// HELPERS
+
+function daysInYear(year) {
+    return isLeapYear(year) ? 366 : 365;
+}
+
+function isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+// HOOKS
+
+hooks.parseTwoDigitYear = function (input) {
+    return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
+};
+
+// MOMENTS
+
+var getSetYear = makeGetSet('FullYear', true);
+
+function getIsLeapYear () {
+    return isLeapYear(this.year());
+}
+
+function makeGetSet (unit, keepTime) {
+    return function (value) {
+        if (value != null) {
+            set$1(this, unit, value);
+            hooks.updateOffset(this, keepTime);
+            return this;
+        } else {
+            return get(this, unit);
+        }
+    };
+}
+
+function get (mom, unit) {
+    return mom.isValid() ?
+        mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]() : NaN;
+}
+
+function set$1 (mom, unit, value) {
+    if (mom.isValid() && !isNaN(value)) {
+        if (unit === 'FullYear' && isLeapYear(mom.year())) {
+            mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value, mom.month(), daysInMonth(value, mom.month()));
+        }
+        else {
+            mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
+        }
+    }
+}
+
+// MOMENTS
+
+function stringGet (units) {
+    units = normalizeUnits(units);
+    if (isFunction(this[units])) {
+        return this[units]();
+    }
+    return this;
+}
+
+
+function stringSet (units, value) {
+    if (typeof units === 'object') {
+        units = normalizeObjectUnits(units);
+        var prioritized = getPrioritizedUnits(units);
+        for (var i = 0; i < prioritized.length; i++) {
+            this[prioritized[i].unit](units[prioritized[i].unit]);
+        }
+    } else {
+        units = normalizeUnits(units);
+        if (isFunction(this[units])) {
+            return this[units](value);
+        }
+    }
+    return this;
+}
+
+function mod(n, x) {
+    return ((n % x) + x) % x;
+}
+
 var indexOf;
 
 if (Array.prototype.indexOf) {
@@ -907,10 +984,13 @@ if (Array.prototype.indexOf) {
     };
 }
 
-var indexOf$1 = indexOf;
-
 function daysInMonth(year, month) {
-    return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    if (isNaN(year) || isNaN(month)) {
+        return NaN;
+    }
+    var modMonth = mod(month, 12);
+    year += (month - modMonth) / 12;
+    return modMonth === 1 ? (isLeapYear(year) ? 29 : 28) : (31 - modMonth % 7 % 2);
 }
 
 // FORMATTING
@@ -999,26 +1079,26 @@ function handleStrictParse(monthName, format, strict) {
 
     if (strict) {
         if (format === 'MMM') {
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             return ii !== -1 ? ii : null;
         }
     } else {
         if (format === 'MMM') {
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             return ii !== -1 ? ii : null;
         }
     }
@@ -1175,72 +1255,6 @@ function computeMonthsParse () {
     this._monthsShortRegex = this._monthsRegex;
     this._monthsStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
     this._monthsShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
-}
-
-// FORMATTING
-
-addFormatToken('Y', 0, 0, function () {
-    var y = this.year();
-    return y <= 9999 ? '' + y : '+' + y;
-});
-
-addFormatToken(0, ['YY', 2], 0, function () {
-    return this.year() % 100;
-});
-
-addFormatToken(0, ['YYYY',   4],       0, 'year');
-addFormatToken(0, ['YYYYY',  5],       0, 'year');
-addFormatToken(0, ['YYYYYY', 6, true], 0, 'year');
-
-// ALIASES
-
-addUnitAlias('year', 'y');
-
-// PRIORITIES
-
-addUnitPriority('year', 1);
-
-// PARSING
-
-addRegexToken('Y',      matchSigned);
-addRegexToken('YY',     match1to2, match2);
-addRegexToken('YYYY',   match1to4, match4);
-addRegexToken('YYYYY',  match1to6, match6);
-addRegexToken('YYYYYY', match1to6, match6);
-
-addParseToken(['YYYYY', 'YYYYYY'], YEAR);
-addParseToken('YYYY', function (input, array) {
-    array[YEAR] = input.length === 2 ? hooks.parseTwoDigitYear(input) : toInt(input);
-});
-addParseToken('YY', function (input, array) {
-    array[YEAR] = hooks.parseTwoDigitYear(input);
-});
-addParseToken('Y', function (input, array) {
-    array[YEAR] = parseInt(input, 10);
-});
-
-// HELPERS
-
-function daysInYear(year) {
-    return isLeapYear(year) ? 366 : 365;
-}
-
-function isLeapYear(year) {
-    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-}
-
-// HOOKS
-
-hooks.parseTwoDigitYear = function (input) {
-    return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
-};
-
-// MOMENTS
-
-var getSetYear = makeGetSet('FullYear', true);
-
-function getIsLeapYear () {
-    return isLeapYear(this.year());
 }
 
 function createDate (y, m, d, h, M, s, ms) {
@@ -1510,48 +1524,48 @@ function handleStrictParse$1(weekdayName, format, strict) {
 
     if (strict) {
         if (format === 'dddd') {
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else if (format === 'ddd') {
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         }
     } else {
         if (format === 'dddd') {
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else if (format === 'ddd') {
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         }
     }
@@ -1940,11 +1954,10 @@ function loadLocale(name) {
             module && module.exports) {
         try {
             oldLocale = globalLocale._abbr;
-            __webpack_require__(516)("./" + name);
-            // because defineLocale currently also sets the global locale, we
-            // want to undo that for lazy loaded locales
+            var aliasedRequire = require;
+            __webpack_require__(519)("./" + name);
             getSetGlobalLocale(oldLocale);
-        } catch (e) { }
+        } catch (e) {}
     }
     return locales[name];
 }
@@ -2070,7 +2083,7 @@ function getLocale (key) {
 }
 
 function listLocales() {
-    return keys$1(locales);
+    return keys(locales);
 }
 
 function checkOverflow (m) {
@@ -2101,6 +2114,154 @@ function checkOverflow (m) {
     }
 
     return m;
+}
+
+// Pick the first defined of two or three arguments.
+function defaults(a, b, c) {
+    if (a != null) {
+        return a;
+    }
+    if (b != null) {
+        return b;
+    }
+    return c;
+}
+
+function currentDateArray(config) {
+    // hooks is actually the exported moment object
+    var nowValue = new Date(hooks.now());
+    if (config._useUTC) {
+        return [nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate()];
+    }
+    return [nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate()];
+}
+
+// convert an array to a date.
+// the array should mirror the parameters below
+// note: all values past the year are optional and will default to the lowest possible value.
+// [year, month, day , hour, minute, second, millisecond]
+function configFromArray (config) {
+    var i, date, input = [], currentDate, yearToUse;
+
+    if (config._d) {
+        return;
+    }
+
+    currentDate = currentDateArray(config);
+
+    //compute day of the year from weeks and weekdays
+    if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
+        dayOfYearFromWeekInfo(config);
+    }
+
+    //if the day of the year is set, figure out what it is
+    if (config._dayOfYear != null) {
+        yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
+
+        if (config._dayOfYear > daysInYear(yearToUse) || config._dayOfYear === 0) {
+            getParsingFlags(config)._overflowDayOfYear = true;
+        }
+
+        date = createUTCDate(yearToUse, 0, config._dayOfYear);
+        config._a[MONTH] = date.getUTCMonth();
+        config._a[DATE] = date.getUTCDate();
+    }
+
+    // Default to current date.
+    // * if no year, month, day of month are given, default to today
+    // * if day of month is given, default month and year
+    // * if month is given, default only year
+    // * if year is given, don't default anything
+    for (i = 0; i < 3 && config._a[i] == null; ++i) {
+        config._a[i] = input[i] = currentDate[i];
+    }
+
+    // Zero out whatever was not defaulted, including time
+    for (; i < 7; i++) {
+        config._a[i] = input[i] = (config._a[i] == null) ? (i === 2 ? 1 : 0) : config._a[i];
+    }
+
+    // Check for 24:00:00.000
+    if (config._a[HOUR] === 24 &&
+            config._a[MINUTE] === 0 &&
+            config._a[SECOND] === 0 &&
+            config._a[MILLISECOND] === 0) {
+        config._nextDay = true;
+        config._a[HOUR] = 0;
+    }
+
+    config._d = (config._useUTC ? createUTCDate : createDate).apply(null, input);
+    // Apply timezone offset from input. The actual utcOffset can be changed
+    // with parseZone.
+    if (config._tzm != null) {
+        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
+    }
+
+    if (config._nextDay) {
+        config._a[HOUR] = 24;
+    }
+
+    // check for mismatching day of week
+    if (config._w && typeof config._w.d !== 'undefined' && config._w.d !== config._d.getDay()) {
+        getParsingFlags(config).weekdayMismatch = true;
+    }
+}
+
+function dayOfYearFromWeekInfo(config) {
+    var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
+
+    w = config._w;
+    if (w.GG != null || w.W != null || w.E != null) {
+        dow = 1;
+        doy = 4;
+
+        // TODO: We need to take the current isoWeekYear, but that depends on
+        // how we interpret now (local, utc, fixed offset). So create
+        // a now version of current config (take local/utc/offset flags, and
+        // create now).
+        weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(createLocal(), 1, 4).year);
+        week = defaults(w.W, 1);
+        weekday = defaults(w.E, 1);
+        if (weekday < 1 || weekday > 7) {
+            weekdayOverflow = true;
+        }
+    } else {
+        dow = config._locale._week.dow;
+        doy = config._locale._week.doy;
+
+        var curWeek = weekOfYear(createLocal(), dow, doy);
+
+        weekYear = defaults(w.gg, config._a[YEAR], curWeek.year);
+
+        // Default to current week.
+        week = defaults(w.w, curWeek.week);
+
+        if (w.d != null) {
+            // weekday -- low day numbers are considered next week
+            weekday = w.d;
+            if (weekday < 0 || weekday > 6) {
+                weekdayOverflow = true;
+            }
+        } else if (w.e != null) {
+            // local weekday -- counting starts from begining of week
+            weekday = w.e + dow;
+            if (w.e < 0 || w.e > 6) {
+                weekdayOverflow = true;
+            }
+        } else {
+            // default to begining of week
+            weekday = dow;
+        }
+    }
+    if (week < 1 || week > weeksInYear(weekYear, dow, doy)) {
+        getParsingFlags(config)._overflowWeeks = true;
+    } else if (weekdayOverflow != null) {
+        getParsingFlags(config)._overflowWeekday = true;
+    } else {
+        temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy);
+        config._a[YEAR] = temp.year;
+        config._dayOfYear = temp.dayOfYear;
+    }
 }
 
 // iso 8601 regex
@@ -2194,70 +2355,94 @@ function configFromISO(config) {
 }
 
 // RFC 2822 regex: For details see https://tools.ietf.org/html/rfc2822#section-3.3
-var basicRfcRegex = /^((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d?\d\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(?:\d\d)?\d\d\s)(\d\d:\d\d)(\:\d\d)?(\s(?:UT|GMT|[ECMP][SD]T|[A-IK-Za-ik-z]|[+-]\d{4}))$/;
+var rfc2822 = /^(?:(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d{1,2})\s(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(\d{2,4})\s(\d\d):(\d\d)(?::(\d\d))?\s(?:(UT|GMT|[ECMP][SD]T)|([Zz])|([+-]\d{4}))$/;
+
+function extractFromRFC2822Strings(yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr) {
+    var result = [
+        untruncateYear(yearStr),
+        defaultLocaleMonthsShort.indexOf(monthStr),
+        parseInt(dayStr, 10),
+        parseInt(hourStr, 10),
+        parseInt(minuteStr, 10)
+    ];
+
+    if (secondStr) {
+        result.push(parseInt(secondStr, 10));
+    }
+
+    return result;
+}
+
+function untruncateYear(yearStr) {
+    var year = parseInt(yearStr, 10);
+    if (year <= 49) {
+        return 2000 + year;
+    } else if (year <= 999) {
+        return 1900 + year;
+    }
+    return year;
+}
+
+function preprocessRFC2822(s) {
+    // Remove comments and folding whitespace and replace multiple-spaces with a single space
+    return s.replace(/\([^)]*\)|[\n\t]/g, ' ').replace(/(\s\s+)/g, ' ').trim();
+}
+
+function checkWeekday(weekdayStr, parsedInput, config) {
+    if (weekdayStr) {
+        // TODO: Replace the vanilla JS Date object with an indepentent day-of-week check.
+        var weekdayProvided = defaultLocaleWeekdaysShort.indexOf(weekdayStr),
+            weekdayActual = new Date(parsedInput[0], parsedInput[1], parsedInput[2]).getDay();
+        if (weekdayProvided !== weekdayActual) {
+            getParsingFlags(config).weekdayMismatch = true;
+            config._isValid = false;
+            return false;
+        }
+    }
+    return true;
+}
+
+var obsOffsets = {
+    UT: 0,
+    GMT: 0,
+    EDT: -4 * 60,
+    EST: -5 * 60,
+    CDT: -5 * 60,
+    CST: -6 * 60,
+    MDT: -6 * 60,
+    MST: -7 * 60,
+    PDT: -7 * 60,
+    PST: -8 * 60
+};
+
+function calculateOffset(obsOffset, militaryOffset, numOffset) {
+    if (obsOffset) {
+        return obsOffsets[obsOffset];
+    } else if (militaryOffset) {
+        // the only allowed military tz is Z
+        return 0;
+    } else {
+        var hm = parseInt(numOffset, 10);
+        var m = hm % 100, h = (hm - m) / 100;
+        return h * 60 + m;
+    }
+}
 
 // date and time from ref 2822 format
 function configFromRFC2822(config) {
-    var string, match, dayFormat,
-        dateFormat, timeFormat, tzFormat;
-    var timezones = {
-        ' GMT': ' +0000',
-        ' EDT': ' -0400',
-        ' EST': ' -0500',
-        ' CDT': ' -0500',
-        ' CST': ' -0600',
-        ' MDT': ' -0600',
-        ' MST': ' -0700',
-        ' PDT': ' -0700',
-        ' PST': ' -0800'
-    };
-    var military = 'YXWVUTSRQPONZABCDEFGHIKLM';
-    var timezone, timezoneIndex;
-
-    string = config._i
-        .replace(/\([^\)]*\)|[\n\t]/g, ' ') // Remove comments and folding whitespace
-        .replace(/(\s\s+)/g, ' ') // Replace multiple-spaces with a single space
-        .replace(/^\s|\s$/g, ''); // Remove leading and trailing spaces
-    match = basicRfcRegex.exec(string);
-
+    var match = rfc2822.exec(preprocessRFC2822(config._i));
     if (match) {
-        dayFormat = match[1] ? 'ddd' + ((match[1].length === 5) ? ', ' : ' ') : '';
-        dateFormat = 'D MMM ' + ((match[2].length > 10) ? 'YYYY ' : 'YY ');
-        timeFormat = 'HH:mm' + (match[4] ? ':ss' : '');
-
-        // TODO: Replace the vanilla JS Date object with an indepentent day-of-week check.
-        if (match[1]) { // day of week given
-            var momentDate = new Date(match[2]);
-            var momentDay = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][momentDate.getDay()];
-
-            if (match[1].substr(0,3) !== momentDay) {
-                getParsingFlags(config).weekdayMismatch = true;
-                config._isValid = false;
-                return;
-            }
+        var parsedArray = extractFromRFC2822Strings(match[4], match[3], match[2], match[5], match[6], match[7]);
+        if (!checkWeekday(match[1], parsedArray, config)) {
+            return;
         }
 
-        switch (match[5].length) {
-            case 2: // military
-                if (timezoneIndex === 0) {
-                    timezone = ' +0000';
-                } else {
-                    timezoneIndex = military.indexOf(match[5][1].toUpperCase()) - 12;
-                    timezone = ((timezoneIndex < 0) ? ' -' : ' +') +
-                        (('' + timezoneIndex).replace(/^-?/, '0')).match(/..$/)[0] + '00';
-                }
-                break;
-            case 4: // Zone
-                timezone = timezones[match[5]];
-                break;
-            default: // UT or +/-9999
-                timezone = timezones[' GMT'];
-        }
-        match[5] = timezone;
-        config._i = match.splice(1).join('');
-        tzFormat = ' ZZ';
-        config._f = dayFormat + dateFormat + timeFormat + tzFormat;
-        configFromStringAndFormat(config);
+        config._a = parsedArray;
+        config._tzm = calculateOffset(match[8], match[9], match[10]);
+
+        config._d = createUTCDate.apply(null, config._a);
+        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
+
         getParsingFlags(config).rfc2822 = true;
     } else {
         config._isValid = false;
@@ -2300,149 +2485,6 @@ hooks.createFromInputFallback = deprecate(
         config._d = new Date(config._i + (config._useUTC ? ' UTC' : ''));
     }
 );
-
-// Pick the first defined of two or three arguments.
-function defaults(a, b, c) {
-    if (a != null) {
-        return a;
-    }
-    if (b != null) {
-        return b;
-    }
-    return c;
-}
-
-function currentDateArray(config) {
-    // hooks is actually the exported moment object
-    var nowValue = new Date(hooks.now());
-    if (config._useUTC) {
-        return [nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate()];
-    }
-    return [nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate()];
-}
-
-// convert an array to a date.
-// the array should mirror the parameters below
-// note: all values past the year are optional and will default to the lowest possible value.
-// [year, month, day , hour, minute, second, millisecond]
-function configFromArray (config) {
-    var i, date, input = [], currentDate, yearToUse;
-
-    if (config._d) {
-        return;
-    }
-
-    currentDate = currentDateArray(config);
-
-    //compute day of the year from weeks and weekdays
-    if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
-        dayOfYearFromWeekInfo(config);
-    }
-
-    //if the day of the year is set, figure out what it is
-    if (config._dayOfYear != null) {
-        yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
-
-        if (config._dayOfYear > daysInYear(yearToUse) || config._dayOfYear === 0) {
-            getParsingFlags(config)._overflowDayOfYear = true;
-        }
-
-        date = createUTCDate(yearToUse, 0, config._dayOfYear);
-        config._a[MONTH] = date.getUTCMonth();
-        config._a[DATE] = date.getUTCDate();
-    }
-
-    // Default to current date.
-    // * if no year, month, day of month are given, default to today
-    // * if day of month is given, default month and year
-    // * if month is given, default only year
-    // * if year is given, don't default anything
-    for (i = 0; i < 3 && config._a[i] == null; ++i) {
-        config._a[i] = input[i] = currentDate[i];
-    }
-
-    // Zero out whatever was not defaulted, including time
-    for (; i < 7; i++) {
-        config._a[i] = input[i] = (config._a[i] == null) ? (i === 2 ? 1 : 0) : config._a[i];
-    }
-
-    // Check for 24:00:00.000
-    if (config._a[HOUR] === 24 &&
-            config._a[MINUTE] === 0 &&
-            config._a[SECOND] === 0 &&
-            config._a[MILLISECOND] === 0) {
-        config._nextDay = true;
-        config._a[HOUR] = 0;
-    }
-
-    config._d = (config._useUTC ? createUTCDate : createDate).apply(null, input);
-    // Apply timezone offset from input. The actual utcOffset can be changed
-    // with parseZone.
-    if (config._tzm != null) {
-        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
-    }
-
-    if (config._nextDay) {
-        config._a[HOUR] = 24;
-    }
-}
-
-function dayOfYearFromWeekInfo(config) {
-    var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
-
-    w = config._w;
-    if (w.GG != null || w.W != null || w.E != null) {
-        dow = 1;
-        doy = 4;
-
-        // TODO: We need to take the current isoWeekYear, but that depends on
-        // how we interpret now (local, utc, fixed offset). So create
-        // a now version of current config (take local/utc/offset flags, and
-        // create now).
-        weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(createLocal(), 1, 4).year);
-        week = defaults(w.W, 1);
-        weekday = defaults(w.E, 1);
-        if (weekday < 1 || weekday > 7) {
-            weekdayOverflow = true;
-        }
-    } else {
-        dow = config._locale._week.dow;
-        doy = config._locale._week.doy;
-
-        var curWeek = weekOfYear(createLocal(), dow, doy);
-
-        weekYear = defaults(w.gg, config._a[YEAR], curWeek.year);
-
-        // Default to current week.
-        week = defaults(w.w, curWeek.week);
-
-        if (w.d != null) {
-            // weekday -- low day numbers are considered next week
-            weekday = w.d;
-            if (weekday < 0 || weekday > 6) {
-                weekdayOverflow = true;
-            }
-        } else if (w.e != null) {
-            // local weekday -- counting starts from begining of week
-            weekday = w.e + dow;
-            if (w.e < 0 || w.e > 6) {
-                weekdayOverflow = true;
-            }
-        } else {
-            // default to begining of week
-            weekday = dow;
-        }
-    }
-    if (week < 1 || week > weeksInYear(weekYear, dow, doy)) {
-        getParsingFlags(config)._overflowWeeks = true;
-    } else if (weekdayOverflow != null) {
-        getParsingFlags(config)._overflowWeekday = true;
-    } else {
-        temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy);
-        config._a[YEAR] = temp.year;
-        config._dayOfYear = temp.dayOfYear;
-    }
-}
 
 // constant that refers to the ISO standard
 hooks.ISO_8601 = function () {};
@@ -2768,7 +2810,7 @@ var ordering = ['year', 'quarter', 'month', 'week', 'day', 'hour', 'minute', 'se
 
 function isDurationValid(m) {
     for (var key in m) {
-        if (!(ordering.indexOf(key) !== -1 && (m[key] == null || !isNaN(m[key])))) {
+        if (!(indexOf.call(ordering, key) !== -1 && (m[key] == null || !isNaN(m[key])))) {
             return false;
         }
     }
@@ -2819,7 +2861,7 @@ function Duration (duration) {
     // day when working around DST, we need to store them separately
     this._days = +days +
         weeks * 7;
-    // It is impossible translate months into days without knowing
+    // It is impossible to translate months into days without knowing
     // which months you are are talking about, so we have to store
     // it separately.
     this._months = +months +
@@ -3066,12 +3108,12 @@ function isUtc () {
 }
 
 // ASP.NET json date format regex
-var aspNetRegex = /^(\-)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/;
+var aspNetRegex = /^(\-|\+)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/;
 
 // from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
 // somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
 // and further modified to allow for strings containing both week and day
-var isoRegex = /^(-)?P(?:(-?[0-9,.]*)Y)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)W)?(?:(-?[0-9,.]*)D)?(?:T(?:(-?[0-9,.]*)H)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)S)?)?$/;
+var isoRegex = /^(-|\+)?P(?:([-+]?[0-9,.]*)Y)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)W)?(?:([-+]?[0-9,.]*)D)?(?:T(?:([-+]?[0-9,.]*)H)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)S)?)?$/;
 
 function createDuration (input, key) {
     var duration = input,
@@ -3105,7 +3147,7 @@ function createDuration (input, key) {
             ms : toInt(absRound(match[MILLISECOND] * 1000)) * sign // the millisecond decimal point is included in the match
         };
     } else if (!!(match = isoRegex.exec(input))) {
-        sign = (match[1] === '-') ? -1 : 1;
+        sign = (match[1] === '-') ? -1 : (match[1] === '+') ? 1 : 1;
         duration = {
             y : parseIso(match[2], sign),
             M : parseIso(match[3], sign),
@@ -3208,14 +3250,14 @@ function addSubtract (mom, duration, isAdding, updateOffset) {
 
     updateOffset = updateOffset == null ? true : updateOffset;
 
-    if (milliseconds) {
-        mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
+    if (months) {
+        setMonth(mom, get(mom, 'Month') + months * isAdding);
     }
     if (days) {
         set$1(mom, 'Date', get(mom, 'Date') + days * isAdding);
     }
-    if (months) {
-        setMonth(mom, get(mom, 'Month') + months * isAdding);
+    if (milliseconds) {
+        mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
     }
     if (updateOffset) {
         hooks.updateOffset(mom, days || months);
@@ -3325,22 +3367,18 @@ function diff (input, units, asFloat) {
 
     units = normalizeUnits(units);
 
-    if (units === 'year' || units === 'month' || units === 'quarter') {
-        output = monthDiff(this, that);
-        if (units === 'quarter') {
-            output = output / 3;
-        } else if (units === 'year') {
-            output = output / 12;
-        }
-    } else {
-        delta = this - that;
-        output = units === 'second' ? delta / 1e3 : // 1000
-            units === 'minute' ? delta / 6e4 : // 1000 * 60
-            units === 'hour' ? delta / 36e5 : // 1000 * 60 * 60
-            units === 'day' ? (delta - zoneDelta) / 864e5 : // 1000 * 60 * 60 * 24, negate dst
-            units === 'week' ? (delta - zoneDelta) / 6048e5 : // 1000 * 60 * 60 * 24 * 7, negate dst
-            delta;
+    switch (units) {
+        case 'year': output = monthDiff(this, that) / 12; break;
+        case 'month': output = monthDiff(this, that); break;
+        case 'quarter': output = monthDiff(this, that) / 3; break;
+        case 'second': output = (this - that) / 1e3; break; // 1000
+        case 'minute': output = (this - that) / 6e4; break; // 1000 * 60
+        case 'hour': output = (this - that) / 36e5; break; // 1000 * 60 * 60
+        case 'day': output = (this - that - zoneDelta) / 864e5; break; // 1000 * 60 * 60 * 24, negate dst
+        case 'week': output = (this - that - zoneDelta) / 6048e5; break; // 1000 * 60 * 60 * 24 * 7, negate dst
+        default: output = this - that;
     }
+
     return asFloat ? output : absFloor(output);
 }
 
@@ -4318,6 +4356,10 @@ var asWeeks        = makeAs('w');
 var asMonths       = makeAs('M');
 var asYears        = makeAs('y');
 
+function clone$1 () {
+    return createDuration(this);
+}
+
 function get$2 (units) {
     units = normalizeUnits(units);
     return this.isValid() ? this[units + 's']() : NaN;
@@ -4427,6 +4469,10 @@ function humanize (withSuffix) {
 
 var abs$1 = Math.abs;
 
+function sign(x) {
+    return ((x > 0) - (x < 0)) || +x;
+}
+
 function toISOString$1() {
     // for ISO strings we do not use the normal bubbling rules:
     //  * milliseconds bubble up until they become hours
@@ -4461,7 +4507,7 @@ function toISOString$1() {
     var D = days;
     var h = hours;
     var m = minutes;
-    var s = seconds;
+    var s = seconds ? seconds.toFixed(3).replace(/\.?0+$/, '') : '';
     var total = this.asSeconds();
 
     if (!total) {
@@ -4470,15 +4516,19 @@ function toISOString$1() {
         return 'P0D';
     }
 
-    return (total < 0 ? '-' : '') +
-        'P' +
-        (Y ? Y + 'Y' : '') +
-        (M ? M + 'M' : '') +
-        (D ? D + 'D' : '') +
+    var totalSign = total < 0 ? '-' : '';
+    var ymSign = sign(this._months) !== sign(total) ? '-' : '';
+    var daysSign = sign(this._days) !== sign(total) ? '-' : '';
+    var hmsSign = sign(this._milliseconds) !== sign(total) ? '-' : '';
+
+    return totalSign + 'P' +
+        (Y ? ymSign + Y + 'Y' : '') +
+        (M ? ymSign + M + 'M' : '') +
+        (D ? daysSign + D + 'D' : '') +
         ((h || m || s) ? 'T' : '') +
-        (h ? h + 'H' : '') +
-        (m ? m + 'M' : '') +
-        (s ? s + 'S' : '');
+        (h ? hmsSign + h + 'H' : '') +
+        (m ? hmsSign + m + 'M' : '') +
+        (s ? hmsSign + s + 'S' : '');
 }
 
 var proto$2 = Duration.prototype;
@@ -4498,6 +4548,7 @@ proto$2.asMonths       = asMonths;
 proto$2.asYears        = asYears;
 proto$2.valueOf        = valueOf$1;
 proto$2._bubble        = bubble;
+proto$2.clone          = clone$1;
 proto$2.get            = get$2;
 proto$2.milliseconds   = milliseconds;
 proto$2.seconds        = seconds;
@@ -4539,7 +4590,7 @@ addParseToken('x', function (input, array, config) {
 // Side effect imports
 
 
-hooks.version = '2.18.1';
+hooks.version = '2.19.1';
 
 setHookCallback(createLocal);
 
@@ -4566,7 +4617,7 @@ hooks.updateLocale          = updateLocale;
 hooks.locales               = listLocales;
 hooks.weekdaysShort         = listWeekdaysShort;
 hooks.normalizeUnits        = normalizeUnits;
-hooks.relativeTimeRounding = getSetRelativeTimeRounding;
+hooks.relativeTimeRounding  = getSetRelativeTimeRounding;
 hooks.relativeTimeThreshold = getSetRelativeTimeThreshold;
 hooks.calendarFormat        = getCalendarFormat;
 hooks.prototype             = proto;
@@ -4653,6 +4704,7 @@ module.exports = function _curry3(fn) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var CREATE_ERROR = "createError";
 var CREATE_START = "createStart";
 var CREATE_SUCCESS = "createSuccess";
@@ -4663,7 +4715,6 @@ var FETCH_SUCCESS = "fetchSuccess";
 var UPDATE_ERROR = "updateError";
 var UPDATE_START = "updateStart";
 var UPDATE_SUCCESS = "updateSuccess";
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
     DEFAULT_KEY: "id",
     STORE_LIST: "STORE_LIST",
@@ -4685,7 +4736,7 @@ exports.default = {
         CLIENT_GENERATED_ID: "_cid",
         DELETED: "deleted",
         PENDING_CREATE: "pendingCreate",
-        PENDING_UPDATE: "pendingUpdate",
+        PENDING_UPDATE: "pendingUpdate"
     }
 };
 
@@ -4695,244 +4746,244 @@ exports.default = {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = {
-  F: __webpack_require__(277),
-  T: __webpack_require__(278),
-  __: __webpack_require__(279),
+  F: __webpack_require__(280),
+  T: __webpack_require__(281),
+  __: __webpack_require__(282),
   add: __webpack_require__(43),
-  addIndex: __webpack_require__(280),
+  addIndex: __webpack_require__(283),
   adjust: __webpack_require__(87),
-  all: __webpack_require__(281),
-  allPass: __webpack_require__(283),
+  all: __webpack_require__(284),
+  allPass: __webpack_require__(286),
   always: __webpack_require__(30),
   and: __webpack_require__(91),
   any: __webpack_require__(92),
-  anyPass: __webpack_require__(285),
+  anyPass: __webpack_require__(288),
   ap: __webpack_require__(71),
-  aperture: __webpack_require__(286),
-  append: __webpack_require__(289),
+  aperture: __webpack_require__(289),
+  append: __webpack_require__(292),
   apply: __webpack_require__(94),
-  applySpec: __webpack_require__(290),
-  ascend: __webpack_require__(291),
+  applySpec: __webpack_require__(293),
+  ascend: __webpack_require__(294),
   assoc: __webpack_require__(47),
   assocPath: __webpack_require__(96),
-  binary: __webpack_require__(292),
+  binary: __webpack_require__(295),
   bind: __webpack_require__(89),
-  both: __webpack_require__(293),
-  call: __webpack_require__(294),
+  both: __webpack_require__(296),
+  call: __webpack_require__(297),
   chain: __webpack_require__(72),
-  clamp: __webpack_require__(298),
-  clone: __webpack_require__(299),
-  comparator: __webpack_require__(300),
-  complement: __webpack_require__(301),
+  clamp: __webpack_require__(301),
+  clone: __webpack_require__(302),
+  comparator: __webpack_require__(303),
+  complement: __webpack_require__(304),
   compose: __webpack_require__(74),
   composeK: __webpack_require__(104),
-  composeP: __webpack_require__(303),
+  composeP: __webpack_require__(306),
   concat: __webpack_require__(76),
-  cond: __webpack_require__(312),
-  construct: __webpack_require__(313),
+  cond: __webpack_require__(315),
+  construct: __webpack_require__(316),
   constructN: __webpack_require__(111),
-  contains: __webpack_require__(314),
+  contains: __webpack_require__(317),
   converge: __webpack_require__(112),
-  countBy: __webpack_require__(315),
+  countBy: __webpack_require__(318),
   curry: __webpack_require__(51),
   curryN: __webpack_require__(8),
-  dec: __webpack_require__(317),
-  descend: __webpack_require__(318),
+  dec: __webpack_require__(320),
+  descend: __webpack_require__(321),
   defaultTo: __webpack_require__(113),
   difference: __webpack_require__(114),
   differenceWith: __webpack_require__(115),
   dissoc: __webpack_require__(116),
-  dissocPath: __webpack_require__(319),
-  divide: __webpack_require__(320),
+  dissocPath: __webpack_require__(322),
+  divide: __webpack_require__(323),
   drop: __webpack_require__(117),
-  dropLast: __webpack_require__(322),
-  dropLastWhile: __webpack_require__(326),
-  dropRepeats: __webpack_require__(329),
+  dropLast: __webpack_require__(325),
+  dropLastWhile: __webpack_require__(329),
+  dropRepeats: __webpack_require__(332),
   dropRepeatsWith: __webpack_require__(120),
-  dropWhile: __webpack_require__(330),
-  either: __webpack_require__(332),
+  dropWhile: __webpack_require__(333),
+  either: __webpack_require__(335),
   empty: __webpack_require__(123),
-  eqBy: __webpack_require__(333),
-  eqProps: __webpack_require__(334),
+  eqBy: __webpack_require__(336),
+  eqProps: __webpack_require__(337),
   equals: __webpack_require__(17),
-  evolve: __webpack_require__(335),
+  evolve: __webpack_require__(338),
   filter: __webpack_require__(77),
-  find: __webpack_require__(336),
-  findIndex: __webpack_require__(338),
-  findLast: __webpack_require__(340),
-  findLastIndex: __webpack_require__(342),
-  flatten: __webpack_require__(344),
+  find: __webpack_require__(339),
+  findIndex: __webpack_require__(341),
+  findLast: __webpack_require__(343),
+  findLastIndex: __webpack_require__(345),
+  flatten: __webpack_require__(347),
   flip: __webpack_require__(55),
-  forEach: __webpack_require__(345),
-  forEachObjIndexed: __webpack_require__(346),
-  fromPairs: __webpack_require__(347),
-  groupBy: __webpack_require__(348),
-  groupWith: __webpack_require__(349),
-  gt: __webpack_require__(350),
-  gte: __webpack_require__(351),
-  has: __webpack_require__(352),
-  hasIn: __webpack_require__(353),
-  head: __webpack_require__(354),
+  forEach: __webpack_require__(348),
+  forEachObjIndexed: __webpack_require__(349),
+  fromPairs: __webpack_require__(350),
+  groupBy: __webpack_require__(351),
+  groupWith: __webpack_require__(352),
+  gt: __webpack_require__(353),
+  gte: __webpack_require__(354),
+  has: __webpack_require__(355),
+  hasIn: __webpack_require__(356),
+  head: __webpack_require__(357),
   identical: __webpack_require__(107),
   identity: __webpack_require__(79),
-  ifElse: __webpack_require__(355),
-  inc: __webpack_require__(356),
-  indexBy: __webpack_require__(357),
-  indexOf: __webpack_require__(358),
-  init: __webpack_require__(359),
-  insert: __webpack_require__(360),
-  insertAll: __webpack_require__(361),
-  intersection: __webpack_require__(362),
-  intersectionWith: __webpack_require__(364),
-  intersperse: __webpack_require__(365),
-  into: __webpack_require__(366),
-  invert: __webpack_require__(369),
-  invertObj: __webpack_require__(370),
+  ifElse: __webpack_require__(358),
+  inc: __webpack_require__(359),
+  indexBy: __webpack_require__(360),
+  indexOf: __webpack_require__(361),
+  init: __webpack_require__(362),
+  insert: __webpack_require__(363),
+  insertAll: __webpack_require__(364),
+  intersection: __webpack_require__(365),
+  intersectionWith: __webpack_require__(367),
+  intersperse: __webpack_require__(368),
+  into: __webpack_require__(369),
+  invert: __webpack_require__(372),
+  invertObj: __webpack_require__(373),
   invoker: __webpack_require__(38),
   is: __webpack_require__(126),
   isArrayLike: __webpack_require__(34),
-  isEmpty: __webpack_require__(371),
-  isNil: __webpack_require__(372),
-  join: __webpack_require__(373),
+  isEmpty: __webpack_require__(374),
+  isNil: __webpack_require__(375),
+  join: __webpack_require__(376),
   juxt: __webpack_require__(127),
   keys: __webpack_require__(15),
-  keysIn: __webpack_require__(374),
+  keysIn: __webpack_require__(377),
   last: __webpack_require__(121),
-  lastIndexOf: __webpack_require__(375),
+  lastIndexOf: __webpack_require__(378),
   length: __webpack_require__(128),
   lens: __webpack_require__(56),
-  lensIndex: __webpack_require__(376),
-  lensPath: __webpack_require__(377),
-  lensProp: __webpack_require__(378),
+  lensIndex: __webpack_require__(379),
+  lensPath: __webpack_require__(380),
+  lensProp: __webpack_require__(381),
   lift: __webpack_require__(50),
   liftN: __webpack_require__(98),
-  lt: __webpack_require__(379),
-  lte: __webpack_require__(380),
+  lt: __webpack_require__(382),
+  lte: __webpack_require__(383),
   map: __webpack_require__(10),
-  mapAccum: __webpack_require__(381),
-  mapAccumRight: __webpack_require__(382),
-  mapObjIndexed: __webpack_require__(383),
-  match: __webpack_require__(384),
-  mathMod: __webpack_require__(385),
+  mapAccum: __webpack_require__(384),
+  mapAccumRight: __webpack_require__(385),
+  mapObjIndexed: __webpack_require__(386),
+  match: __webpack_require__(387),
+  mathMod: __webpack_require__(388),
   max: __webpack_require__(31),
-  maxBy: __webpack_require__(386),
+  maxBy: __webpack_require__(389),
   mean: __webpack_require__(131),
-  median: __webpack_require__(387),
-  memoize: __webpack_require__(388),
-  merge: __webpack_require__(389),
-  mergeAll: __webpack_require__(390),
-  mergeWith: __webpack_require__(391),
+  median: __webpack_require__(390),
+  memoize: __webpack_require__(391),
+  merge: __webpack_require__(392),
+  mergeAll: __webpack_require__(393),
+  mergeWith: __webpack_require__(394),
   mergeWithKey: __webpack_require__(133),
-  min: __webpack_require__(392),
-  minBy: __webpack_require__(393),
-  modulo: __webpack_require__(394),
+  min: __webpack_require__(395),
+  minBy: __webpack_require__(396),
+  modulo: __webpack_require__(397),
   multiply: __webpack_require__(134),
   nAry: __webpack_require__(48),
-  negate: __webpack_require__(395),
-  none: __webpack_require__(396),
+  negate: __webpack_require__(398),
+  none: __webpack_require__(399),
   not: __webpack_require__(102),
   nth: __webpack_require__(37),
-  nthArg: __webpack_require__(397),
+  nthArg: __webpack_require__(400),
   objOf: __webpack_require__(125),
-  of: __webpack_require__(398),
-  omit: __webpack_require__(400),
-  once: __webpack_require__(401),
+  of: __webpack_require__(401),
+  omit: __webpack_require__(403),
+  once: __webpack_require__(404),
   or: __webpack_require__(122),
   over: __webpack_require__(135),
-  pair: __webpack_require__(402),
-  partial: __webpack_require__(403),
-  partialRight: __webpack_require__(404),
-  partition: __webpack_require__(405),
+  pair: __webpack_require__(405),
+  partial: __webpack_require__(406),
+  partialRight: __webpack_require__(407),
+  partition: __webpack_require__(408),
   path: __webpack_require__(39),
-  pathEq: __webpack_require__(406),
-  pathOr: __webpack_require__(407),
-  pathSatisfies: __webpack_require__(408),
-  pick: __webpack_require__(409),
+  pathEq: __webpack_require__(409),
+  pathOr: __webpack_require__(410),
+  pathSatisfies: __webpack_require__(411),
+  pick: __webpack_require__(412),
   pickAll: __webpack_require__(137),
-  pickBy: __webpack_require__(410),
+  pickBy: __webpack_require__(413),
   pipe: __webpack_require__(103),
-  pipeK: __webpack_require__(411),
+  pipeK: __webpack_require__(414),
   pipeP: __webpack_require__(105),
   pluck: __webpack_require__(33),
   prepend: __webpack_require__(138),
-  product: __webpack_require__(412),
-  project: __webpack_require__(413),
+  product: __webpack_require__(415),
+  project: __webpack_require__(416),
   prop: __webpack_require__(70),
-  propEq: __webpack_require__(414),
-  propIs: __webpack_require__(415),
-  propOr: __webpack_require__(416),
-  propSatisfies: __webpack_require__(417),
-  props: __webpack_require__(418),
-  range: __webpack_require__(419),
+  propEq: __webpack_require__(417),
+  propIs: __webpack_require__(418),
+  propOr: __webpack_require__(419),
+  propSatisfies: __webpack_require__(420),
+  props: __webpack_require__(421),
+  range: __webpack_require__(422),
   reduce: __webpack_require__(16),
   reduceBy: __webpack_require__(54),
   reduceRight: __webpack_require__(140),
-  reduceWhile: __webpack_require__(420),
-  reduced: __webpack_require__(421),
+  reduceWhile: __webpack_require__(423),
+  reduced: __webpack_require__(424),
   reject: __webpack_require__(53),
-  remove: __webpack_require__(422),
-  repeat: __webpack_require__(423),
-  replace: __webpack_require__(424),
+  remove: __webpack_require__(425),
+  repeat: __webpack_require__(426),
+  replace: __webpack_require__(427),
   reverse: __webpack_require__(52),
-  scan: __webpack_require__(425),
+  scan: __webpack_require__(428),
   sequence: __webpack_require__(142),
-  set: __webpack_require__(426),
-  slice: __webpack_require__(26),
-  sort: __webpack_require__(427),
-  sortBy: __webpack_require__(428),
-  sortWith: __webpack_require__(429),
-  split: __webpack_require__(430),
-  splitAt: __webpack_require__(431),
-  splitEvery: __webpack_require__(432),
-  splitWhen: __webpack_require__(433),
-  subtract: __webpack_require__(434),
+  set: __webpack_require__(429),
+  slice: __webpack_require__(27),
+  sort: __webpack_require__(430),
+  sortBy: __webpack_require__(431),
+  sortWith: __webpack_require__(432),
+  split: __webpack_require__(433),
+  splitAt: __webpack_require__(434),
+  splitEvery: __webpack_require__(435),
+  splitWhen: __webpack_require__(436),
+  subtract: __webpack_require__(437),
   sum: __webpack_require__(132),
-  symmetricDifference: __webpack_require__(435),
-  symmetricDifferenceWith: __webpack_require__(436),
+  symmetricDifference: __webpack_require__(438),
+  symmetricDifferenceWith: __webpack_require__(439),
   tail: __webpack_require__(75),
   take: __webpack_require__(118),
-  takeLast: __webpack_require__(437),
-  takeLastWhile: __webpack_require__(438),
-  takeWhile: __webpack_require__(439),
-  tap: __webpack_require__(441),
-  test: __webpack_require__(442),
+  takeLast: __webpack_require__(440),
+  takeLastWhile: __webpack_require__(441),
+  takeWhile: __webpack_require__(442),
+  tap: __webpack_require__(444),
+  test: __webpack_require__(445),
   times: __webpack_require__(141),
-  toLower: __webpack_require__(444),
-  toPairs: __webpack_require__(445),
-  toPairsIn: __webpack_require__(446),
+  toLower: __webpack_require__(447),
+  toPairs: __webpack_require__(448),
+  toPairsIn: __webpack_require__(449),
   toString: __webpack_require__(36),
-  toUpper: __webpack_require__(447),
-  transduce: __webpack_require__(448),
-  transpose: __webpack_require__(449),
-  traverse: __webpack_require__(450),
-  trim: __webpack_require__(451),
-  tryCatch: __webpack_require__(452),
+  toUpper: __webpack_require__(450),
+  transduce: __webpack_require__(451),
+  transpose: __webpack_require__(452),
+  traverse: __webpack_require__(453),
+  trim: __webpack_require__(454),
+  tryCatch: __webpack_require__(455),
   type: __webpack_require__(73),
-  unapply: __webpack_require__(453),
-  unary: __webpack_require__(454),
-  uncurryN: __webpack_require__(455),
-  unfold: __webpack_require__(456),
-  union: __webpack_require__(457),
-  unionWith: __webpack_require__(458),
+  unapply: __webpack_require__(456),
+  unary: __webpack_require__(457),
+  uncurryN: __webpack_require__(458),
+  unfold: __webpack_require__(459),
+  union: __webpack_require__(460),
+  unionWith: __webpack_require__(461),
   uniq: __webpack_require__(81),
   uniqBy: __webpack_require__(124),
   uniqWith: __webpack_require__(82),
-  unless: __webpack_require__(459),
-  unnest: __webpack_require__(460),
-  until: __webpack_require__(461),
+  unless: __webpack_require__(462),
+  unnest: __webpack_require__(463),
+  until: __webpack_require__(464),
   update: __webpack_require__(130),
   useWith: __webpack_require__(139),
   values: __webpack_require__(95),
-  valuesIn: __webpack_require__(462),
-  view: __webpack_require__(463),
-  when: __webpack_require__(464),
+  valuesIn: __webpack_require__(465),
+  view: __webpack_require__(466),
+  when: __webpack_require__(467),
   where: __webpack_require__(143),
-  whereEq: __webpack_require__(465),
-  without: __webpack_require__(466),
-  xprod: __webpack_require__(467),
-  zip: __webpack_require__(468),
-  zipObj: __webpack_require__(469),
-  zipWith: __webpack_require__(470)
+  whereEq: __webpack_require__(468),
+  without: __webpack_require__(469),
+  xprod: __webpack_require__(470),
+  zip: __webpack_require__(471),
+  zipObj: __webpack_require__(472),
+  zipWith: __webpack_require__(473)
 };
 
 
@@ -5074,7 +5125,7 @@ var _curry2 = __webpack_require__(0);
 var _dispatchable = __webpack_require__(6);
 var _map = __webpack_require__(45);
 var _reduce = __webpack_require__(12);
-var _xmap = __webpack_require__(284);
+var _xmap = __webpack_require__(287);
 var curryN = __webpack_require__(8);
 var keys = __webpack_require__(15);
 
@@ -5685,7 +5736,7 @@ module.exports = _curry3(_reduce);
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
-var _equals = __webpack_require__(306);
+var _equals = __webpack_require__(309);
 
 
 /**
@@ -5724,6 +5775,7 @@ module.exports = _curry2(function equals(a, b) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var invariants_1 = __webpack_require__(148);
 var store_1 = __webpack_require__(25);
 function invariantsList(invariantArgs, config, current, record) {
@@ -5731,11 +5783,10 @@ function invariantsList(invariantArgs, config, current, record) {
         assertValidStore: store_1.default.assert,
         config: config,
         current: current,
-        record: record,
+        record: record
     };
     invariants_1.default(invariantArgs, extra);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = invariantsList;
 
 
@@ -5745,18 +5796,18 @@ exports.default = invariantsList;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var invariants_1 = __webpack_require__(148);
-var store_1 = __webpack_require__(28);
+var store_1 = __webpack_require__(29);
 function invariantsMap(invariantArgs, config, current, record) {
     var extra = {
         assertValidStore: store_1.default.assert,
         config: config,
         current: current,
-        record: record,
+        record: record
     };
     invariants_1.default(invariantArgs, extra);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = invariantsMap;
 
 
@@ -5766,18 +5817,18 @@ exports.default = invariantsMap;
 
 "use strict";
 
-var actionCreatorsFor_1 = __webpack_require__(276);
+Object.defineProperty(exports, "__esModule", { value: true });
+var actionCreatorsFor_1 = __webpack_require__(279);
 var actionTypesFor_1 = __webpack_require__(84);
 var constants_1 = __webpack_require__(4);
-var list_1 = __webpack_require__(484);
-var map_1 = __webpack_require__(499);
-Object.defineProperty(exports, "__esModule", { value: true });
+var list_1 = __webpack_require__(487);
+var map_1 = __webpack_require__(502);
 exports.default = {
     actionCreatorsFor: actionCreatorsFor_1.default,
     actionTypesFor: actionTypesFor_1.default,
     constants: constants_1.default,
     List: list_1.default,
-    Map: map_1.default,
+    Map: map_1.default
 };
 
 
@@ -5840,85 +5891,19 @@ module.exports = function _reduced(x) {
 
 "use strict";
 
-var assert_1 = __webpack_require__(488);
-var remove_1 = __webpack_require__(149);
-var merge_1 = __webpack_require__(489);
 Object.defineProperty(exports, "__esModule", { value: true });
+var assert_1 = __webpack_require__(491);
+var remove_1 = __webpack_require__(149);
+var merge_1 = __webpack_require__(492);
 exports.default = {
     assert: assert_1.default,
     remove: remove_1.default,
-    merge: merge_1.default,
+    merge: merge_1.default
 };
 
 
 /***/ }),
 /* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _checkForMethod = __webpack_require__(35);
-var _curry3 = __webpack_require__(3);
-
-
-/**
- * Returns the elements of the given list or string (or object with a `slice`
- * method) from `fromIndex` (inclusive) to `toIndex` (exclusive).
- *
- * Dispatches to the `slice` method of the third argument, if present.
- *
- * @func
- * @memberOf R
- * @since v0.1.4
- * @category List
- * @sig Number -> Number -> [a] -> [a]
- * @sig Number -> Number -> String -> String
- * @param {Number} fromIndex The start index (inclusive).
- * @param {Number} toIndex The end index (exclusive).
- * @param {*} list
- * @return {*}
- * @example
- *
- *      R.slice(1, 3, ['a', 'b', 'c', 'd']);        //=> ['b', 'c']
- *      R.slice(1, Infinity, ['a', 'b', 'c', 'd']); //=> ['b', 'c', 'd']
- *      R.slice(0, -1, ['a', 'b', 'c', 'd']);       //=> ['a', 'b', 'c']
- *      R.slice(-3, -1, ['a', 'b', 'c', 'd']);      //=> ['b', 'c']
- *      R.slice(0, 3, 'ramda');                     //=> 'ram'
- */
-module.exports = _curry3(_checkForMethod('slice', function slice(fromIndex, toIndex, list) {
-  return Array.prototype.slice.call(list, fromIndex, toIndex);
-}));
-
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _indexOf = __webpack_require__(106);
-
-
-module.exports = function _contains(a, list) {
-  return _indexOf(list, a, 0) >= 0;
-};
-
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var assert_1 = __webpack_require__(502);
-var merge_1 = __webpack_require__(503);
-var remove_1 = __webpack_require__(504);
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = {
-    assert: assert_1.default,
-    merge: merge_1.default,
-    remove: remove_1.default,
-};
-
-
-/***/ }),
-/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.SET_LINE_ITEM_INSTRUCTIONS=exports.SET_LINE_ITEM_MADE_FOR=exports.VALIDATE_CURRENT_CART=exports.VALIDATE_CURRENT_ORDER=exports.CREATE_NEW_ORDER=exports.SET_REQUESTED_AT=exports.SET_PROMO_CODE=exports.SET_ORDER_ADDRESS=exports.SET_PAYMENT_METHOD=exports.BIND_CUSTOMER_TO_ORDER=exports.SUBMIT_ORDER=exports.SET_ORDER_LOCATION_ID=exports.REMOVE_OPTION_FROM_LINE_ITEM=exports.ADD_OPTION_TO_LINE_ITEM=exports.REMOVE_LINE_ITEM=exports.SET_LINE_ITEM_QUANTITY=exports.PUSH_LINE_ITEM=exports.ADD_LINE_ITEM=exports.RESOLVE_ORDER_LOCATION=exports.RESOLVE_ORDER=undefined;exports.
@@ -6197,9 +6182,75 @@ bindCustomerToOrder=bindCustomerToOrder;exports.
 
 
 
-submitOrder=submitOrder;var _exception=__webpack_require__(275);var _exception2=_interopRequireDefault(_exception);var _constants=__webpack_require__(68);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var RESOLVE_ORDER=exports.RESOLVE_ORDER='RESOLVE_ORDER';var RESOLVE_ORDER_LOCATION=exports.RESOLVE_ORDER_LOCATION='RESOLVE_ORDER_LOCATION';var ADD_LINE_ITEM=exports.ADD_LINE_ITEM='ADD_LINE_ITEM';var PUSH_LINE_ITEM=exports.PUSH_LINE_ITEM='PUSH_LINE_ITEM';var SET_LINE_ITEM_QUANTITY=exports.SET_LINE_ITEM_QUANTITY='SET_LINE_ITEM_QUANTITY';var REMOVE_LINE_ITEM=exports.REMOVE_LINE_ITEM='REMOVE_LINE_ITEM';var ADD_OPTION_TO_LINE_ITEM=exports.ADD_OPTION_TO_LINE_ITEM='ADD_OPTION_TO_LINE_ITEM';var REMOVE_OPTION_FROM_LINE_ITEM=exports.REMOVE_OPTION_FROM_LINE_ITEM='REMOVE_OPTION_FROM_LINE_ITEM';var SET_ORDER_LOCATION_ID=exports.SET_ORDER_LOCATION_ID='SET_ORDER_LOCATION_ID';var SUBMIT_ORDER=exports.SUBMIT_ORDER='SUBMIT_ORDER';var BIND_CUSTOMER_TO_ORDER=exports.BIND_CUSTOMER_TO_ORDER='BIND_CUSTOMER_TO_ORDER';var SET_PAYMENT_METHOD=exports.SET_PAYMENT_METHOD='SET_PAYMENT_METHOD';var SET_ORDER_ADDRESS=exports.SET_ORDER_ADDRESS='SET_ORDER_ADDRESS';var SET_PROMO_CODE=exports.SET_PROMO_CODE='SET_PROMO_CODE';var SET_REQUESTED_AT=exports.SET_REQUESTED_AT='SET_REQUESTED_AT';var CREATE_NEW_ORDER=exports.CREATE_NEW_ORDER='CREATE_NEW_ORDER';var VALIDATE_CURRENT_ORDER=exports.VALIDATE_CURRENT_ORDER='VALIDATE_CURRENT_ORDER';var VALIDATE_CURRENT_CART=exports.VALIDATE_CURRENT_CART='VALIDATE_CURRENT_CART';var SET_LINE_ITEM_MADE_FOR=exports.SET_LINE_ITEM_MADE_FOR='SET_LINE_ITEM_MADE_FOR';var SET_LINE_ITEM_INSTRUCTIONS=exports.SET_LINE_ITEM_INSTRUCTIONS='SET_LINE_ITEM_INSTRUCTIONS';function _resolveOrder(payload){return{type:RESOLVE_ORDER,payload:payload};}function _resolveOrderLocation(payload){return{type:RESOLVE_ORDER_LOCATION,payload:payload};}function _addLineItem(order,product,quantity){return{type:ADD_LINE_ITEM,payload:order.addLineItem(product,quantity).then(function(lineItem){return{order:order,lineItem:lineItem};})};}function _pushLineItem(order,lineItem){return{type:PUSH_LINE_ITEM,payload:order.pushLineItem(lineItem).then(function(lineItem){return{order:order,lineItem:lineItem};})};}function _setLineItemQuantity(order,lineItem,newQuantity){return{type:SET_LINE_ITEM_QUANTITY,payload:order.setLineItemQuantity(lineItem,newQuantity).then(function(lineItem){return{order:order,lineItem:lineItem};})};}function _setLineItemMadeFor(order,lineItem,madeFor){return{type:SET_LINE_ITEM_MADE_FOR,payload:order.setLineItemMadeFor(lineItem,madeFor).then(function(lineItem){return{order:order,lineItem:lineItem};})};}function _setLineItemInstructions(order,lineItem,instructions){return{type:SET_LINE_ITEM_INSTRUCTIONS,payload:order.setLineItemInstructions(lineItem,instructions).then(function(lineItem){return{order:order,lineItem:lineItem};})};}function _removeLineItem(order,lineItem){return{type:REMOVE_LINE_ITEM,payload:order.removeLineItem(lineItem).then(function(remainingLineItems){return{order:order,remainingLineItems:remainingLineItems};})};}function _addOptionToLineItem(order,lineItem,optionGroup,optionItem){return{type:ADD_OPTION_TO_LINE_ITEM,payload:order.addOptionToLineItem(lineItem,optionGroup,optionItem).then(function(lineItem){return{order:order,lineItem:lineItem};})};}function _removeOptionFromLineItem(order,lineItem,optionItem){return{type:REMOVE_OPTION_FROM_LINE_ITEM,payload:order.removeOptionFromLineItem(lineItem,optionItem).then(function(lineItem){return{order:order,lineItem:lineItem};})};}function _setOrderLocationId(order,locationId){return{type:SET_ORDER_LOCATION_ID,payload:order.setLocation(locationId).then(function(order){return{order:order};})};}function _setOrderAddress(order,address){return{type:SET_ORDER_ADDRESS,payload:order.setAddress(address).then(function(order){return{order:order};})};}function _bindCustomerToOrder(order,customer){return{type:BIND_CUSTOMER_TO_ORDER,payload:order.setCustomer(customer).then(function(order){return{order:order};})};}function _setPaymentMethod(order,type,card){return{type:SET_PAYMENT_METHOD,payload:order.setPaymentMethod(type,card).then(function(order){return{order:order};})};}function _setPromoCode(order,promo){return{type:SET_PROMO_CODE,payload:order.setPromoCode(promo).then(function(order){return{order:order};})};}function _setRequestedAt(order,time,wantsFuture){return{type:SET_REQUESTED_AT,payload:order.setRequestedAt(time,wantsFuture).then(function(order){return{order:order};})};}function _submitOrder(brandibble,order){return{type:SUBMIT_ORDER,payload:brandibble.orders.submit(order).then(function(_ref){var data=_ref.data;return data;})};}function _createNewOrder(data){return{type:CREATE_NEW_ORDER,payload:data};}function _validateCurrentCart(data){return{type:VALIDATE_CURRENT_CART,payload:data};}function _validateCurrentOrder(data){return{type:VALIDATE_CURRENT_ORDER,payload:data};}function createNewOrder(brandibble){var locationId=arguments.length>1&&arguments[1]!==undefined?arguments[1]:null;var serviceType=arguments[2];var paymentType=arguments.length>3&&arguments[3]!==undefined?arguments[3]:null;var miscOptions=arguments.length>4&&arguments[4]!==undefined?arguments[4]:_constants.Defaults.miscOptions;return function(dispatch){var orders=brandibble.orders;var payload=orders.create(locationId,serviceType,paymentType,miscOptions).then(function(order){return{order:order};});return dispatch(_createNewOrder(payload));};}function resolveOrder(brandibble){var locationId=arguments.length>1&&arguments[1]!==undefined?arguments[1]:null;var serviceType=arguments.length>2&&arguments[2]!==undefined?arguments[2]:'pickup';var paymentType=arguments.length>3&&arguments[3]!==undefined?arguments[3]:null;var miscOptions=arguments.length>4&&arguments[4]!==undefined?arguments[4]:_constants.Defaults.miscOptions;var orders=brandibble.orders;var order=orders.current();var payload=order?Promise.resolve({order:order}):orders.create(locationId,serviceType,paymentType,miscOptions).then(function(res){return{order:res};});return function(dispatch){return dispatch(_resolveOrder(payload));};}function resolveOrderLocation(brandibble){var orders=brandibble.orders;var order=orders.current();var payload=order&&order.locationId?brandibble.locations.show(order.locationId).then(function(_ref2){var data=_ref2.data;return data;}):Promise.resolve(null);return function(dispatch){return dispatch(_resolveOrderLocation(payload));};}function validateCurrentCart(brandibble){var data=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};return function(dispatch){var orders=brandibble.orders;var order=orders.current();var payload=orders.validateCart(order,data).then(function(res){return res;});return dispatch(_validateCurrentCart(payload));};}function validateCurrentOrder(brandibble){var data=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};return function(dispatch){var orders=brandibble.orders;var order=orders.current();var payload=orders.validate(order,data).then(function(res){return res;});return dispatch(_validateCurrentOrder(payload));};}function setOrderLocationId(currentOrder,locationId){var _arguments=arguments;return function(dispatch){return dispatch(_setOrderLocationId.apply(undefined,_arguments));};}function setOrderAddress(){for(var _len=arguments.length,args=Array(_len),_key=0;_key<_len;_key++){args[_key]=arguments[_key];}return function(dispatch){return dispatch(_setOrderAddress.apply(undefined,args));};}function addLineItem(currentOrder,product){var _arguments2=arguments;var quantity=arguments.length>2&&arguments[2]!==undefined?arguments[2]:1;if(!currentOrder.locationId){throw new _exception2.default('addLineItem','Please set a Location ID for this order.');}return function(dispatch){return dispatch(_addLineItem.apply(undefined,_arguments2));};}function pushLineItem(currentOrder,lineItem){var _arguments3=arguments;if(!currentOrder.locationId){throw new _exception2.default('addLineItem','Please set a Location ID for this order.');}return function(dispatch){return dispatch(_pushLineItem.apply(undefined,_arguments3));};}function setLineItemQuantity(currentOrder,lineItem){var _arguments4=arguments;var newQuantity=arguments.length>2&&arguments[2]!==undefined?arguments[2]:1;if(newQuantity<1){throw new _exception2.default('updateLineItemQuantity','Please pass quantity more than 1 to this action. Use removeLineItem to remove from order.');}return function(dispatch){return dispatch(_setLineItemQuantity.apply(undefined,_arguments4));};}function setLineItemMadeFor(currentOrder,lineItem){var _arguments5=arguments;var madeFor=arguments.length>2&&arguments[2]!==undefined?arguments[2]:'';return function(dispatch){return dispatch(_setLineItemMadeFor.apply(undefined,_arguments5));};}function setLineItemInstructions(currentOrder,lineItem){var _arguments6=arguments;var instructions=arguments.length>2&&arguments[2]!==undefined?arguments[2]:'';return function(dispatch){return dispatch(_setLineItemInstructions.apply(undefined,_arguments6));};}function setPaymentMethod(currentOrder,type,card){return function(dispatch){return dispatch(_setPaymentMethod(currentOrder,type,card));};}function setRequestedAt(currentOrder,time){var wantsFuture=arguments.length>2&&arguments[2]!==undefined?arguments[2]:false;return function(dispatch){return dispatch(_setRequestedAt(currentOrder,time,wantsFuture));};}function setPromoCode(currentOrder,promo){return function(dispatch){return dispatch(_setPromoCode(currentOrder,promo));};}function removeLineItem(currentOrder,lineItem){var _arguments7=arguments;return function(dispatch){return dispatch(_removeLineItem.apply(undefined,_arguments7));};}function addOptionToLineItem(currentOrder,lineItem,optionGroup,optionItem){var _arguments8=arguments;return function(dispatch){return dispatch(_addOptionToLineItem.apply(undefined,_arguments8));};}function removeOptionFromLineItem(currentOrder,lineItem,optionItem){var _arguments9=arguments;return function(dispatch){return dispatch(_removeOptionFromLineItem.apply(undefined,_arguments9));};}function bindCustomerToOrder(){for(var _len2=arguments.length,args=Array(_len2),_key2=0;_key2<_len2;_key2++){args[_key2]=arguments[_key2];}return function(dispatch){return dispatch(_bindCustomerToOrder.apply(undefined,args));};}function submitOrder(){for(var _len3=arguments.length,args=Array(_len3),_key3=0;_key3<_len3;_key3++){args[_key3]=arguments[_key3];}
+submitOrder=submitOrder;var _exception=__webpack_require__(278);var _exception2=_interopRequireDefault(_exception);var _constants=__webpack_require__(68);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var RESOLVE_ORDER=exports.RESOLVE_ORDER='RESOLVE_ORDER';var RESOLVE_ORDER_LOCATION=exports.RESOLVE_ORDER_LOCATION='RESOLVE_ORDER_LOCATION';var ADD_LINE_ITEM=exports.ADD_LINE_ITEM='ADD_LINE_ITEM';var PUSH_LINE_ITEM=exports.PUSH_LINE_ITEM='PUSH_LINE_ITEM';var SET_LINE_ITEM_QUANTITY=exports.SET_LINE_ITEM_QUANTITY='SET_LINE_ITEM_QUANTITY';var REMOVE_LINE_ITEM=exports.REMOVE_LINE_ITEM='REMOVE_LINE_ITEM';var ADD_OPTION_TO_LINE_ITEM=exports.ADD_OPTION_TO_LINE_ITEM='ADD_OPTION_TO_LINE_ITEM';var REMOVE_OPTION_FROM_LINE_ITEM=exports.REMOVE_OPTION_FROM_LINE_ITEM='REMOVE_OPTION_FROM_LINE_ITEM';var SET_ORDER_LOCATION_ID=exports.SET_ORDER_LOCATION_ID='SET_ORDER_LOCATION_ID';var SUBMIT_ORDER=exports.SUBMIT_ORDER='SUBMIT_ORDER';var BIND_CUSTOMER_TO_ORDER=exports.BIND_CUSTOMER_TO_ORDER='BIND_CUSTOMER_TO_ORDER';var SET_PAYMENT_METHOD=exports.SET_PAYMENT_METHOD='SET_PAYMENT_METHOD';var SET_ORDER_ADDRESS=exports.SET_ORDER_ADDRESS='SET_ORDER_ADDRESS';var SET_PROMO_CODE=exports.SET_PROMO_CODE='SET_PROMO_CODE';var SET_REQUESTED_AT=exports.SET_REQUESTED_AT='SET_REQUESTED_AT';var CREATE_NEW_ORDER=exports.CREATE_NEW_ORDER='CREATE_NEW_ORDER';var VALIDATE_CURRENT_ORDER=exports.VALIDATE_CURRENT_ORDER='VALIDATE_CURRENT_ORDER';var VALIDATE_CURRENT_CART=exports.VALIDATE_CURRENT_CART='VALIDATE_CURRENT_CART';var SET_LINE_ITEM_MADE_FOR=exports.SET_LINE_ITEM_MADE_FOR='SET_LINE_ITEM_MADE_FOR';var SET_LINE_ITEM_INSTRUCTIONS=exports.SET_LINE_ITEM_INSTRUCTIONS='SET_LINE_ITEM_INSTRUCTIONS';function _resolveOrder(payload){return{type:RESOLVE_ORDER,payload:payload};}function _resolveOrderLocation(payload){return{type:RESOLVE_ORDER_LOCATION,payload:payload};}function _addLineItem(order,product,quantity){return{type:ADD_LINE_ITEM,payload:order.addLineItem(product,quantity).then(function(lineItem){return{order:order,lineItem:lineItem};})};}function _pushLineItem(order,lineItem){return{type:PUSH_LINE_ITEM,payload:order.pushLineItem(lineItem).then(function(lineItem){return{order:order,lineItem:lineItem};})};}function _setLineItemQuantity(order,lineItem,newQuantity){return{type:SET_LINE_ITEM_QUANTITY,payload:order.setLineItemQuantity(lineItem,newQuantity).then(function(lineItem){return{order:order,lineItem:lineItem};})};}function _setLineItemMadeFor(order,lineItem,madeFor){return{type:SET_LINE_ITEM_MADE_FOR,payload:order.setLineItemMadeFor(lineItem,madeFor).then(function(lineItem){return{order:order,lineItem:lineItem};})};}function _setLineItemInstructions(order,lineItem,instructions){return{type:SET_LINE_ITEM_INSTRUCTIONS,payload:order.setLineItemInstructions(lineItem,instructions).then(function(lineItem){return{order:order,lineItem:lineItem};})};}function _removeLineItem(order,lineItem){return{type:REMOVE_LINE_ITEM,payload:order.removeLineItem(lineItem).then(function(remainingLineItems){return{order:order,remainingLineItems:remainingLineItems};})};}function _addOptionToLineItem(order,lineItem,optionGroup,optionItem){return{type:ADD_OPTION_TO_LINE_ITEM,payload:order.addOptionToLineItem(lineItem,optionGroup,optionItem).then(function(lineItem){return{order:order,lineItem:lineItem};})};}function _removeOptionFromLineItem(order,lineItem,optionItem){return{type:REMOVE_OPTION_FROM_LINE_ITEM,payload:order.removeOptionFromLineItem(lineItem,optionItem).then(function(lineItem){return{order:order,lineItem:lineItem};})};}function _setOrderLocationId(order,locationId){return{type:SET_ORDER_LOCATION_ID,payload:order.setLocation(locationId).then(function(order){return{order:order};})};}function _setOrderAddress(order,address){return{type:SET_ORDER_ADDRESS,payload:order.setAddress(address).then(function(order){return{order:order};})};}function _bindCustomerToOrder(order,customer){return{type:BIND_CUSTOMER_TO_ORDER,payload:order.setCustomer(customer).then(function(order){return{order:order};})};}function _setPaymentMethod(order,type,card){return{type:SET_PAYMENT_METHOD,payload:order.setPaymentMethod(type,card).then(function(order){return{order:order};})};}function _setPromoCode(order,promo){return{type:SET_PROMO_CODE,payload:order.setPromoCode(promo).then(function(order){return{order:order};})};}function _setRequestedAt(order,time,wantsFuture){return{type:SET_REQUESTED_AT,payload:order.setRequestedAt(time,wantsFuture).then(function(order){return{order:order};})};}function _submitOrder(brandibble,order){return{type:SUBMIT_ORDER,payload:brandibble.orders.submit(order).then(function(_ref){var data=_ref.data;return data;})};}function _createNewOrder(data){return{type:CREATE_NEW_ORDER,payload:data};}function _validateCurrentCart(data){return{type:VALIDATE_CURRENT_CART,payload:data};}function _validateCurrentOrder(data){return{type:VALIDATE_CURRENT_ORDER,payload:data};}function createNewOrder(brandibble){var locationId=arguments.length>1&&arguments[1]!==undefined?arguments[1]:null;var serviceType=arguments[2];var paymentType=arguments.length>3&&arguments[3]!==undefined?arguments[3]:null;var miscOptions=arguments.length>4&&arguments[4]!==undefined?arguments[4]:_constants.Defaults.miscOptions;return function(dispatch){var orders=brandibble.orders;var payload=orders.create(locationId,serviceType,paymentType,miscOptions).then(function(order){return{order:order};});return dispatch(_createNewOrder(payload));};}function resolveOrder(brandibble){var locationId=arguments.length>1&&arguments[1]!==undefined?arguments[1]:null;var serviceType=arguments.length>2&&arguments[2]!==undefined?arguments[2]:'pickup';var paymentType=arguments.length>3&&arguments[3]!==undefined?arguments[3]:null;var miscOptions=arguments.length>4&&arguments[4]!==undefined?arguments[4]:_constants.Defaults.miscOptions;var orders=brandibble.orders;var order=orders.current();var payload=order?Promise.resolve({order:order}):orders.create(locationId,serviceType,paymentType,miscOptions).then(function(res){return{order:res};});return function(dispatch){return dispatch(_resolveOrder(payload));};}function resolveOrderLocation(brandibble){var orders=brandibble.orders;var order=orders.current();var payload=order&&order.locationId?brandibble.locations.show(order.locationId).then(function(_ref2){var data=_ref2.data;return data;}):Promise.resolve(null);return function(dispatch){return dispatch(_resolveOrderLocation(payload));};}function validateCurrentCart(brandibble){var data=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};return function(dispatch){var orders=brandibble.orders;var order=orders.current();var payload=orders.validateCart(order,data).then(function(res){return res;});return dispatch(_validateCurrentCart(payload));};}function validateCurrentOrder(brandibble){var data=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};return function(dispatch){var orders=brandibble.orders;var order=orders.current();var payload=orders.validate(order,data).then(function(res){return res;});return dispatch(_validateCurrentOrder(payload));};}function setOrderLocationId(currentOrder,locationId){var _arguments=arguments;return function(dispatch){return dispatch(_setOrderLocationId.apply(undefined,_arguments));};}function setOrderAddress(){for(var _len=arguments.length,args=Array(_len),_key=0;_key<_len;_key++){args[_key]=arguments[_key];}return function(dispatch){return dispatch(_setOrderAddress.apply(undefined,args));};}function addLineItem(currentOrder,product){var _arguments2=arguments;var quantity=arguments.length>2&&arguments[2]!==undefined?arguments[2]:1;if(!currentOrder.locationId){throw new _exception2.default('addLineItem','Please set a Location ID for this order.');}return function(dispatch){return dispatch(_addLineItem.apply(undefined,_arguments2));};}function pushLineItem(currentOrder,lineItem){var _arguments3=arguments;if(!currentOrder.locationId){throw new _exception2.default('addLineItem','Please set a Location ID for this order.');}return function(dispatch){return dispatch(_pushLineItem.apply(undefined,_arguments3));};}function setLineItemQuantity(currentOrder,lineItem){var _arguments4=arguments;var newQuantity=arguments.length>2&&arguments[2]!==undefined?arguments[2]:1;if(newQuantity<1){throw new _exception2.default('updateLineItemQuantity','Please pass quantity more than 1 to this action. Use removeLineItem to remove from order.');}return function(dispatch){return dispatch(_setLineItemQuantity.apply(undefined,_arguments4));};}function setLineItemMadeFor(currentOrder,lineItem){var _arguments5=arguments;var madeFor=arguments.length>2&&arguments[2]!==undefined?arguments[2]:'';return function(dispatch){return dispatch(_setLineItemMadeFor.apply(undefined,_arguments5));};}function setLineItemInstructions(currentOrder,lineItem){var _arguments6=arguments;var instructions=arguments.length>2&&arguments[2]!==undefined?arguments[2]:'';return function(dispatch){return dispatch(_setLineItemInstructions.apply(undefined,_arguments6));};}function setPaymentMethod(currentOrder,type,card){return function(dispatch){return dispatch(_setPaymentMethod(currentOrder,type,card));};}function setRequestedAt(currentOrder,time){var wantsFuture=arguments.length>2&&arguments[2]!==undefined?arguments[2]:false;return function(dispatch){return dispatch(_setRequestedAt(currentOrder,time,wantsFuture));};}function setPromoCode(currentOrder,promo){return function(dispatch){return dispatch(_setPromoCode(currentOrder,promo));};}function removeLineItem(currentOrder,lineItem){var _arguments7=arguments;return function(dispatch){return dispatch(_removeLineItem.apply(undefined,_arguments7));};}function addOptionToLineItem(currentOrder,lineItem,optionGroup,optionItem){var _arguments8=arguments;return function(dispatch){return dispatch(_addOptionToLineItem.apply(undefined,_arguments8));};}function removeOptionFromLineItem(currentOrder,lineItem,optionItem){var _arguments9=arguments;return function(dispatch){return dispatch(_removeOptionFromLineItem.apply(undefined,_arguments9));};}function bindCustomerToOrder(){for(var _len2=arguments.length,args=Array(_len2),_key2=0;_key2<_len2;_key2++){args[_key2]=arguments[_key2];}return function(dispatch){return dispatch(_bindCustomerToOrder.apply(undefined,args));};}function submitOrder(){for(var _len3=arguments.length,args=Array(_len3),_key3=0;_key3<_len3;_key3++){args[_key3]=arguments[_key3];}
 return function(dispatch){return dispatch(_submitOrder.apply(undefined,args));};
 }
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _checkForMethod = __webpack_require__(35);
+var _curry3 = __webpack_require__(3);
+
+
+/**
+ * Returns the elements of the given list or string (or object with a `slice`
+ * method) from `fromIndex` (inclusive) to `toIndex` (exclusive).
+ *
+ * Dispatches to the `slice` method of the third argument, if present.
+ *
+ * @func
+ * @memberOf R
+ * @since v0.1.4
+ * @category List
+ * @sig Number -> Number -> [a] -> [a]
+ * @sig Number -> Number -> String -> String
+ * @param {Number} fromIndex The start index (inclusive).
+ * @param {Number} toIndex The end index (exclusive).
+ * @param {*} list
+ * @return {*}
+ * @example
+ *
+ *      R.slice(1, 3, ['a', 'b', 'c', 'd']);        //=> ['b', 'c']
+ *      R.slice(1, Infinity, ['a', 'b', 'c', 'd']); //=> ['b', 'c', 'd']
+ *      R.slice(0, -1, ['a', 'b', 'c', 'd']);       //=> ['a', 'b', 'c']
+ *      R.slice(-3, -1, ['a', 'b', 'c', 'd']);      //=> ['b', 'c']
+ *      R.slice(0, 3, 'ramda');                     //=> 'ram'
+ */
+module.exports = _curry3(_checkForMethod('slice', function slice(fromIndex, toIndex, list) {
+  return Array.prototype.slice.call(list, fromIndex, toIndex);
+}));
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _indexOf = __webpack_require__(106);
+
+
+module.exports = function _contains(a, list) {
+  return _indexOf(list, a, 0) >= 0;
+};
+
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var assert_1 = __webpack_require__(505);
+var merge_1 = __webpack_require__(506);
+var remove_1 = __webpack_require__(507);
+exports.default = {
+    assert: assert_1.default,
+    merge: merge_1.default,
+    remove: remove_1.default
+};
+
 
 /***/ }),
 /* 30 */
@@ -7133,7 +7184,7 @@ module.exports = function _checkForMethod(methodname, fn) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
-var _toString = __webpack_require__(305);
+var _toString = __webpack_require__(308);
 
 
 /**
@@ -7335,7 +7386,7 @@ module.exports = function(module) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.sendSupportTicket=exports.setupBrandibbleRedux=exports.setupBrandibble=exports.SEND_SUPPORT_TICKET=exports.SETUP_BRANDIBBLE_REDUX=exports.SETUP_BRANDIBBLE=undefined;var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};var _fireAction=__webpack_require__(21);var _fireAction2=_interopRequireDefault(_fireAction);
 var _handleErrors=__webpack_require__(22);var _handleErrors2=_interopRequireDefault(_handleErrors);
-var _order=__webpack_require__(29);
+var _order=__webpack_require__(26);
 var _user=__webpack_require__(11);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}
 
 var SETUP_BRANDIBBLE=exports.SETUP_BRANDIBBLE='SETUP_BRANDIBBLE';
@@ -7762,7 +7813,7 @@ var _curryN = __webpack_require__(44);
 var _dispatchable = __webpack_require__(6);
 var _has = __webpack_require__(9);
 var _reduce = __webpack_require__(12);
-var _xreduceBy = __webpack_require__(316);
+var _xreduceBy = __webpack_require__(319);
 
 
 /**
@@ -7935,12 +7986,12 @@ module.exports = g;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 function wrapArray(recordOrRecords) {
     var isArray = r.is(Array, recordOrRecords);
     return isArray ? recordOrRecords : [recordOrRecords];
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = wrapArray;
 
 
@@ -8462,7 +8513,7 @@ module.exports = _curry2(function ap(applicative, fn) {
 var _curry2 = __webpack_require__(0);
 var _dispatchable = __webpack_require__(6);
 var _makeFlat = __webpack_require__(99);
-var _xchain = __webpack_require__(295);
+var _xchain = __webpack_require__(298);
 var map = __webpack_require__(10);
 
 
@@ -8579,7 +8630,7 @@ module.exports = function compose() {
 
 var _checkForMethod = __webpack_require__(35);
 var _curry1 = __webpack_require__(2);
-var slice = __webpack_require__(26);
+var slice = __webpack_require__(27);
 
 
 /**
@@ -8668,7 +8719,7 @@ var _dispatchable = __webpack_require__(6);
 var _filter = __webpack_require__(109);
 var _isObject = __webpack_require__(110);
 var _reduce = __webpack_require__(12);
-var _xfilter = __webpack_require__(311);
+var _xfilter = __webpack_require__(314);
 var keys = __webpack_require__(15);
 
 
@@ -8846,7 +8897,7 @@ module.exports = _curry2(function uniqWith(pred, list) {
 /* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _objectAssign = __webpack_require__(368);
+var _objectAssign = __webpack_require__(371);
 
 module.exports =
   typeof Object.assign === 'function' ? Object.assign : _objectAssign;
@@ -8858,8 +8909,8 @@ module.exports =
 
 "use strict";
 
-var actionTypesFor = __webpack_require__(472);
 Object.defineProperty(exports, "__esModule", { value: true });
+var actionTypesFor = __webpack_require__(475);
 exports.default = actionTypesFor;
 
 
@@ -8869,6 +8920,7 @@ exports.default = actionTypesFor;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 function findByKey(collection, key, id) {
     function predicate(record) {
@@ -8876,7 +8928,6 @@ function findByKey(collection, key, id) {
     }
     return r.find(predicate, collection);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = findByKey;
 
 
@@ -9450,7 +9501,7 @@ module.exports = _curry1(function not(a) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var _arity = __webpack_require__(14);
-var _pipe = __webpack_require__(302);
+var _pipe = __webpack_require__(305);
 var reduce = __webpack_require__(16);
 var tail = __webpack_require__(75);
 
@@ -9541,7 +9592,7 @@ module.exports = function composeK() {
 /***/ (function(module, exports, __webpack_require__) {
 
 var _arity = __webpack_require__(14);
-var _pipeP = __webpack_require__(304);
+var _pipeP = __webpack_require__(307);
 var reduce = __webpack_require__(16);
 var tail = __webpack_require__(75);
 
@@ -9873,7 +9924,7 @@ module.exports = _curry2(function defaultTo(d, v) {
 /* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _contains = __webpack_require__(27);
+var _contains = __webpack_require__(28);
 var _curry2 = __webpack_require__(0);
 
 
@@ -9995,8 +10046,8 @@ module.exports = _curry2(function dissoc(prop, obj) {
 
 var _curry2 = __webpack_require__(0);
 var _dispatchable = __webpack_require__(6);
-var _xdrop = __webpack_require__(321);
-var slice = __webpack_require__(26);
+var _xdrop = __webpack_require__(324);
+var slice = __webpack_require__(27);
 
 
 /**
@@ -10034,8 +10085,8 @@ module.exports = _curry2(_dispatchable(['drop'], _xdrop, function drop(n, xs) {
 
 var _curry2 = __webpack_require__(0);
 var _dispatchable = __webpack_require__(6);
-var _xtake = __webpack_require__(324);
-var slice = __webpack_require__(26);
+var _xtake = __webpack_require__(327);
+var slice = __webpack_require__(27);
 
 
 /**
@@ -10287,7 +10338,7 @@ module.exports = _curry1(function empty(x) {
 /* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _Set = __webpack_require__(363);
+var _Set = __webpack_require__(366);
 var _curry2 = __webpack_require__(0);
 
 
@@ -11091,6 +11142,7 @@ module.exports = root;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var makeScope_1 = __webpack_require__(146);
 var r = __webpack_require__(5);
 function default_1(config, reducerName, record) {
@@ -11099,7 +11151,6 @@ function default_1(config, reducerName, record) {
     if (isArray)
         throw new TypeError(scope + ": Expected record not to be an array");
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = default_1;
 
 
@@ -11109,10 +11160,10 @@ exports.default = default_1;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 function makeScope(config, reducerName) {
     return config.resourceName + "." + reducerName;
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = makeScope;
 
 
@@ -11122,27 +11173,28 @@ exports.default = makeScope;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 var actionTypesFor_1 = __webpack_require__(84);
 var constants_1 = __webpack_require__(4);
 function reducersFor(resourceName, args, emptyState, reducers) {
     if (args === void 0) { args = {}; }
     if (resourceName == null)
-        throw new Error('reducersFor: Expected resourceName');
+        throw new Error("reducersFor: Expected resourceName");
     var defaults = {
         key: constants_1.default.DEFAULT_KEY,
-        resourceName: resourceName,
+        resourceName: resourceName
     };
     var config = r.merge(defaults, args);
     return function getReducer(state, action) {
         state = state || emptyState;
         if (action == null)
-            throw new Error(resourceName + ' reducers: Expected action');
+            throw new Error(resourceName + " reducers: Expected action");
         var actionTypes = actionTypesFor_1.default(resourceName);
         var record = action.record;
         switch (action.type) {
             case actionTypes.fetchSuccess:
-                return reducers.fetchSuccess(config, state, action.records);
+                return reducers.fetchSuccess(config, state, action.records, emptyState, action.data && action.data.replace);
             case actionTypes.createStart:
                 return reducers.createStart(config, state, record);
             case actionTypes.createSuccess:
@@ -11166,7 +11218,6 @@ function reducersFor(resourceName, args, emptyState, reducers) {
         }
     };
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = reducersFor;
 
 
@@ -11176,7 +11227,8 @@ exports.default = reducersFor;
 
 "use strict";
 
-var assertHasKey_1 = __webpack_require__(487);
+Object.defineProperty(exports, "__esModule", { value: true });
+var assertHasKey_1 = __webpack_require__(490);
 var assertNotArray_1 = __webpack_require__(145);
 var makeScope_1 = __webpack_require__(146);
 function invariants(baseArgs, extraArgs) {
@@ -11194,7 +11246,6 @@ function invariants(baseArgs, extraArgs) {
     }
     assertHasKey_1.default(extraArgs.config, scope, extraArgs.record);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = invariants;
 
 
@@ -11204,6 +11255,7 @@ exports.default = invariants;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 function remove(config, current, addedRecord) {
     var key = config.key;
@@ -11214,7 +11266,6 @@ function remove(config, current, addedRecord) {
     }
     return r.reject(predicate, current);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = remove;
 
 
@@ -11224,6 +11275,7 @@ exports.default = remove;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 var constants_1 = __webpack_require__(4);
 function prepareRecord(record) {
@@ -11243,6 +11295,7 @@ exports.prepareRecord = prepareRecord;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 var constants_1 = __webpack_require__(4);
 function prepareRecord(record) {
@@ -11262,16 +11315,19 @@ exports.prepareRecord = prepareRecord;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 function default_1(config, reducerName, records) {
     // All given records must have a key
     var haskey = r.has(config.key);
     var allKeys = r.all(haskey, records);
     if (!allKeys) {
-        throw new Error(reducerName + ": Expected all records to have a value for the store\'s key `" + config.key + "`");
+        throw new Error(reducerName +
+            ": Expected all records to have a value for the store's key `" +
+            config.key +
+            "`");
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = default_1;
 
 
@@ -11281,6 +11337,7 @@ exports.default = default_1;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 var constants_1 = __webpack_require__(4);
 function prepareRecord(record) {
@@ -11295,6 +11352,7 @@ exports.prepareRecord = prepareRecord;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 var constants_1 = __webpack_require__(4);
 function prepareRecord(record) {
@@ -13919,7 +13977,7 @@ var ar = moment.defineLocale('ar', {
         yy : pluralize('y')
     },
     preparse: function (string) {
-        return string.replace(/\u200f/g, '').replace(/[١٢٣٤٥٦٧٨٩٠]/g, function (match) {
+        return string.replace(/[١٢٣٤٥٦٧٨٩٠]/g, function (match) {
             return numberMap[match];
         }).replace(/،/g, ',');
     },
@@ -14180,7 +14238,7 @@ var arLy = moment.defineLocale('ar-ly', {
         yy : pluralize('y')
     },
     preparse: function (string) {
-        return string.replace(/\u200f/g, '').replace(/،/g, ',');
+        return string.replace(/،/g, ',');
     },
     postformat: function (string) {
         return string.replace(/\d/g, function (match) {
@@ -14786,6 +14844,70 @@ return bg;
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
+//! locale : Bambara [bm]
+//! author : Estelle Comment : https://github.com/estellecomment
+
+;(function (global, factory) {
+    true ? factory(__webpack_require__(1)) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+// Language contact person : Abdoufata Kane : https://github.com/abdoufata
+
+var bm = moment.defineLocale('bm', {
+    months : 'Zanwuyekalo_Fewuruyekalo_Marisikalo_Awirilikalo_Mɛkalo_Zuwɛnkalo_Zuluyekalo_Utikalo_Sɛtanburukalo_ɔkutɔburukalo_Nowanburukalo_Desanburukalo'.split('_'),
+    monthsShort : 'Zan_Few_Mar_Awi_Mɛ_Zuw_Zul_Uti_Sɛt_ɔku_Now_Des'.split('_'),
+    weekdays : 'Kari_Ntɛnɛn_Tarata_Araba_Alamisa_Juma_Sibiri'.split('_'),
+    weekdaysShort : 'Kar_Ntɛ_Tar_Ara_Ala_Jum_Sib'.split('_'),
+    weekdaysMin : 'Ka_Nt_Ta_Ar_Al_Ju_Si'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'MMMM [tile] D [san] YYYY',
+        LLL : 'MMMM [tile] D [san] YYYY [lɛrɛ] HH:mm',
+        LLLL : 'dddd MMMM [tile] D [san] YYYY [lɛrɛ] HH:mm'
+    },
+    calendar : {
+        sameDay : '[Bi lɛrɛ] LT',
+        nextDay : '[Sini lɛrɛ] LT',
+        nextWeek : 'dddd [don lɛrɛ] LT',
+        lastDay : '[Kunu lɛrɛ] LT',
+        lastWeek : 'dddd [tɛmɛnen lɛrɛ] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : '%s kɔnɔ',
+        past : 'a bɛ %s bɔ',
+        s : 'sanga dama dama',
+        m : 'miniti kelen',
+        mm : 'miniti %d',
+        h : 'lɛrɛ kelen',
+        hh : 'lɛrɛ %d',
+        d : 'tile kelen',
+        dd : 'tile %d',
+        M : 'kalo kelen',
+        MM : 'kalo %d',
+        y : 'san kelen',
+        yy : 'san %d'
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return bm;
+
+})));
+
+
+/***/ }),
+/* 170 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//! moment.js locale configuration
 //! locale : Bengali [bn]
 //! author : Kaushik Gandhi : https://github.com/kaushikgandhi
 
@@ -14906,7 +15028,7 @@ return bn;
 
 
 /***/ }),
-/* 170 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -15030,7 +15152,7 @@ return bo;
 
 
 /***/ }),
-/* 171 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -15143,7 +15265,7 @@ return br;
 
 
 /***/ }),
-/* 172 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -15291,7 +15413,7 @@ return bs;
 
 
 /***/ }),
-/* 173 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -15315,17 +15437,17 @@ var ca = moment.defineLocale('ca', {
     monthsParseExact : true,
     weekdays : 'diumenge_dilluns_dimarts_dimecres_dijous_divendres_dissabte'.split('_'),
     weekdaysShort : 'dg._dl._dt._dc._dj._dv._ds.'.split('_'),
-    weekdaysMin : 'Dg_Dl_Dt_Dc_Dj_Dv_Ds'.split('_'),
+    weekdaysMin : 'dg_dl_dt_dc_dj_dv_ds'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
         LT : 'H:mm',
         LTS : 'H:mm:ss',
         L : 'DD/MM/YYYY',
-        LL : '[el] D MMMM [de] YYYY',
+        LL : 'D MMMM [de] YYYY',
         ll : 'D MMM YYYY',
-        LLL : '[el] D MMMM [de] YYYY [a les] H:mm',
+        LLL : 'D MMMM [de] YYYY [a les] H:mm',
         lll : 'D MMM YYYY, H:mm',
-        LLLL : '[el] dddd D MMMM [de] YYYY [a les] H:mm',
+        LLLL : 'dddd D MMMM [de] YYYY [a les] H:mm',
         llll : 'ddd D MMM YYYY, H:mm'
     },
     calendar : {
@@ -15384,7 +15506,7 @@ return ca;
 
 
 /***/ }),
-/* 174 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -15561,7 +15683,7 @@ return cs;
 
 
 /***/ }),
-/* 175 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -15629,7 +15751,7 @@ return cv;
 
 
 /***/ }),
-/* 176 */
+/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -15715,7 +15837,7 @@ return cy;
 
 
 /***/ }),
-/* 177 */
+/* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -15738,7 +15860,7 @@ var da = moment.defineLocale('da', {
     longDateFormat : {
         LT : 'HH:mm',
         LTS : 'HH:mm:ss',
-        L : 'DD/MM/YYYY',
+        L : 'DD.MM.YYYY',
         LL : 'D. MMMM YYYY',
         LLL : 'D. MMMM YYYY HH:mm',
         LLLL : 'dddd [d.] D. MMMM YYYY [kl.] HH:mm'
@@ -15780,7 +15902,7 @@ return da;
 
 
 /***/ }),
-/* 178 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -15812,7 +15934,7 @@ function processRelativeTime(number, withoutSuffix, key, isFuture) {
 
 var de = moment.defineLocale('de', {
     months : 'Januar_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
-    monthsShort : 'Jan._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
+    monthsShort : 'Jan._Feb._März_Apr._Mai_Juni_Juli_Aug._Sep._Okt._Nov._Dez.'.split('_'),
     monthsParseExact : true,
     weekdays : 'Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag'.split('_'),
     weekdaysShort : 'So._Mo._Di._Mi._Do._Fr._Sa.'.split('_'),
@@ -15863,7 +15985,7 @@ return de;
 
 
 /***/ }),
-/* 179 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -15896,7 +16018,7 @@ function processRelativeTime(number, withoutSuffix, key, isFuture) {
 
 var deAt = moment.defineLocale('de-at', {
     months : 'Jänner_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
-    monthsShort : 'Jän._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
+    monthsShort : 'Jän._Feb._März_Apr._Mai_Juni_Juli_Aug._Sep._Okt._Nov._Dez.'.split('_'),
     monthsParseExact : true,
     weekdays : 'Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag'.split('_'),
     weekdaysShort : 'So._Mo._Di._Mi._Do._Fr._Sa.'.split('_'),
@@ -15947,7 +16069,7 @@ return deAt;
 
 
 /***/ }),
-/* 180 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -15979,7 +16101,7 @@ function processRelativeTime(number, withoutSuffix, key, isFuture) {
 
 var deCh = moment.defineLocale('de-ch', {
     months : 'Januar_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
-    monthsShort : 'Jan._Febr._März_April_Mai_Juni_Juli_Aug._Sept._Okt._Nov._Dez.'.split('_'),
+    monthsShort : 'Jan._Feb._März_Apr._Mai_Juni_Juli_Aug._Sep._Okt._Nov._Dez.'.split('_'),
     monthsParseExact : true,
     weekdays : 'Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag'.split('_'),
     weekdaysShort : 'So_Mo_Di_Mi_Do_Fr_Sa'.split('_'),
@@ -16030,7 +16152,7 @@ return deCh;
 
 
 /***/ }),
-/* 181 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -16135,7 +16257,7 @@ return dv;
 
 
 /***/ }),
-/* 182 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -16159,7 +16281,7 @@ var el = moment.defineLocale('el', {
     months : function (momentToFormat, format) {
         if (!momentToFormat) {
             return this._monthsNominativeEl;
-        } else if (/D/.test(format.substring(0, format.indexOf('MMMM')))) { // if there is a day number before 'MMMM'
+        } else if (typeof format === 'string' && /D/.test(format.substring(0, format.indexOf('MMMM')))) { // if there is a day number before 'MMMM'
             return this._monthsGenitiveEl[momentToFormat.month()];
         } else {
             return this._monthsNominativeEl[momentToFormat.month()];
@@ -16240,7 +16362,7 @@ return el;
 
 
 /***/ }),
-/* 183 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -16312,7 +16434,7 @@ return enAu;
 
 
 /***/ }),
-/* 184 */
+/* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -16380,7 +16502,7 @@ return enCa;
 
 
 /***/ }),
-/* 185 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -16452,7 +16574,7 @@ return enGb;
 
 
 /***/ }),
-/* 186 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -16524,7 +16646,7 @@ return enIe;
 
 
 /***/ }),
-/* 187 */
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -16596,7 +16718,7 @@ return enNz;
 
 
 /***/ }),
-/* 188 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -16674,7 +16796,7 @@ return eo;
 
 
 /***/ }),
-/* 189 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -16691,6 +16813,9 @@ return eo;
 var monthsShortDot = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_');
 var monthsShort = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
 
+var monthsParse = [/^ene/i, /^feb/i, /^mar/i, /^abr/i, /^may/i, /^jun/i, /^jul/i, /^ago/i, /^sep/i, /^oct/i, /^nov/i, /^dic/i];
+var monthsRegex = /^(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre|ene\.?|feb\.?|mar\.?|abr\.?|may\.?|jun\.?|jul\.?|ago\.?|sep\.?|oct\.?|nov\.?|dic\.?)/i;
+
 var es = moment.defineLocale('es', {
     months : 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
     monthsShort : function (m, format) {
@@ -16702,7 +16827,13 @@ var es = moment.defineLocale('es', {
             return monthsShortDot[m.month()];
         }
     },
-    monthsParseExact : true,
+    monthsRegex : monthsRegex,
+    monthsShortRegex : monthsRegex,
+    monthsStrictRegex : /^(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)/i,
+    monthsShortStrictRegex : /^(ene\.?|feb\.?|mar\.?|abr\.?|may\.?|jun\.?|jul\.?|ago\.?|sep\.?|oct\.?|nov\.?|dic\.?)/i,
+    monthsParse : monthsParse,
+    longMonthsParse : monthsParse,
+    shortMonthsParse : monthsParse,
     weekdays : 'domingo_lunes_martes_miércoles_jueves_viernes_sábado'.split('_'),
     weekdaysShort : 'dom._lun._mar._mié._jue._vie._sáb.'.split('_'),
     weekdaysMin : 'do_lu_ma_mi_ju_vi_sá'.split('_'),
@@ -16762,7 +16893,7 @@ return es;
 
 
 /***/ }),
-/* 190 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -16778,6 +16909,9 @@ return es;
 var monthsShortDot = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_');
 var monthsShort = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
 
+var monthsParse = [/^ene/i, /^feb/i, /^mar/i, /^abr/i, /^may/i, /^jun/i, /^jul/i, /^ago/i, /^sep/i, /^oct/i, /^nov/i, /^dic/i];
+var monthsRegex = /^(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre|ene\.?|feb\.?|mar\.?|abr\.?|may\.?|jun\.?|jul\.?|ago\.?|sep\.?|oct\.?|nov\.?|dic\.?)/i;
+
 var esDo = moment.defineLocale('es-do', {
     months : 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
     monthsShort : function (m, format) {
@@ -16789,7 +16923,13 @@ var esDo = moment.defineLocale('es-do', {
             return monthsShortDot[m.month()];
         }
     },
-    monthsParseExact : true,
+    monthsRegex: monthsRegex,
+    monthsShortRegex: monthsRegex,
+    monthsStrictRegex: /^(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)/i,
+    monthsShortStrictRegex: /^(ene\.?|feb\.?|mar\.?|abr\.?|may\.?|jun\.?|jul\.?|ago\.?|sep\.?|oct\.?|nov\.?|dic\.?)/i,
+    monthsParse: monthsParse,
+    longMonthsParse: monthsParse,
+    shortMonthsParse: monthsParse,
     weekdays : 'domingo_lunes_martes_miércoles_jueves_viernes_sábado'.split('_'),
     weekdaysShort : 'dom._lun._mar._mié._jue._vie._sáb.'.split('_'),
     weekdaysMin : 'do_lu_ma_mi_ju_vi_sá'.split('_'),
@@ -16849,7 +16989,95 @@ return esDo;
 
 
 /***/ }),
-/* 191 */
+/* 192 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//! moment.js locale configuration
+//! locale : Spanish(United State) [es-us]
+//! author : bustta : https://github.com/bustta
+
+;(function (global, factory) {
+    true ? factory(__webpack_require__(1)) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var monthsShortDot = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_');
+var monthsShort = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
+
+var esUs = moment.defineLocale('es-us', {
+    months : 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
+    monthsShort : function (m, format) {
+        if (!m) {
+            return monthsShortDot;
+        } else if (/-MMM-/.test(format)) {
+            return monthsShort[m.month()];
+        } else {
+            return monthsShortDot[m.month()];
+        }
+    },
+    monthsParseExact : true,
+    weekdays : 'domingo_lunes_martes_miércoles_jueves_viernes_sábado'.split('_'),
+    weekdaysShort : 'dom._lun._mar._mié._jue._vie._sáb.'.split('_'),
+    weekdaysMin : 'do_lu_ma_mi_ju_vi_sá'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'H:mm',
+        LTS : 'H:mm:ss',
+        L : 'MM/DD/YYYY',
+        LL : 'MMMM [de] D [de] YYYY',
+        LLL : 'MMMM [de] D [de] YYYY H:mm',
+        LLLL : 'dddd, MMMM [de] D [de] YYYY H:mm'
+    },
+    calendar : {
+        sameDay : function () {
+            return '[hoy a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        nextDay : function () {
+            return '[mañana a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        nextWeek : function () {
+            return 'dddd [a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        lastDay : function () {
+            return '[ayer a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        lastWeek : function () {
+            return '[el] dddd [pasado a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'en %s',
+        past : 'hace %s',
+        s : 'unos segundos',
+        m : 'un minuto',
+        mm : '%d minutos',
+        h : 'una hora',
+        hh : '%d horas',
+        d : 'un día',
+        dd : '%d días',
+        M : 'un mes',
+        MM : '%d meses',
+        y : 'un año',
+        yy : '%d años'
+    },
+    dayOfMonthOrdinalParse : /\d{1,2}º/,
+    ordinal : '%dº',
+    week : {
+        dow : 0, // Sunday is the first day of the week.
+        doy : 6  // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return esUs;
+
+})));
+
+
+/***/ }),
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -16934,7 +17162,7 @@ return et;
 
 
 /***/ }),
-/* 192 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -17005,7 +17233,7 @@ return eu;
 
 
 /***/ }),
-/* 193 */
+/* 195 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -17117,7 +17345,7 @@ return fa;
 
 
 /***/ }),
-/* 194 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -17229,7 +17457,7 @@ return fi;
 
 
 /***/ }),
-/* 195 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -17294,7 +17522,7 @@ return fo;
 
 
 /***/ }),
-/* 196 */
+/* 198 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -17382,7 +17610,7 @@ return fr;
 
 
 /***/ }),
-/* 197 */
+/* 199 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -17461,7 +17689,7 @@ return frCa;
 
 
 /***/ }),
-/* 198 */
+/* 200 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -17544,7 +17772,7 @@ return frCh;
 
 
 /***/ }),
-/* 199 */
+/* 201 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -17624,7 +17852,7 @@ return fy;
 
 
 /***/ }),
-/* 200 */
+/* 202 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -17705,7 +17933,7 @@ return gd;
 
 
 /***/ }),
-/* 201 */
+/* 203 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -17787,7 +18015,7 @@ return gl;
 
 
 /***/ }),
-/* 202 */
+/* 204 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -17914,7 +18142,136 @@ return gomLatn;
 
 
 /***/ }),
-/* 203 */
+/* 205 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//! moment.js locale configuration
+//! locale : Gujarati [gu]
+//! author : Kaushik Thanki : https://github.com/Kaushik1987
+
+;(function (global, factory) {
+    true ? factory(__webpack_require__(1)) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var symbolMap = {
+        '1': '૧',
+        '2': '૨',
+        '3': '૩',
+        '4': '૪',
+        '5': '૫',
+        '6': '૬',
+        '7': '૭',
+        '8': '૮',
+        '9': '૯',
+        '0': '૦'
+    };
+var numberMap = {
+        '૧': '1',
+        '૨': '2',
+        '૩': '3',
+        '૪': '4',
+        '૫': '5',
+        '૬': '6',
+        '૭': '7',
+        '૮': '8',
+        '૯': '9',
+        '૦': '0'
+    };
+
+var gu = moment.defineLocale('gu', {
+    months: 'જાન્યુઆરી_ફેબ્રુઆરી_માર્ચ_એપ્રિલ_મે_જૂન_જુલાઈ_ઑગસ્ટ_સપ્ટેમ્બર_ઑક્ટ્બર_નવેમ્બર_ડિસેમ્બર'.split('_'),
+    monthsShort: 'જાન્યુ._ફેબ્રુ._માર્ચ_એપ્રિ._મે_જૂન_જુલા._ઑગ._સપ્ટે._ઑક્ટ્._નવે._ડિસે.'.split('_'),
+    monthsParseExact: true,
+    weekdays: 'રવિવાર_સોમવાર_મંગળવાર_બુધ્વાર_ગુરુવાર_શુક્રવાર_શનિવાર'.split('_'),
+    weekdaysShort: 'રવિ_સોમ_મંગળ_બુધ્_ગુરુ_શુક્ર_શનિ'.split('_'),
+    weekdaysMin: 'ર_સો_મં_બુ_ગુ_શુ_શ'.split('_'),
+    longDateFormat: {
+        LT: 'A h:mm વાગ્યે',
+        LTS: 'A h:mm:ss વાગ્યે',
+        L: 'DD/MM/YYYY',
+        LL: 'D MMMM YYYY',
+        LLL: 'D MMMM YYYY, A h:mm વાગ્યે',
+        LLLL: 'dddd, D MMMM YYYY, A h:mm વાગ્યે'
+    },
+    calendar: {
+        sameDay: '[આજ] LT',
+        nextDay: '[કાલે] LT',
+        nextWeek: 'dddd, LT',
+        lastDay: '[ગઇકાલે] LT',
+        lastWeek: '[પાછલા] dddd, LT',
+        sameElse: 'L'
+    },
+    relativeTime: {
+        future: '%s મા',
+        past: '%s પેહલા',
+        s: 'અમુક પળો',
+        m: 'એક મિનિટ',
+        mm: '%d મિનિટ',
+        h: 'એક કલાક',
+        hh: '%d કલાક',
+        d: 'એક દિવસ',
+        dd: '%d દિવસ',
+        M: 'એક મહિનો',
+        MM: '%d મહિનો',
+        y: 'એક વર્ષ',
+        yy: '%d વર્ષ'
+    },
+    preparse: function (string) {
+        return string.replace(/[૧૨૩૪૫૬૭૮૯૦]/g, function (match) {
+            return numberMap[match];
+        });
+    },
+    postformat: function (string) {
+        return string.replace(/\d/g, function (match) {
+            return symbolMap[match];
+        });
+    },
+    // Gujarati notation for meridiems are quite fuzzy in practice. While there exists
+    // a rigid notion of a 'Pahar' it is not used as rigidly in modern Gujarati.
+    meridiemParse: /રાત|બપોર|સવાર|સાંજ/,
+    meridiemHour: function (hour, meridiem) {
+        if (hour === 12) {
+            hour = 0;
+        }
+        if (meridiem === 'રાત') {
+            return hour < 4 ? hour : hour + 12;
+        } else if (meridiem === 'સવાર') {
+            return hour;
+        } else if (meridiem === 'બપોર') {
+            return hour >= 10 ? hour : hour + 12;
+        } else if (meridiem === 'સાંજ') {
+            return hour + 12;
+        }
+    },
+    meridiem: function (hour, minute, isLower) {
+        if (hour < 4) {
+            return 'રાત';
+        } else if (hour < 10) {
+            return 'સવાર';
+        } else if (hour < 17) {
+            return 'બપોર';
+        } else if (hour < 20) {
+            return 'સાંજ';
+        } else {
+            return 'રાત';
+        }
+    },
+    week: {
+        dow: 0, // Sunday is the first day of the week.
+        doy: 6 // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return gu;
+
+})));
+
+
+/***/ }),
+/* 206 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -18018,7 +18375,7 @@ return he;
 
 
 /***/ }),
-/* 204 */
+/* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -18147,7 +18504,7 @@ return hi;
 
 
 /***/ }),
-/* 205 */
+/* 208 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -18297,7 +18654,7 @@ return hr;
 
 
 /***/ }),
-/* 206 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -18411,7 +18768,7 @@ return hu;
 
 
 /***/ }),
-/* 207 */
+/* 210 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -18511,7 +18868,7 @@ return hyAm;
 
 
 /***/ }),
-/* 208 */
+/* 211 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -18599,7 +18956,7 @@ return id;
 
 
 /***/ }),
-/* 209 */
+/* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -18731,7 +19088,7 @@ return is;
 
 
 /***/ }),
-/* 210 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -18806,7 +19163,7 @@ return it;
 
 
 /***/ }),
-/* 211 */
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -18891,7 +19248,7 @@ return ja;
 
 
 /***/ }),
-/* 212 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -18979,7 +19336,7 @@ return jv;
 
 
 /***/ }),
-/* 213 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -19073,7 +19430,7 @@ return ka;
 
 
 /***/ }),
-/* 214 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -19165,7 +19522,7 @@ return kk;
 
 
 /***/ }),
-/* 215 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -19228,7 +19585,7 @@ return km;
 
 
 /***/ }),
-/* 216 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -19359,7 +19716,7 @@ return kn;
 
 
 /***/ }),
-/* 217 */
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -19416,8 +19773,22 @@ var ko = moment.defineLocale('ko', {
         y : '일 년',
         yy : '%d년'
     },
-    dayOfMonthOrdinalParse : /\d{1,2}일/,
-    ordinal : '%d일',
+    dayOfMonthOrdinalParse : /\d{1,2}(일|월|주)/,
+    ordinal : function (number, period) {
+        switch (period) {
+            case 'd':
+            case 'D':
+            case 'DDD':
+                return number + '일';
+            case 'M':
+                return number + '월';
+            case 'w':
+            case 'W':
+                return number + '주';
+            default:
+                return number;
+        }
+    },
     meridiemParse : /오전|오후/,
     isPM : function (token) {
         return token === '오후';
@@ -19433,7 +19804,7 @@ return ko;
 
 
 /***/ }),
-/* 218 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -19526,7 +19897,7 @@ return ky;
 
 
 /***/ }),
-/* 219 */
+/* 222 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -19668,7 +20039,7 @@ return lb;
 
 
 /***/ }),
-/* 220 */
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -19743,7 +20114,7 @@ return lo;
 
 
 /***/ }),
-/* 221 */
+/* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -19865,7 +20236,7 @@ return lt;
 
 
 /***/ }),
-/* 222 */
+/* 225 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -19967,7 +20338,7 @@ return lv;
 
 
 /***/ }),
-/* 223 */
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20083,7 +20454,7 @@ return me;
 
 
 /***/ }),
-/* 224 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20152,7 +20523,7 @@ return mi;
 
 
 /***/ }),
-/* 225 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20247,7 +20618,7 @@ return mk;
 
 
 /***/ }),
-/* 226 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20333,7 +20704,7 @@ return ml;
 
 
 /***/ }),
-/* 227 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20497,7 +20868,7 @@ return mr;
 
 
 /***/ }),
-/* 228 */
+/* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20584,7 +20955,7 @@ return ms;
 
 
 /***/ }),
-/* 229 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20672,7 +21043,7 @@ return msMy;
 
 
 /***/ }),
-/* 230 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20773,7 +21144,7 @@ return my;
 
 
 /***/ }),
-/* 231 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20841,7 +21212,7 @@ return nb;
 
 
 /***/ }),
-/* 232 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20969,7 +21340,7 @@ return ne;
 
 
 /***/ }),
-/* 233 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21013,7 +21384,7 @@ var nl = moment.defineLocale('nl', {
 
     weekdays : 'zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag'.split('_'),
     weekdaysShort : 'zo._ma._di._wo._do._vr._za.'.split('_'),
-    weekdaysMin : 'Zo_Ma_Di_Wo_Do_Vr_Za'.split('_'),
+    weekdaysMin : 'zo_ma_di_wo_do_vr_za'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
         LT : 'HH:mm',
@@ -21062,7 +21433,7 @@ return nl;
 
 
 /***/ }),
-/* 234 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21106,7 +21477,7 @@ var nlBe = moment.defineLocale('nl-be', {
 
     weekdays : 'zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag'.split('_'),
     weekdaysShort : 'zo._ma._di._wo._do._vr._za.'.split('_'),
-    weekdaysMin : 'Zo_Ma_Di_Wo_Do_Vr_Za'.split('_'),
+    weekdaysMin : 'zo_ma_di_wo_do_vr_za'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
         LT : 'HH:mm',
@@ -21155,7 +21526,7 @@ return nlBe;
 
 
 /***/ }),
-/* 235 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21220,7 +21591,7 @@ return nn;
 
 
 /***/ }),
-/* 236 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21349,7 +21720,7 @@ return paIn;
 
 
 /***/ }),
-/* 237 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21416,7 +21787,24 @@ var pl = moment.defineLocale('pl', {
     calendar : {
         sameDay: '[Dziś o] LT',
         nextDay: '[Jutro o] LT',
-        nextWeek: '[W] dddd [o] LT',
+        nextWeek: function () {
+            switch (this.day()) {
+                case 0:
+                    return '[W niedzielę o] LT';
+
+                case 2:
+                    return '[We wtorek o] LT';
+
+                case 3:
+                    return '[W środę o] LT';
+
+                case 6:
+                    return '[W sobotę o] LT';
+
+                default:
+                    return '[W] dddd [o] LT';
+            }
+        },
         lastDay: '[Wczoraj o] LT',
         lastWeek: function () {
             switch (this.day()) {
@@ -21461,7 +21849,7 @@ return pl;
 
 
 /***/ }),
-/* 238 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21476,9 +21864,9 @@ return pl;
 
 
 var pt = moment.defineLocale('pt', {
-    months : 'Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro'.split('_'),
-    monthsShort : 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_'),
-    weekdays : 'Domingo_Segunda-Feira_Terça-Feira_Quarta-Feira_Quinta-Feira_Sexta-Feira_Sábado'.split('_'),
+    months : 'janeiro_fevereiro_março_abril_maio_junho_julho_agosto_setembro_outubro_novembro_dezembro'.split('_'),
+    monthsShort : 'jan_fev_mar_abr_mai_jun_jul_ago_set_out_nov_dez'.split('_'),
+    weekdays : 'Domingo_Segunda-feira_Terça-feira_Quarta-feira_Quinta-feira_Sexta-feira_Sábado'.split('_'),
     weekdaysShort : 'Dom_Seg_Ter_Qua_Qui_Sex_Sáb'.split('_'),
     weekdaysMin : 'Do_2ª_3ª_4ª_5ª_6ª_Sá'.split('_'),
     weekdaysParseExact : true,
@@ -21531,7 +21919,7 @@ return pt;
 
 
 /***/ }),
-/* 239 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21546,8 +21934,8 @@ return pt;
 
 
 var ptBr = moment.defineLocale('pt-br', {
-    months : 'Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro'.split('_'),
-    monthsShort : 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_'),
+    months : 'janeiro_fevereiro_março_abril_maio_junho_julho_agosto_setembro_outubro_novembro_dezembro'.split('_'),
+    monthsShort : 'jan_fev_mar_abr_mai_jun_jul_ago_set_out_nov_dez'.split('_'),
     weekdays : 'Domingo_Segunda-feira_Terça-feira_Quarta-feira_Quinta-feira_Sexta-feira_Sábado'.split('_'),
     weekdaysShort : 'Dom_Seg_Ter_Qua_Qui_Sex_Sáb'.split('_'),
     weekdaysMin : 'Do_2ª_3ª_4ª_5ª_6ª_Sá'.split('_'),
@@ -21576,6 +21964,7 @@ var ptBr = moment.defineLocale('pt-br', {
         future : 'em %s',
         past : '%s atrás',
         s : 'poucos segundos',
+        ss : '%d segundos',
         m : 'um minuto',
         mm : '%d minutos',
         h : 'uma hora',
@@ -21597,7 +21986,7 @@ return ptBr;
 
 
 /***/ }),
-/* 240 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21677,7 +22066,7 @@ return ro;
 
 
 /***/ }),
-/* 241 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21855,7 +22244,7 @@ var ru = moment.defineLocale('ru', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
     }
 });
 
@@ -21865,7 +22254,7 @@ return ru;
 
 
 /***/ }),
-/* 242 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21968,7 +22357,7 @@ return sd;
 
 
 /***/ }),
-/* 243 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22034,7 +22423,7 @@ return se;
 
 
 /***/ }),
-/* 244 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22110,7 +22499,7 @@ return si;
 
 
 /***/ }),
-/* 245 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22265,7 +22654,7 @@ return sk;
 
 
 /***/ }),
-/* 246 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22432,7 +22821,7 @@ return sl;
 
 
 /***/ }),
-/* 247 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22507,7 +22896,7 @@ return sq;
 
 
 /***/ }),
-/* 248 */
+/* 251 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22622,7 +23011,7 @@ return sr;
 
 
 /***/ }),
-/* 249 */
+/* 252 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22737,7 +23126,7 @@ return srCyrl;
 
 
 /***/ }),
-/* 250 */
+/* 253 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22831,7 +23220,7 @@ return ss;
 
 
 /***/ }),
-/* 251 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22905,7 +23294,7 @@ return sv;
 
 
 /***/ }),
-/* 252 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22969,7 +23358,7 @@ return sw;
 
 
 /***/ }),
-/* 253 */
+/* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23104,7 +23493,7 @@ return ta;
 
 
 /***/ }),
-/* 254 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23198,7 +23587,7 @@ return te;
 
 
 /***/ }),
-/* 255 */
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23271,7 +23660,7 @@ return tet;
 
 
 /***/ }),
-/* 256 */
+/* 259 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23343,7 +23732,7 @@ return th;
 
 
 /***/ }),
-/* 257 */
+/* 260 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23410,7 +23799,7 @@ return tlPh;
 
 
 /***/ }),
-/* 258 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23535,7 +23924,7 @@ return tlh;
 
 
 /***/ }),
-/* 259 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23588,9 +23977,9 @@ var tr = moment.defineLocale('tr', {
     calendar : {
         sameDay : '[bugün saat] LT',
         nextDay : '[yarın saat] LT',
-        nextWeek : '[haftaya] dddd [saat] LT',
+        nextWeek : '[gelecek] dddd [saat] LT',
         lastDay : '[dün] LT',
-        lastWeek : '[geçen hafta] dddd [saat] LT',
+        lastWeek : '[geçen] dddd [saat] LT',
         sameElse : 'L'
     },
     relativeTime : {
@@ -23630,7 +24019,7 @@ return tr;
 
 
 /***/ }),
-/* 260 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23726,7 +24115,7 @@ return tzl;
 
 
 /***/ }),
-/* 261 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23789,7 +24178,7 @@ return tzm;
 
 
 /***/ }),
-/* 262 */
+/* 265 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23852,7 +24241,7 @@ return tzmLatn;
 
 
 /***/ }),
-/* 263 */
+/* 266 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24008,7 +24397,7 @@ return uk;
 
 
 /***/ }),
-/* 264 */
+/* 267 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24112,7 +24501,7 @@ return ur;
 
 
 /***/ }),
-/* 265 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24175,7 +24564,7 @@ return uz;
 
 
 /***/ }),
-/* 266 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24238,7 +24627,7 @@ return uzLatn;
 
 
 /***/ }),
-/* 267 */
+/* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24322,7 +24711,7 @@ return vi;
 
 
 /***/ }),
-/* 268 */
+/* 271 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24395,7 +24784,7 @@ return xPseudo;
 
 
 /***/ }),
-/* 269 */
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24460,7 +24849,7 @@ return yo;
 
 
 /***/ }),
-/* 270 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24576,7 +24965,7 @@ return zhCn;
 
 
 /***/ }),
-/* 271 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24686,7 +25075,7 @@ return zhHk;
 
 
 /***/ }),
-/* 272 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24795,30 +25184,30 @@ return zhTw;
 
 
 /***/ }),
-/* 273 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.brandibbleMiddleware=exports.reducer=exports.Brandibble=undefined;var _constants=__webpack_require__(68);
 
 
 
-Object.keys(_constants).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _constants[key];}});});var _actions=__webpack_require__(274);
-Object.keys(_actions).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _actions[key];}});});var _selectors=__webpack_require__(518);
-Object.keys(_selectors).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _selectors[key];}});});var _brandibble=__webpack_require__(525);var _brandibble2=_interopRequireDefault(_brandibble);var _middleware=__webpack_require__(526);var _middleware2=_interopRequireDefault(_middleware);var _reducers=__webpack_require__(530);var _reducers2=_interopRequireDefault(_reducers);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}
+Object.keys(_constants).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _constants[key];}});});var _actions=__webpack_require__(277);
+Object.keys(_actions).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _actions[key];}});});var _selectors=__webpack_require__(521);
+Object.keys(_selectors).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _selectors[key];}});});var _brandibble=__webpack_require__(528);var _brandibble2=_interopRequireDefault(_brandibble);var _middleware=__webpack_require__(529);var _middleware2=_interopRequireDefault(_middleware);var _reducers=__webpack_require__(533);var _reducers2=_interopRequireDefault(_reducers);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}
 var Brandibble=exports.Brandibble=_brandibble2.default;
 var reducer=exports.reducer=_reducers2.default;
 var brandibbleMiddleware=exports.brandibbleMiddleware=_middleware2.default;
 
 /***/ }),
-/* 274 */
+/* 277 */
 /***/ (function(module, exports, __webpack_require__) {
 
-Object.defineProperty(exports,"__esModule",{value:true});var _application=__webpack_require__(41);Object.keys(_application).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _application[key];}});});var _data=__webpack_require__(514);
-Object.keys(_data).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _data[key];}});});var _session=__webpack_require__(515);
+Object.defineProperty(exports,"__esModule",{value:true});var _application=__webpack_require__(41);Object.keys(_application).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _application[key];}});});var _data=__webpack_require__(517);
+Object.keys(_data).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _data[key];}});});var _session=__webpack_require__(518);
 Object.keys(_session).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _session[key];}});});
 
 /***/ }),
-/* 275 */
+/* 278 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.default=BrandibbleReduxException;function BrandibbleReduxException(action,message){
@@ -24827,17 +25216,18 @@ this.stack=new Error().stack;
 }
 
 /***/ }),
-/* 276 */
+/* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
-var invariant = __webpack_require__(471);
+var invariant = __webpack_require__(474);
 var actionTypesFor_1 = __webpack_require__(84);
 var assertNotArray_1 = __webpack_require__(145);
 var constants_1 = __webpack_require__(4);
-var getDefaultConfig_1 = __webpack_require__(483);
+var getDefaultConfig_1 = __webpack_require__(486);
 // const invariant = require("invariant")
 function actionCreatorsFor(resourceName, config) {
     if (resourceName == null)
@@ -24861,7 +25251,7 @@ function actionCreatorsFor(resourceName, config) {
         fetchStart: function (data) {
             return {
                 data: data,
-                type: actionTypes.fetchStart,
+                type: actionTypes.fetchStart
             };
         },
         fetchSuccess: function (records, data) {
@@ -24870,7 +25260,7 @@ function actionCreatorsFor(resourceName, config) {
             return {
                 data: data,
                 records: records,
-                type: actionTypes.fetchSuccess,
+                type: actionTypes.fetchSuccess
             };
         },
         fetchError: function (error, data) {
@@ -24879,7 +25269,7 @@ function actionCreatorsFor(resourceName, config) {
             return {
                 data: data,
                 error: error,
-                type: actionTypes.fetchError,
+                type: actionTypes.fetchError
             };
         },
         createStart: function (record, data) {
@@ -24888,7 +25278,7 @@ function actionCreatorsFor(resourceName, config) {
             return {
                 data: data,
                 record: record,
-                type: actionTypes.createStart,
+                type: actionTypes.createStart
             };
         },
         createSuccess: function (record, clientGeneratedKey, data) {
@@ -24898,7 +25288,7 @@ function actionCreatorsFor(resourceName, config) {
                 cid: clientGeneratedKey,
                 data: data,
                 record: record,
-                type: actionTypes.createSuccess,
+                type: actionTypes.createSuccess
             };
         },
         createError: function (error, record, data) {
@@ -24909,7 +25299,7 @@ function actionCreatorsFor(resourceName, config) {
                 data: data,
                 error: error,
                 record: record,
-                type: actionTypes.createError,
+                type: actionTypes.createError
             };
         },
         updateStart: function (record, data) {
@@ -24918,7 +25308,7 @@ function actionCreatorsFor(resourceName, config) {
             return {
                 data: data,
                 record: record,
-                type: actionTypes.updateStart,
+                type: actionTypes.updateStart
             };
         },
         updateSuccess: function (record, data) {
@@ -24927,7 +25317,7 @@ function actionCreatorsFor(resourceName, config) {
             return {
                 data: data,
                 record: record,
-                type: actionTypes.updateSuccess,
+                type: actionTypes.updateSuccess
             };
         },
         updateError: function (error, record, data) {
@@ -24938,7 +25328,7 @@ function actionCreatorsFor(resourceName, config) {
                 data: data,
                 error: error,
                 record: record,
-                type: actionTypes.updateError,
+                type: actionTypes.updateError
             };
         },
         deleteStart: function (record, data) {
@@ -24947,7 +25337,7 @@ function actionCreatorsFor(resourceName, config) {
             return {
                 data: data,
                 record: record,
-                type: actionTypes.deleteStart,
+                type: actionTypes.deleteStart
             };
         },
         deleteSuccess: function (record, data) {
@@ -24956,7 +25346,7 @@ function actionCreatorsFor(resourceName, config) {
             return {
                 data: data,
                 record: record,
-                type: actionTypes.deleteSuccess,
+                type: actionTypes.deleteSuccess
             };
         },
         deleteError: function (error, record, data) {
@@ -24967,17 +25357,16 @@ function actionCreatorsFor(resourceName, config) {
                 data: data,
                 error: error,
                 record: record,
-                type: actionTypes.deleteError,
+                type: actionTypes.deleteError
             };
         }
     };
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = actionCreatorsFor;
 
 
 /***/ }),
-/* 277 */
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var always = __webpack_require__(30);
@@ -25002,7 +25391,7 @@ module.exports = always(false);
 
 
 /***/ }),
-/* 278 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var always = __webpack_require__(30);
@@ -25027,7 +25416,7 @@ module.exports = always(true);
 
 
 /***/ }),
-/* 279 */
+/* 282 */
 /***/ (function(module, exports) {
 
 /**
@@ -25060,7 +25449,7 @@ module.exports = {'@@functional/placeholder': true};
 
 
 /***/ }),
-/* 280 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _concat = __webpack_require__(13);
@@ -25109,12 +25498,12 @@ module.exports = _curry1(function addIndex(fn) {
 
 
 /***/ }),
-/* 281 */
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
 var _dispatchable = __webpack_require__(6);
-var _xall = __webpack_require__(282);
+var _xall = __webpack_require__(285);
 
 
 /**
@@ -25154,7 +25543,7 @@ module.exports = _curry2(_dispatchable(['all'], _xall, function all(fn, list) {
 
 
 /***/ }),
-/* 282 */
+/* 285 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -25188,7 +25577,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 283 */
+/* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -25239,7 +25628,7 @@ module.exports = _curry1(function allPass(preds) {
 
 
 /***/ }),
-/* 284 */
+/* 287 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -25262,7 +25651,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 285 */
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -25314,13 +25703,13 @@ module.exports = _curry1(function anyPass(preds) {
 
 
 /***/ }),
-/* 286 */
+/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _aperture = __webpack_require__(287);
+var _aperture = __webpack_require__(290);
 var _curry2 = __webpack_require__(0);
 var _dispatchable = __webpack_require__(6);
-var _xaperture = __webpack_require__(288);
+var _xaperture = __webpack_require__(291);
 
 
 /**
@@ -25348,7 +25737,7 @@ module.exports = _curry2(_dispatchable([], _xaperture, _aperture));
 
 
 /***/ }),
-/* 287 */
+/* 290 */
 /***/ (function(module, exports) {
 
 module.exports = function _aperture(n, list) {
@@ -25364,7 +25753,7 @@ module.exports = function _aperture(n, list) {
 
 
 /***/ }),
-/* 288 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _concat = __webpack_require__(13);
@@ -25406,7 +25795,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 289 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _concat = __webpack_require__(13);
@@ -25439,7 +25828,7 @@ module.exports = _curry2(function append(el, list) {
 
 
 /***/ }),
-/* 290 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -25489,7 +25878,7 @@ module.exports = _curry1(function applySpec(spec) {
 
 
 /***/ }),
-/* 291 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -25524,7 +25913,7 @@ module.exports = _curry3(function ascend(fn, a, b) {
 
 
 /***/ }),
-/* 292 */
+/* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -25564,7 +25953,7 @@ module.exports = _curry1(function binary(fn) {
 
 
 /***/ }),
-/* 293 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -25611,7 +26000,7 @@ module.exports = _curry2(function both(f, g) {
 
 
 /***/ }),
-/* 294 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var curry = __webpack_require__(51);
@@ -25654,11 +26043,11 @@ module.exports = curry(function call(fn) {
 
 
 /***/ }),
-/* 295 */
+/* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
-var _flatCat = __webpack_require__(296);
+var _flatCat = __webpack_require__(299);
 var map = __webpack_require__(10);
 
 
@@ -25668,10 +26057,10 @@ module.exports = _curry2(function _xchain(f, xf) {
 
 
 /***/ }),
-/* 296 */
+/* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _forceReduced = __webpack_require__(297);
+var _forceReduced = __webpack_require__(300);
 var _reduce = __webpack_require__(12);
 var _xfBase = __webpack_require__(7);
 var isArrayLike = __webpack_require__(34);
@@ -25706,7 +26095,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 297 */
+/* 300 */
 /***/ (function(module, exports) {
 
 module.exports = function _forceReduced(x) {
@@ -25718,7 +26107,7 @@ module.exports = function _forceReduced(x) {
 
 
 /***/ }),
-/* 298 */
+/* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -25754,7 +26143,7 @@ module.exports = _curry3(function clamp(min, max, value) {
 
 
 /***/ }),
-/* 299 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _clone = __webpack_require__(100);
@@ -25790,7 +26179,7 @@ module.exports = _curry1(function clone(value) {
 
 
 /***/ }),
-/* 300 */
+/* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -25824,7 +26213,7 @@ module.exports = _curry1(function comparator(pred) {
 
 
 /***/ }),
-/* 301 */
+/* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var lift = __webpack_require__(50);
@@ -25857,7 +26246,7 @@ module.exports = lift(not);
 
 
 /***/ }),
-/* 302 */
+/* 305 */
 /***/ (function(module, exports) {
 
 module.exports = function _pipe(f, g) {
@@ -25868,7 +26257,7 @@ module.exports = function _pipe(f, g) {
 
 
 /***/ }),
-/* 303 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var pipeP = __webpack_require__(105);
@@ -25918,7 +26307,7 @@ module.exports = function composeP() {
 
 
 /***/ }),
-/* 304 */
+/* 307 */
 /***/ (function(module, exports) {
 
 module.exports = function _pipeP(f, g) {
@@ -25932,13 +26321,13 @@ module.exports = function _pipeP(f, g) {
 
 
 /***/ }),
-/* 305 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _contains = __webpack_require__(27);
+var _contains = __webpack_require__(28);
 var _map = __webpack_require__(45);
-var _quote = __webpack_require__(309);
-var _toISOString = __webpack_require__(310);
+var _quote = __webpack_require__(312);
+var _toISOString = __webpack_require__(313);
 var keys = __webpack_require__(15);
 var reject = __webpack_require__(53);
 
@@ -25984,11 +26373,11 @@ module.exports = function _toString(x, seen) {
 
 
 /***/ }),
-/* 306 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _arrayFromIterator = __webpack_require__(307);
-var _functionName = __webpack_require__(308);
+var _arrayFromIterator = __webpack_require__(310);
+var _functionName = __webpack_require__(311);
 var _has = __webpack_require__(9);
 var identical = __webpack_require__(107);
 var keys = __webpack_require__(15);
@@ -26099,7 +26488,7 @@ module.exports = function _equals(a, b, stackA, stackB) {
 
 
 /***/ }),
-/* 307 */
+/* 310 */
 /***/ (function(module, exports) {
 
 module.exports = function _arrayFromIterator(iter) {
@@ -26113,7 +26502,7 @@ module.exports = function _arrayFromIterator(iter) {
 
 
 /***/ }),
-/* 308 */
+/* 311 */
 /***/ (function(module, exports) {
 
 module.exports = function _functionName(f) {
@@ -26124,7 +26513,7 @@ module.exports = function _functionName(f) {
 
 
 /***/ }),
-/* 309 */
+/* 312 */
 /***/ (function(module, exports) {
 
 module.exports = function _quote(s) {
@@ -26143,7 +26532,7 @@ module.exports = function _quote(s) {
 
 
 /***/ }),
-/* 310 */
+/* 313 */
 /***/ (function(module, exports) {
 
 /**
@@ -26171,7 +26560,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 311 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -26194,7 +26583,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 312 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _arity = __webpack_require__(14);
@@ -26247,7 +26636,7 @@ module.exports = _curry1(function cond(pairs) {
 
 
 /***/ }),
-/* 313 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -26291,10 +26680,10 @@ module.exports = _curry1(function construct(Fn) {
 
 
 /***/ }),
-/* 314 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _contains = __webpack_require__(27);
+var _contains = __webpack_require__(28);
 var _curry2 = __webpack_require__(0);
 
 
@@ -26322,7 +26711,7 @@ module.exports = _curry2(_contains);
 
 
 /***/ }),
-/* 315 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var reduceBy = __webpack_require__(54);
@@ -26356,7 +26745,7 @@ module.exports = reduceBy(function(acc, elem) { return acc + 1; }, 0);
 
 
 /***/ }),
-/* 316 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curryN = __webpack_require__(44);
@@ -26402,7 +26791,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 317 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var add = __webpack_require__(43);
@@ -26427,7 +26816,7 @@ module.exports = add(-1);
 
 
 /***/ }),
-/* 318 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -26462,7 +26851,7 @@ module.exports = _curry3(function descend(fn, a, b) {
 
 
 /***/ }),
-/* 319 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -26503,7 +26892,7 @@ module.exports = _curry2(function dissocPath(path, obj) {
 
 
 /***/ }),
-/* 320 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -26535,7 +26924,7 @@ module.exports = _curry2(function divide(a, b) { return a / b; });
 
 
 /***/ }),
-/* 321 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -26562,13 +26951,13 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 322 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
 var _dispatchable = __webpack_require__(6);
-var _dropLast = __webpack_require__(323);
-var _xdropLast = __webpack_require__(325);
+var _dropLast = __webpack_require__(326);
+var _xdropLast = __webpack_require__(328);
 
 
 /**
@@ -26596,7 +26985,7 @@ module.exports = _curry2(_dispatchable([], _xdropLast, _dropLast));
 
 
 /***/ }),
-/* 323 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var take = __webpack_require__(118);
@@ -26607,7 +26996,7 @@ module.exports = function dropLast(n, xs) {
 
 
 /***/ }),
-/* 324 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -26633,7 +27022,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 325 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -26673,13 +27062,13 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 326 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
 var _dispatchable = __webpack_require__(6);
-var _dropLastWhile = __webpack_require__(327);
-var _xdropLastWhile = __webpack_require__(328);
+var _dropLastWhile = __webpack_require__(330);
+var _xdropLastWhile = __webpack_require__(331);
 
 
 /**
@@ -26708,7 +27097,7 @@ module.exports = _curry2(_dispatchable([], _xdropLastWhile, _dropLastWhile));
 
 
 /***/ }),
-/* 327 */
+/* 330 */
 /***/ (function(module, exports) {
 
 module.exports = function dropLastWhile(pred, list) {
@@ -26721,7 +27110,7 @@ module.exports = function dropLastWhile(pred, list) {
 
 
 /***/ }),
-/* 328 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -26762,7 +27151,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 329 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -26794,12 +27183,12 @@ module.exports = _curry1(_dispatchable([], _xdropRepeatsWith(equals), dropRepeat
 
 
 /***/ }),
-/* 330 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
 var _dispatchable = __webpack_require__(6);
-var _xdropWhile = __webpack_require__(331);
+var _xdropWhile = __webpack_require__(334);
 
 
 /**
@@ -26838,7 +27227,7 @@ module.exports = _curry2(_dispatchable(['dropWhile'], _xdropWhile, function drop
 
 
 /***/ }),
-/* 331 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -26867,7 +27256,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 332 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -26913,7 +27302,7 @@ module.exports = _curry2(function either(f, g) {
 
 
 /***/ }),
-/* 333 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -26943,7 +27332,7 @@ module.exports = _curry3(function eqBy(f, x, y) {
 
 
 /***/ }),
-/* 334 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -26977,7 +27366,7 @@ module.exports = _curry3(function eqProps(prop, obj1, obj2) {
 
 
 /***/ }),
-/* 335 */
+/* 338 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -27025,12 +27414,12 @@ module.exports = _curry2(function evolve(transformations, object) {
 
 
 /***/ }),
-/* 336 */
+/* 339 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
 var _dispatchable = __webpack_require__(6);
-var _xfind = __webpack_require__(337);
+var _xfind = __webpack_require__(340);
 
 
 /**
@@ -27070,7 +27459,7 @@ module.exports = _curry2(_dispatchable(['find'], _xfind, function find(fn, list)
 
 
 /***/ }),
-/* 337 */
+/* 340 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -27104,12 +27493,12 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 338 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
 var _dispatchable = __webpack_require__(6);
-var _xfindIndex = __webpack_require__(339);
+var _xfindIndex = __webpack_require__(342);
 
 
 /**
@@ -27148,7 +27537,7 @@ module.exports = _curry2(_dispatchable([], _xfindIndex, function findIndex(fn, l
 
 
 /***/ }),
-/* 339 */
+/* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -27184,12 +27573,12 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 340 */
+/* 343 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
 var _dispatchable = __webpack_require__(6);
-var _xfindLast = __webpack_require__(341);
+var _xfindLast = __webpack_require__(344);
 
 
 /**
@@ -27226,7 +27615,7 @@ module.exports = _curry2(_dispatchable([], _xfindLast, function findLast(fn, lis
 
 
 /***/ }),
-/* 341 */
+/* 344 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -27254,12 +27643,12 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 342 */
+/* 345 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
 var _dispatchable = __webpack_require__(6);
-var _xfindLastIndex = __webpack_require__(343);
+var _xfindLastIndex = __webpack_require__(346);
 
 
 /**
@@ -27297,7 +27686,7 @@ module.exports = _curry2(_dispatchable([], _xfindLastIndex, function findLastInd
 
 
 /***/ }),
-/* 343 */
+/* 346 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -27328,7 +27717,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 344 */
+/* 347 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -27356,7 +27745,7 @@ module.exports = _curry1(_makeFlat(true));
 
 
 /***/ }),
-/* 345 */
+/* 348 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _checkForMethod = __webpack_require__(35);
@@ -27409,7 +27798,7 @@ module.exports = _curry2(_checkForMethod('forEach', function forEach(fn, list) {
 
 
 /***/ }),
-/* 346 */
+/* 349 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -27451,7 +27840,7 @@ module.exports = _curry2(function forEachObjIndexed(fn, obj) {
 
 
 /***/ }),
-/* 347 */
+/* 350 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -27485,7 +27874,7 @@ module.exports = _curry1(function fromPairs(pairs) {
 
 
 /***/ }),
-/* 348 */
+/* 351 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _checkForMethod = __webpack_require__(35);
@@ -27542,7 +27931,7 @@ module.exports = _curry2(_checkForMethod('groupBy', reduceBy(function(acc, item)
 
 
 /***/ }),
-/* 349 */
+/* 352 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -27590,7 +27979,7 @@ module.exports = _curry2(function(fn, list) {
 
 
 /***/ }),
-/* 350 */
+/* 353 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -27621,7 +28010,7 @@ module.exports = _curry2(function gt(a, b) { return a > b; });
 
 
 /***/ }),
-/* 351 */
+/* 354 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -27652,7 +28041,7 @@ module.exports = _curry2(function gte(a, b) { return a >= b; });
 
 
 /***/ }),
-/* 352 */
+/* 355 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -27687,7 +28076,7 @@ module.exports = _curry2(_has);
 
 
 /***/ }),
-/* 353 */
+/* 356 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -27725,7 +28114,7 @@ module.exports = _curry2(function hasIn(prop, obj) {
 
 
 /***/ }),
-/* 354 */
+/* 357 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var nth = __webpack_require__(37);
@@ -27756,7 +28145,7 @@ module.exports = nth(0);
 
 
 /***/ }),
-/* 355 */
+/* 358 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -27798,7 +28187,7 @@ module.exports = _curry3(function ifElse(condition, onTrue, onFalse) {
 
 
 /***/ }),
-/* 356 */
+/* 359 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var add = __webpack_require__(43);
@@ -27823,7 +28212,7 @@ module.exports = add(1);
 
 
 /***/ }),
-/* 357 */
+/* 360 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var reduceBy = __webpack_require__(54);
@@ -27855,7 +28244,7 @@ module.exports = reduceBy(function(acc, elem) { return elem; }, null);
 
 
 /***/ }),
-/* 358 */
+/* 361 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -27890,10 +28279,10 @@ module.exports = _curry2(function indexOf(target, xs) {
 
 
 /***/ }),
-/* 359 */
+/* 362 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var slice = __webpack_require__(26);
+var slice = __webpack_require__(27);
 
 
 /**
@@ -27924,7 +28313,7 @@ module.exports = slice(0, -1);
 
 
 /***/ }),
-/* 360 */
+/* 363 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -27957,7 +28346,7 @@ module.exports = _curry3(function insert(idx, elt, list) {
 
 
 /***/ }),
-/* 361 */
+/* 364 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -27990,10 +28379,10 @@ module.exports = _curry3(function insertAll(idx, elts, list) {
 
 
 /***/ }),
-/* 362 */
+/* 365 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _contains = __webpack_require__(27);
+var _contains = __webpack_require__(28);
 var _curry2 = __webpack_require__(0);
 var _filter = __webpack_require__(109);
 var flip = __webpack_require__(55);
@@ -28031,10 +28420,10 @@ module.exports = _curry2(function intersection(list1, list2) {
 
 
 /***/ }),
-/* 363 */
+/* 366 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _contains = __webpack_require__(27);
+var _contains = __webpack_require__(28);
 
 
 // A simple Set type that honours R.equals semantics
@@ -28208,7 +28597,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 364 */
+/* 367 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _containsWith = __webpack_require__(78);
@@ -28273,7 +28662,7 @@ module.exports = _curry3(function intersectionWith(pred, list1, list2) {
 
 
 /***/ }),
-/* 365 */
+/* 368 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _checkForMethod = __webpack_require__(35);
@@ -28314,14 +28703,14 @@ module.exports = _curry2(_checkForMethod('intersperse', function intersperse(sep
 
 
 /***/ }),
-/* 366 */
+/* 369 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _clone = __webpack_require__(100);
 var _curry3 = __webpack_require__(3);
 var _isTransformer = __webpack_require__(69);
 var _reduce = __webpack_require__(12);
-var _stepCat = __webpack_require__(367);
+var _stepCat = __webpack_require__(370);
 
 
 /**
@@ -28369,7 +28758,7 @@ module.exports = _curry3(function into(acc, xf, list) {
 
 
 /***/ }),
-/* 367 */
+/* 370 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _assign = __webpack_require__(83);
@@ -28423,7 +28812,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 368 */
+/* 371 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _has = __webpack_require__(9);
@@ -28453,7 +28842,7 @@ module.exports = function _objectAssign(target) {
 
 
 /***/ }),
-/* 369 */
+/* 372 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -28501,7 +28890,7 @@ module.exports = _curry1(function invert(obj) {
 
 
 /***/ }),
-/* 370 */
+/* 373 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -28550,7 +28939,7 @@ module.exports = _curry1(function invertObj(obj) {
 
 
 /***/ }),
-/* 371 */
+/* 374 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -28585,7 +28974,7 @@ module.exports = _curry1(function isEmpty(x) {
 
 
 /***/ }),
-/* 372 */
+/* 375 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -28612,7 +29001,7 @@ module.exports = _curry1(function isNil(x) { return x == null; });
 
 
 /***/ }),
-/* 373 */
+/* 376 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var invoker = __webpack_require__(38);
@@ -28641,7 +29030,7 @@ module.exports = invoker(1, 'join');
 
 
 /***/ }),
-/* 374 */
+/* 377 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -28678,7 +29067,7 @@ module.exports = _curry1(function keysIn(obj) {
 
 
 /***/ }),
-/* 375 */
+/* 378 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -28722,7 +29111,7 @@ module.exports = _curry2(function lastIndexOf(target, xs) {
 
 
 /***/ }),
-/* 376 */
+/* 379 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -28757,7 +29146,7 @@ module.exports = _curry1(function lensIndex(n) {
 
 
 /***/ }),
-/* 377 */
+/* 380 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -28796,7 +29185,7 @@ module.exports = _curry1(function lensPath(p) {
 
 
 /***/ }),
-/* 378 */
+/* 381 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -28831,7 +29220,7 @@ module.exports = _curry1(function lensProp(k) {
 
 
 /***/ }),
-/* 379 */
+/* 382 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -28862,7 +29251,7 @@ module.exports = _curry2(function lt(a, b) { return a < b; });
 
 
 /***/ }),
-/* 380 */
+/* 383 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -28893,7 +29282,7 @@ module.exports = _curry2(function lte(a, b) { return a <= b; });
 
 
 /***/ }),
-/* 381 */
+/* 384 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -28948,7 +29337,7 @@ module.exports = _curry3(function mapAccum(fn, acc, list) {
 
 
 /***/ }),
-/* 382 */
+/* 385 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -29005,7 +29394,7 @@ module.exports = _curry3(function mapAccumRight(fn, acc, list) {
 
 
 /***/ }),
-/* 383 */
+/* 386 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -29043,7 +29432,7 @@ module.exports = _curry2(function mapObjIndexed(fn, obj) {
 
 
 /***/ }),
-/* 384 */
+/* 387 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -29076,7 +29465,7 @@ module.exports = _curry2(function match(rx, str) {
 
 
 /***/ }),
-/* 385 */
+/* 388 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -29123,7 +29512,7 @@ module.exports = _curry2(function mathMod(m, p) {
 
 
 /***/ }),
-/* 386 */
+/* 389 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -29159,7 +29548,7 @@ module.exports = _curry3(function maxBy(f, a, b) {
 
 
 /***/ }),
-/* 387 */
+/* 390 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -29196,7 +29585,7 @@ module.exports = _curry1(function median(list) {
 
 
 /***/ }),
-/* 388 */
+/* 391 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _arity = __webpack_require__(14);
@@ -29244,7 +29633,7 @@ module.exports = _curry1(function memoize(fn) {
 
 
 /***/ }),
-/* 389 */
+/* 392 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _assign = __webpack_require__(83);
@@ -29280,7 +29669,7 @@ module.exports = _curry2(function merge(l, r) {
 
 
 /***/ }),
-/* 390 */
+/* 393 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _assign = __webpack_require__(83);
@@ -29310,7 +29699,7 @@ module.exports = _curry1(function mergeAll(list) {
 
 
 /***/ }),
-/* 391 */
+/* 394 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -29349,7 +29738,7 @@ module.exports = _curry3(function mergeWith(fn, l, r) {
 
 
 /***/ }),
-/* 392 */
+/* 395 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -29376,7 +29765,7 @@ module.exports = _curry2(function min(a, b) { return b < a ? b : a; });
 
 
 /***/ }),
-/* 393 */
+/* 396 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -29412,7 +29801,7 @@ module.exports = _curry3(function minBy(f, a, b) {
 
 
 /***/ }),
-/* 394 */
+/* 397 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -29447,7 +29836,7 @@ module.exports = _curry2(function modulo(a, b) { return a % b; });
 
 
 /***/ }),
-/* 395 */
+/* 398 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -29471,7 +29860,7 @@ module.exports = _curry1(function negate(n) { return -n; });
 
 
 /***/ }),
-/* 396 */
+/* 399 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _complement = __webpack_require__(108);
@@ -29507,7 +29896,7 @@ module.exports = _curry2(_complement(_dispatchable(['any'], _xany, any)));
 
 
 /***/ }),
-/* 397 */
+/* 400 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -29542,11 +29931,11 @@ module.exports = _curry1(function nthArg(n) {
 
 
 /***/ }),
-/* 398 */
+/* 401 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
-var _of = __webpack_require__(399);
+var _of = __webpack_require__(402);
 
 
 /**
@@ -29571,17 +29960,17 @@ module.exports = _curry1(_of);
 
 
 /***/ }),
-/* 399 */
+/* 402 */
 /***/ (function(module, exports) {
 
 module.exports = function _of(x) { return [x]; };
 
 
 /***/ }),
-/* 400 */
+/* 403 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _contains = __webpack_require__(27);
+var _contains = __webpack_require__(28);
 var _curry2 = __webpack_require__(0);
 
 
@@ -29613,7 +30002,7 @@ module.exports = _curry2(function omit(names, obj) {
 
 
 /***/ }),
-/* 401 */
+/* 404 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _arity = __webpack_require__(14);
@@ -29654,7 +30043,7 @@ module.exports = _curry1(function once(fn) {
 
 
 /***/ }),
-/* 402 */
+/* 405 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -29680,7 +30069,7 @@ module.exports = _curry2(function pair(fst, snd) { return [fst, snd]; });
 
 
 /***/ }),
-/* 403 */
+/* 406 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _concat = __webpack_require__(13);
@@ -29719,7 +30108,7 @@ module.exports = _createPartialApplicator(_concat);
 
 
 /***/ }),
-/* 404 */
+/* 407 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _concat = __webpack_require__(13);
@@ -29755,7 +30144,7 @@ module.exports = _createPartialApplicator(flip(_concat));
 
 
 /***/ }),
-/* 405 */
+/* 408 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var filter = __webpack_require__(77);
@@ -29790,7 +30179,7 @@ module.exports = juxt([filter, reject]);
 
 
 /***/ }),
-/* 406 */
+/* 409 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -29828,7 +30217,7 @@ module.exports = _curry3(function pathEq(_path, val, obj) {
 
 
 /***/ }),
-/* 407 */
+/* 410 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -29861,7 +30250,7 @@ module.exports = _curry3(function pathOr(d, p, obj) {
 
 
 /***/ }),
-/* 408 */
+/* 411 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -29893,7 +30282,7 @@ module.exports = _curry3(function pathSatisfies(pred, propPath, obj) {
 
 
 /***/ }),
-/* 409 */
+/* 412 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -29931,7 +30320,7 @@ module.exports = _curry2(function pick(names, obj) {
 
 
 /***/ }),
-/* 410 */
+/* 413 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -29969,7 +30358,7 @@ module.exports = _curry2(function pickBy(test, obj) {
 
 
 /***/ }),
-/* 411 */
+/* 414 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var composeK = __webpack_require__(104);
@@ -30018,7 +30407,7 @@ module.exports = function pipeK() {
 
 
 /***/ }),
-/* 412 */
+/* 415 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var multiply = __webpack_require__(134);
@@ -30044,7 +30433,7 @@ module.exports = reduce(multiply, 1);
 
 
 /***/ }),
-/* 413 */
+/* 416 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _map = __webpack_require__(45);
@@ -30076,7 +30465,7 @@ module.exports = useWith(_map, [pickAll, identity]); // passing `identity` gives
 
 
 /***/ }),
-/* 414 */
+/* 417 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -30113,7 +30502,7 @@ module.exports = _curry3(function propEq(name, val, obj) {
 
 
 /***/ }),
-/* 415 */
+/* 418 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -30146,7 +30535,7 @@ module.exports = _curry3(function propIs(type, name, obj) {
 
 
 /***/ }),
-/* 416 */
+/* 419 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -30185,7 +30574,7 @@ module.exports = _curry3(function propOr(val, p, obj) {
 
 
 /***/ }),
-/* 417 */
+/* 420 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -30215,7 +30604,7 @@ module.exports = _curry3(function propSatisfies(pred, name, obj) {
 
 
 /***/ }),
-/* 418 */
+/* 421 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -30256,7 +30645,7 @@ module.exports = _curry2(function props(ps, obj) {
 
 
 /***/ }),
-/* 419 */
+/* 422 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -30294,7 +30683,7 @@ module.exports = _curry2(function range(from, to) {
 
 
 /***/ }),
-/* 420 */
+/* 423 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curryN = __webpack_require__(44);
@@ -30339,7 +30728,7 @@ module.exports = _curryN(4, [], function _reduceWhile(pred, fn, a, list) {
 
 
 /***/ }),
-/* 421 */
+/* 424 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -30373,7 +30762,7 @@ module.exports = _curry1(_reduced);
 
 
 /***/ }),
-/* 422 */
+/* 425 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -30406,7 +30795,7 @@ module.exports = _curry3(function remove(start, count, list) {
 
 
 /***/ }),
-/* 423 */
+/* 426 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -30442,7 +30831,7 @@ module.exports = _curry2(function repeat(value, n) {
 
 
 /***/ }),
-/* 424 */
+/* 427 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -30474,7 +30863,7 @@ module.exports = _curry3(function replace(regex, replacement, str) {
 
 
 /***/ }),
-/* 425 */
+/* 428 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -30514,7 +30903,7 @@ module.exports = _curry3(function scan(fn, acc, list) {
 
 
 /***/ }),
-/* 426 */
+/* 429 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -30550,7 +30939,7 @@ module.exports = _curry3(function set(lens, v, x) {
 
 
 /***/ }),
-/* 427 */
+/* 430 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -30582,7 +30971,7 @@ module.exports = _curry2(function sort(comparator, list) {
 
 
 /***/ }),
-/* 428 */
+/* 431 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -30630,7 +31019,7 @@ module.exports = _curry2(function sortBy(fn, list) {
 
 
 /***/ }),
-/* 429 */
+/* 432 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -30682,7 +31071,7 @@ module.exports = _curry2(function sortWith(fns, list) {
 
 
 /***/ }),
-/* 430 */
+/* 433 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var invoker = __webpack_require__(38);
@@ -30712,12 +31101,12 @@ module.exports = invoker(1, 'split');
 
 
 /***/ }),
-/* 431 */
+/* 434 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
 var length = __webpack_require__(128);
-var slice = __webpack_require__(26);
+var slice = __webpack_require__(27);
 
 
 /**
@@ -30744,11 +31133,11 @@ module.exports = _curry2(function splitAt(index, array) {
 
 
 /***/ }),
-/* 432 */
+/* 435 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
-var slice = __webpack_require__(26);
+var slice = __webpack_require__(27);
 
 
 /**
@@ -30782,7 +31171,7 @@ module.exports = _curry2(function splitEvery(n, list) {
 
 
 /***/ }),
-/* 433 */
+/* 436 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -30822,7 +31211,7 @@ module.exports = _curry2(function splitWhen(pred, list) {
 
 
 /***/ }),
-/* 434 */
+/* 437 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -30857,7 +31246,7 @@ module.exports = _curry2(function subtract(a, b) {
 
 
 /***/ }),
-/* 435 */
+/* 438 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -30889,7 +31278,7 @@ module.exports = _curry2(function symmetricDifference(list1, list2) {
 
 
 /***/ }),
-/* 436 */
+/* 439 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -30925,7 +31314,7 @@ module.exports = _curry3(function symmetricDifferenceWith(pred, list1, list2) {
 
 
 /***/ }),
-/* 437 */
+/* 440 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -30960,7 +31349,7 @@ module.exports = _curry2(function takeLast(n, xs) {
 
 
 /***/ }),
-/* 438 */
+/* 441 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -30998,12 +31387,12 @@ module.exports = _curry2(function takeLastWhile(fn, list) {
 
 
 /***/ }),
-/* 439 */
+/* 442 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
 var _dispatchable = __webpack_require__(6);
-var _xtakeWhile = __webpack_require__(440);
+var _xtakeWhile = __webpack_require__(443);
 
 
 /**
@@ -31043,7 +31432,7 @@ module.exports = _curry2(_dispatchable(['takeWhile'], _xtakeWhile, function take
 
 
 /***/ }),
-/* 440 */
+/* 443 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -31067,7 +31456,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 441 */
+/* 444 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -31098,12 +31487,12 @@ module.exports = _curry2(function tap(fn, x) {
 
 
 /***/ }),
-/* 442 */
+/* 445 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _cloneRegExp = __webpack_require__(101);
 var _curry2 = __webpack_require__(0);
-var _isRegExp = __webpack_require__(443);
+var _isRegExp = __webpack_require__(446);
 var toString = __webpack_require__(36);
 
 
@@ -31133,7 +31522,7 @@ module.exports = _curry2(function test(pattern, str) {
 
 
 /***/ }),
-/* 443 */
+/* 446 */
 /***/ (function(module, exports) {
 
 module.exports = function _isRegExp(x) {
@@ -31142,7 +31531,7 @@ module.exports = function _isRegExp(x) {
 
 
 /***/ }),
-/* 444 */
+/* 447 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var invoker = __webpack_require__(38);
@@ -31167,7 +31556,7 @@ module.exports = invoker(0, 'toLowerCase');
 
 
 /***/ }),
-/* 445 */
+/* 448 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -31204,7 +31593,7 @@ module.exports = _curry1(function toPairs(obj) {
 
 
 /***/ }),
-/* 446 */
+/* 449 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -31241,7 +31630,7 @@ module.exports = _curry1(function toPairsIn(obj) {
 
 
 /***/ }),
-/* 447 */
+/* 450 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var invoker = __webpack_require__(38);
@@ -31266,7 +31655,7 @@ module.exports = invoker(0, 'toUpperCase');
 
 
 /***/ }),
-/* 448 */
+/* 451 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _reduce = __webpack_require__(12);
@@ -31324,7 +31713,7 @@ module.exports = curryN(4, function transduce(xf, fn, acc, list) {
 
 
 /***/ }),
-/* 449 */
+/* 452 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -31375,7 +31764,7 @@ module.exports = _curry1(function transpose(outerlist) {
 
 
 /***/ }),
-/* 450 */
+/* 453 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -31415,7 +31804,7 @@ module.exports = _curry3(function traverse(of, f, traversable) {
 
 
 /***/ }),
-/* 451 */
+/* 454 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -31457,7 +31846,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 452 */
+/* 455 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _arity = __webpack_require__(14);
@@ -31498,7 +31887,7 @@ module.exports = _curry2(function _tryCatch(tryer, catcher) {
 
 
 /***/ }),
-/* 453 */
+/* 456 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -31536,7 +31925,7 @@ module.exports = _curry1(function unapply(fn) {
 
 
 /***/ }),
-/* 454 */
+/* 457 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -31576,7 +31965,7 @@ module.exports = _curry1(function unary(fn) {
 
 
 /***/ }),
-/* 455 */
+/* 458 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -31620,7 +32009,7 @@ module.exports = _curry2(function uncurryN(depth, fn) {
 
 
 /***/ }),
-/* 456 */
+/* 459 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -31663,7 +32052,7 @@ module.exports = _curry2(function unfold(fn, seed) {
 
 
 /***/ }),
-/* 457 */
+/* 460 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _concat = __webpack_require__(13);
@@ -31693,7 +32082,7 @@ module.exports = _curry2(compose(uniq, _concat));
 
 
 /***/ }),
-/* 458 */
+/* 461 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _concat = __webpack_require__(13);
@@ -31729,7 +32118,7 @@ module.exports = _curry3(function unionWith(pred, list1, list2) {
 
 
 /***/ }),
-/* 459 */
+/* 462 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -31766,7 +32155,7 @@ module.exports = _curry3(function unless(pred, whenFalseFn, x) {
 
 
 /***/ }),
-/* 460 */
+/* 463 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _identity = __webpack_require__(80);
@@ -31794,7 +32183,7 @@ module.exports = chain(_identity);
 
 
 /***/ }),
-/* 461 */
+/* 464 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -31829,7 +32218,7 @@ module.exports = _curry3(function until(pred, fn, init) {
 
 
 /***/ }),
-/* 462 */
+/* 465 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry1 = __webpack_require__(2);
@@ -31866,7 +32255,7 @@ module.exports = _curry1(function valuesIn(obj) {
 
 
 /***/ }),
-/* 463 */
+/* 466 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -31908,7 +32297,7 @@ module.exports = (function() {
 
 
 /***/ }),
-/* 464 */
+/* 467 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -31948,7 +32337,7 @@ module.exports = _curry3(function when(pred, whenTrueFn, x) {
 
 
 /***/ }),
-/* 465 */
+/* 468 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -31990,10 +32379,10 @@ module.exports = _curry2(function whereEq(spec, testObj) {
 
 
 /***/ }),
-/* 466 */
+/* 469 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _contains = __webpack_require__(27);
+var _contains = __webpack_require__(28);
 var _curry2 = __webpack_require__(0);
 var flip = __webpack_require__(55);
 var reject = __webpack_require__(53);
@@ -32024,7 +32413,7 @@ module.exports = _curry2(function(xs, list) {
 
 
 /***/ }),
-/* 467 */
+/* 470 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -32067,7 +32456,7 @@ module.exports = _curry2(function xprod(a, b) { // = xprodWith(prepend); (takes 
 
 
 /***/ }),
-/* 468 */
+/* 471 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -32105,7 +32494,7 @@ module.exports = _curry2(function zip(a, b) {
 
 
 /***/ }),
-/* 469 */
+/* 472 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry2 = __webpack_require__(0);
@@ -32141,7 +32530,7 @@ module.exports = _curry2(function zipObj(keys, values) {
 
 
 /***/ }),
-/* 470 */
+/* 473 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _curry3 = __webpack_require__(3);
@@ -32184,7 +32573,7 @@ module.exports = _curry3(function zipWith(fn, a, b) {
 
 
 /***/ }),
-/* 471 */
+/* 474 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32242,11 +32631,11 @@ module.exports = invariant;
 
 
 /***/ }),
-/* 472 */
+/* 475 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var snakeCase = __webpack_require__(473);
-var trim      = __webpack_require__(476);
+var snakeCase = __webpack_require__(476);
+var trim      = __webpack_require__(479);
 
 function addGroup(resource, actionTypes, group) {
   var upperResource = snakeCase(resource).toUpperCase();
@@ -32284,7 +32673,7 @@ module.exports = function(resource) {
 
 
 /***/ }),
-/* 473 */
+/* 476 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -32295,8 +32684,8 @@ module.exports = function(resource) {
  * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <https://lodash.com/license>
  */
-var deburr = __webpack_require__(474),
-    words = __webpack_require__(475);
+var deburr = __webpack_require__(477),
+    words = __webpack_require__(478);
 
 /**
  * A specialized version of `_.reduce` for arrays without support for
@@ -32362,7 +32751,7 @@ module.exports = snakeCase;
 
 
 /***/ }),
-/* 474 */
+/* 477 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -32551,7 +32940,7 @@ module.exports = deburr;
 
 
 /***/ }),
-/* 475 */
+/* 478 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -32755,7 +33144,7 @@ module.exports = words;
 
 
 /***/ }),
-/* 476 */
+/* 479 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -32766,12 +33155,12 @@ module.exports = words;
  * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <https://lodash.com/license>
  */
-var baseToString = __webpack_require__(477),
-    charsLeftIndex = __webpack_require__(478),
-    charsRightIndex = __webpack_require__(479),
-    isIterateeCall = __webpack_require__(480),
-    trimmedLeftIndex = __webpack_require__(481),
-    trimmedRightIndex = __webpack_require__(482);
+var baseToString = __webpack_require__(480),
+    charsLeftIndex = __webpack_require__(481),
+    charsRightIndex = __webpack_require__(482),
+    isIterateeCall = __webpack_require__(483),
+    trimmedLeftIndex = __webpack_require__(484),
+    trimmedRightIndex = __webpack_require__(485);
 
 /**
  * Removes leading and trailing whitespace or specified characters from `string`.
@@ -32811,7 +33200,7 @@ module.exports = trim;
 
 
 /***/ }),
-/* 477 */
+/* 480 */
 /***/ (function(module, exports) {
 
 /**
@@ -32839,7 +33228,7 @@ module.exports = baseToString;
 
 
 /***/ }),
-/* 478 */
+/* 481 */
 /***/ (function(module, exports) {
 
 /**
@@ -32872,7 +33261,7 @@ module.exports = charsLeftIndex;
 
 
 /***/ }),
-/* 479 */
+/* 482 */
 /***/ (function(module, exports) {
 
 /**
@@ -32904,7 +33293,7 @@ module.exports = charsRightIndex;
 
 
 /***/ }),
-/* 480 */
+/* 483 */
 /***/ (function(module, exports) {
 
 /**
@@ -33042,7 +33431,7 @@ module.exports = isIterateeCall;
 
 
 /***/ }),
-/* 481 */
+/* 484 */
 /***/ (function(module, exports) {
 
 /**
@@ -33087,7 +33476,7 @@ module.exports = trimmedLeftIndex;
 
 
 /***/ }),
-/* 482 */
+/* 485 */
 /***/ (function(module, exports) {
 
 /**
@@ -33131,51 +33520,52 @@ module.exports = trimmedRightIndex;
 
 
 /***/ }),
-/* 483 */
+/* 486 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 function getDefaultConfig(resourceName) {
     return {
         key: "id",
-        resourceName: resourceName,
+        resourceName: resourceName
     };
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = getDefaultConfig;
 
 
 /***/ }),
-/* 484 */
+/* 487 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var reducersFor_1 = __webpack_require__(485);
 Object.defineProperty(exports, "__esModule", { value: true });
+var reducersFor_1 = __webpack_require__(488);
 exports.default = {
-    reducersFor: reducersFor_1.default,
+    reducersFor: reducersFor_1.default
 };
 
 
 /***/ }),
-/* 485 */
+/* 488 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var reducersFor_1 = __webpack_require__(147);
-var error_1 = __webpack_require__(486);
-var start_1 = __webpack_require__(490);
-var success_1 = __webpack_require__(491);
-var error_2 = __webpack_require__(492);
-var start_2 = __webpack_require__(493);
-var success_2 = __webpack_require__(494);
-var success_3 = __webpack_require__(495);
-var error_3 = __webpack_require__(496);
-var start_3 = __webpack_require__(497);
-var success_4 = __webpack_require__(498);
+var error_1 = __webpack_require__(489);
+var start_1 = __webpack_require__(493);
+var success_1 = __webpack_require__(494);
+var error_2 = __webpack_require__(495);
+var start_2 = __webpack_require__(496);
+var success_2 = __webpack_require__(497);
+var success_3 = __webpack_require__(498);
+var error_3 = __webpack_require__(499);
+var start_3 = __webpack_require__(500);
+var success_4 = __webpack_require__(501);
 var r = __webpack_require__(5);
 var baseReducers = {
     createError: error_1.default,
@@ -33187,45 +33577,45 @@ var baseReducers = {
     fetchSuccess: success_3.default,
     updateError: error_3.default,
     updateStart: start_3.default,
-    updateSuccess: success_4.default,
+    updateSuccess: success_4.default
 };
 function reducersFor(resourceName, args, deps) {
     if (args === void 0) { args = {}; }
     var reducers = r.merge(baseReducers, deps);
     return reducersFor_1.default(resourceName, args, [], reducers);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = reducersFor;
 
 
 /***/ }),
-/* 486 */
+/* 489 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var constants_1 = __webpack_require__(4);
 var invariants_1 = __webpack_require__(18);
 var remove_1 = __webpack_require__(149);
 var reducerName = constants_1.default.REDUCER_NAMES.CREATE_ERROR;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: false,
+    canBeArray: false
 };
 function error(config, current, record) {
     invariants_1.default(invariantArgs, config, current, record);
     return remove_1.default(config, current, record);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = error;
 
 
 /***/ }),
-/* 487 */
+/* 490 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 var wrapArray_1 = __webpack_require__(58);
 function assertHasKey(config, scope, recordOrRecords) {
@@ -33237,32 +33627,32 @@ function assertHasKey(config, scope, recordOrRecords) {
         }
     })(records);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = assertHasKey;
 
 
 /***/ }),
-/* 488 */
+/* 491 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 function assert(scope, current) {
     var isArray = r.is(Array, current);
     if (!isArray)
-        throw new Error(scope + ': Expected current to be an array');
+        throw new Error(scope + ": Expected current to be an array");
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = assert;
 
 
 /***/ }),
-/* 489 */
+/* 492 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var wrapArray_1 = __webpack_require__(58);
 /*
 Replaces an existing record in a list
@@ -33293,16 +33683,16 @@ function merge(current, records, key) {
     });
     return newRecords;
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = merge;
 
 
 /***/ }),
-/* 490 */
+/* 493 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var start_1 = __webpack_require__(150);
 var constants_1 = __webpack_require__(4);
 var invariants_1 = __webpack_require__(18);
@@ -33310,7 +33700,7 @@ var store_1 = __webpack_require__(25);
 var reducerName = constants_1.default.REDUCER_NAMES.CREATE_START;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: false,
+    canBeArray: false
 };
 function start(config, current, record) {
     invariants_1.default(invariantArgs, config, current, record);
@@ -33318,41 +33708,34 @@ function start(config, current, record) {
     var newRecord = start_1.prepareRecord(record);
     return store_1.default.merge(current, newRecord, config.key);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = start;
 
 
 /***/ }),
-/* 491 */
+/* 494 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var r = __webpack_require__(5);
+Object.defineProperty(exports, "__esModule", { value: true });
 var constants_1 = __webpack_require__(4);
 var invariants_1 = __webpack_require__(18);
 var reducerName = constants_1.default.REDUCER_NAMES.CREATE_SUCCESS;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: false,
+    canBeArray: false
 };
 function success(config, current, addedRecord, clientGeneratedKey) {
     invariants_1.default(invariantArgs, config, current, addedRecord);
     var key = config.key;
     var done = false;
-    // Keep the clientGeneratedKey if provided
-    if (clientGeneratedKey != null) {
-        addedRecord = r.merge(addedRecord, (_a = {},
-            _a[constants_1.default.SPECIAL_KEYS.CLIENT_GENERATED_ID] = clientGeneratedKey,
-            _a));
-    }
     // Update existing records
     var updatedCollection = current.map(function (record) {
         var recordKey = record[key];
         if (recordKey == null)
-            throw new Error('Expected record to have ' + key);
+            throw new Error("Expected record to have " + key);
         var isSameKey = recordKey === addedRecord[key];
-        var isSameClientGetKey = (clientGeneratedKey != null && clientGeneratedKey === recordKey);
+        var isSameClientGetKey = clientGeneratedKey != null && clientGeneratedKey === recordKey;
         if (isSameKey || isSameClientGetKey) {
             done = true;
             return addedRecord;
@@ -33366,18 +33749,17 @@ function success(config, current, addedRecord, clientGeneratedKey) {
         updatedCollection = updatedCollection.concat([addedRecord]);
     }
     return updatedCollection;
-    var _a;
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = success;
 
 
 /***/ }),
-/* 492 */
+/* 495 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 var constants_1 = __webpack_require__(4);
 var findByKey_1 = __webpack_require__(85);
@@ -33386,7 +33768,7 @@ var store_1 = __webpack_require__(25);
 var reducerName = constants_1.default.REDUCER_NAMES.DELETE_ERROR;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: false,
+    canBeArray: false
 };
 function error(config, current, record) {
     invariants_1.default(invariantArgs, config, current, record);
@@ -33396,16 +33778,16 @@ function error(config, current, record) {
     deleteRecord = r.omit(["deleted", "busy"], deleteRecord);
     return store_1.default.merge(current, deleteRecord, key);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = error;
 
 
 /***/ }),
-/* 493 */
+/* 496 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var start_1 = __webpack_require__(151);
 var constants_1 = __webpack_require__(4);
 var findByKey_1 = __webpack_require__(85);
@@ -33414,7 +33796,7 @@ var store_1 = __webpack_require__(25);
 var reducerName = constants_1.default.REDUCER_NAMES.DELETE_START;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: false,
+    canBeArray: false
 };
 function start(config, current, record) {
     invariants_1.default(invariantArgs, config, current, record);
@@ -33424,23 +33806,23 @@ function start(config, current, record) {
     deleteRecord = start_1.prepareRecord(deleteRecord);
     return store_1.default.merge(current, deleteRecord, key);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = start;
 
 
 /***/ }),
-/* 494 */
+/* 497 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 var invariants_1 = __webpack_require__(18);
 var constants_1 = __webpack_require__(4);
 var reducerName = constants_1.default.REDUCER_NAMES.DELETE_SUCCESS;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: false,
+    canBeArray: false
 };
 function success(config, current, record) {
     invariants_1.default(invariantArgs, config, current, record);
@@ -33451,16 +33833,16 @@ function success(config, current, record) {
     }
     return r.reject(predicate, current);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = success;
 
 
 /***/ }),
-/* 495 */
+/* 498 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var assertAllHaveKeys_1 = __webpack_require__(152);
 var constants_1 = __webpack_require__(4);
 var store_1 = __webpack_require__(25);
@@ -33469,26 +33851,27 @@ var invariants_1 = __webpack_require__(18);
 var reducerName = constants_1.default.REDUCER_NAMES.FETCH_SUCCESS;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: true,
+    canBeArray: true
 };
-function success(config, current, records) {
+function success(config, current, records, emptyState, replace) {
+    if (replace === void 0) { replace = false; }
     invariants_1.default(invariantArgs, config, current, records);
     // wrap array
     records = wrapArray_1.default(records);
     // All given records must have a key
     assertAllHaveKeys_1.default(config, reducerName, records);
-    return store_1.default.merge(current, records, config.key);
+    return store_1.default.merge(replace ? emptyState : current, records, config.key);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = success;
 
 
 /***/ }),
-/* 496 */
+/* 499 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var error_1 = __webpack_require__(153);
 var constants_1 = __webpack_require__(4);
 var findByKey_1 = __webpack_require__(85);
@@ -33497,7 +33880,7 @@ var store_1 = __webpack_require__(25);
 var reducerName = constants_1.default.REDUCER_NAMES.UPDATE_ERROR;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: false,
+    canBeArray: false
 };
 function error(config, current, record) {
     invariants_1.default(invariantArgs, config, current, record);
@@ -33510,69 +33893,7 @@ function error(config, current, record) {
     updatedRecord = error_1.prepareRecord(updatedRecord);
     return store_1.default.merge(current, updatedRecord, key);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = error;
-
-
-/***/ }),
-/* 497 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var start_1 = __webpack_require__(154);
-var constants_1 = __webpack_require__(4);
-var invariants_1 = __webpack_require__(18);
-var store_1 = __webpack_require__(25);
-var reducerName = constants_1.default.REDUCER_NAMES.UPDATE_START;
-var invariantArgs = {
-    reducerName: reducerName,
-    canBeArray: false,
-};
-function start(config, current, record) {
-    invariants_1.default(invariantArgs, config, current, record);
-    // mark record as unsaved and busy
-    var newRecord = start_1.prepareRecord(record);
-    // replace record
-    return store_1.default.merge(current, newRecord, config.key);
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = start;
-
-
-/***/ }),
-/* 498 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var constants_1 = __webpack_require__(4);
-var invariants_1 = __webpack_require__(18);
-var store_1 = __webpack_require__(25);
-var reducerName = constants_1.default.REDUCER_NAMES.UPDATE_SUCCESS;
-var invariantArgs = {
-    reducerName: reducerName,
-    canBeArray: false,
-};
-function success(config, current, record) {
-    invariants_1.default(invariantArgs, config, current, record);
-    return store_1.default.merge(current, record, config.key);
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = success;
-
-
-/***/ }),
-/* 499 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var reducersFor_1 = __webpack_require__(500);
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = {
-    reducersFor: reducersFor_1.default,
-};
 
 
 /***/ }),
@@ -33581,17 +33902,79 @@ exports.default = {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
+var start_1 = __webpack_require__(154);
+var constants_1 = __webpack_require__(4);
+var invariants_1 = __webpack_require__(18);
+var store_1 = __webpack_require__(25);
+var reducerName = constants_1.default.REDUCER_NAMES.UPDATE_START;
+var invariantArgs = {
+    reducerName: reducerName,
+    canBeArray: false
+};
+function start(config, current, record) {
+    invariants_1.default(invariantArgs, config, current, record);
+    // mark record as unsaved and busy
+    var newRecord = start_1.prepareRecord(record);
+    // replace record
+    return store_1.default.merge(current, newRecord, config.key);
+}
+exports.default = start;
+
+
+/***/ }),
+/* 501 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var constants_1 = __webpack_require__(4);
+var invariants_1 = __webpack_require__(18);
+var store_1 = __webpack_require__(25);
+var reducerName = constants_1.default.REDUCER_NAMES.UPDATE_SUCCESS;
+var invariantArgs = {
+    reducerName: reducerName,
+    canBeArray: false
+};
+function success(config, current, record) {
+    invariants_1.default(invariantArgs, config, current, record);
+    return store_1.default.merge(current, record, config.key);
+}
+exports.default = success;
+
+
+/***/ }),
+/* 502 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var reducersFor_1 = __webpack_require__(503);
+exports.default = {
+    reducersFor: reducersFor_1.default
+};
+
+
+/***/ }),
+/* 503 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
 var reducersFor_1 = __webpack_require__(147);
-var error_1 = __webpack_require__(501);
-var start_1 = __webpack_require__(505);
-var success_1 = __webpack_require__(506);
-var error_2 = __webpack_require__(507);
-var start_2 = __webpack_require__(508);
-var success_2 = __webpack_require__(509);
-var success_3 = __webpack_require__(510);
-var error_3 = __webpack_require__(511);
-var start_3 = __webpack_require__(512);
-var success_4 = __webpack_require__(513);
+var error_1 = __webpack_require__(504);
+var start_1 = __webpack_require__(508);
+var success_1 = __webpack_require__(509);
+var error_2 = __webpack_require__(510);
+var start_2 = __webpack_require__(511);
+var success_2 = __webpack_require__(512);
+var success_3 = __webpack_require__(513);
+var error_3 = __webpack_require__(514);
+var start_3 = __webpack_require__(515);
+var success_4 = __webpack_require__(516);
 var r = __webpack_require__(5);
 var baseReducers = {
     createError: error_1.default,
@@ -33603,60 +33986,60 @@ var baseReducers = {
     fetchSuccess: success_3.default,
     updateError: error_3.default,
     updateStart: start_3.default,
-    updateSuccess: success_4.default,
+    updateSuccess: success_4.default
 };
 function reducersFor(resourceName, args, deps) {
     if (args === void 0) { args = {}; }
     var reducers = r.merge(baseReducers, deps);
     return reducersFor_1.default(resourceName, args, {}, reducers);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = reducersFor;
 
 
 /***/ }),
-/* 501 */
+/* 504 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var constants_1 = __webpack_require__(4);
 var invariants_1 = __webpack_require__(19);
-var store_1 = __webpack_require__(28);
+var store_1 = __webpack_require__(29);
 var reducerName = constants_1.default.REDUCER_NAMES.CREATE_ERROR;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: false,
+    canBeArray: false
 };
 function error(config, current, record) {
     invariants_1.default(invariantArgs, config, current, record);
     return store_1.default.remove(config, current, record);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = error;
 
 
 /***/ }),
-/* 502 */
+/* 505 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 function assertValidStore(scope, current) {
     if (!r.is(Object, current))
-        throw new Error(scope + ': Expected current to be an object');
+        throw new Error(scope + ": Expected current to be an object");
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = assertValidStore;
 
 
 /***/ }),
-/* 503 */
+/* 506 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 /*
 Adds or replace one record
@@ -33667,82 +34050,7 @@ function replace(config, current, record) {
     return r.merge(current, (_a = {}, _a[recordKey] = record, _a));
     var _a;
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = replace;
-
-
-/***/ }),
-/* 504 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var r = __webpack_require__(5);
-function remove(config, current, record) {
-    var key = config.key;
-    var recordKey = record[key];
-    return r.omit([recordKey], current);
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = remove;
-
-
-/***/ }),
-/* 505 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var start_1 = __webpack_require__(150);
-var constants_1 = __webpack_require__(4);
-var invariants_1 = __webpack_require__(19);
-var store_1 = __webpack_require__(28);
-var reducerName = constants_1.default.REDUCER_NAMES.CREATE_START;
-var invariantArgs = {
-    reducerName: reducerName,
-    canBeArray: false,
-};
-function start(config, current, record) {
-    invariants_1.default(invariantArgs, config, current, record);
-    // mark record as unsaved and busy
-    var newRecord = start_1.prepareRecord(record);
-    return store_1.default.merge(config, current, newRecord);
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = start;
-
-
-/***/ }),
-/* 506 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var r = __webpack_require__(5);
-var constants_1 = __webpack_require__(4);
-var invariants_1 = __webpack_require__(19);
-var reducerName = constants_1.default.REDUCER_NAMES.CREATE_SUCCESS;
-var invariantArgs = {
-    reducerName: reducerName,
-    canBeArray: false,
-};
-function success(config, current, addedRecord, clientGeneratedKey) {
-    invariants_1.default(invariantArgs, config, current, addedRecord);
-    var key = config.key;
-    var addedRecordKey = addedRecord[key];
-    var addedRecordKeyLens = r.lensProp(addedRecordKey);
-    // Keep the cuid in the record if there is one
-    if (clientGeneratedKey != null) {
-        addedRecord = r.merge(addedRecord, (_a = {},
-            _a[constants_1.default.SPECIAL_KEYS.CLIENT_GENERATED_ID] = clientGeneratedKey,
-            _a));
-    }
-    var currentWithoutClientGeneratedKey = r.dissoc(clientGeneratedKey, current);
-    return r.set(addedRecordKeyLens, addedRecord, currentWithoutClientGeneratedKey);
-    var _a;
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = success;
 
 
 /***/ }),
@@ -33751,13 +34059,81 @@ exports.default = success;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
+var r = __webpack_require__(5);
+function remove(config, current, record) {
+    var key = config.key;
+    var recordKey = record[key];
+    return r.omit([recordKey], current);
+}
+exports.default = remove;
+
+
+/***/ }),
+/* 508 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var start_1 = __webpack_require__(150);
+var constants_1 = __webpack_require__(4);
+var invariants_1 = __webpack_require__(19);
+var store_1 = __webpack_require__(29);
+var reducerName = constants_1.default.REDUCER_NAMES.CREATE_START;
+var invariantArgs = {
+    reducerName: reducerName,
+    canBeArray: false
+};
+function start(config, current, record) {
+    invariants_1.default(invariantArgs, config, current, record);
+    // mark record as unsaved and busy
+    var newRecord = start_1.prepareRecord(record);
+    return store_1.default.merge(config, current, newRecord);
+}
+exports.default = start;
+
+
+/***/ }),
+/* 509 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var r = __webpack_require__(5);
+var constants_1 = __webpack_require__(4);
+var invariants_1 = __webpack_require__(19);
+var reducerName = constants_1.default.REDUCER_NAMES.CREATE_SUCCESS;
+var invariantArgs = {
+    reducerName: reducerName,
+    canBeArray: false
+};
+function success(config, current, addedRecord, clientGeneratedKey) {
+    invariants_1.default(invariantArgs, config, current, addedRecord);
+    var key = config.key;
+    var addedRecordKey = addedRecord[key];
+    var addedRecordKeyLens = r.lensProp(addedRecordKey);
+    var currentWithoutClientGeneratedKey = r.dissoc(clientGeneratedKey, current);
+    return r.set(addedRecordKeyLens, addedRecord, currentWithoutClientGeneratedKey);
+}
+exports.default = success;
+
+
+/***/ }),
+/* 510 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 var constants_1 = __webpack_require__(4);
 var invariants_1 = __webpack_require__(19);
 var reducerName = constants_1.default.REDUCER_NAMES.DELETE_ERROR;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: false,
+    canBeArray: false
 };
 function error(config, current, record) {
     invariants_1.default(invariantArgs, config, current, record);
@@ -33775,24 +34151,24 @@ function error(config, current, record) {
     }
     var _a;
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = error;
 
 
 /***/ }),
-/* 508 */
+/* 511 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var start_1 = __webpack_require__(151);
 var invariants_1 = __webpack_require__(19);
 var constants_1 = __webpack_require__(4);
-var store_1 = __webpack_require__(28);
+var store_1 = __webpack_require__(29);
 var reducerName = constants_1.default.REDUCER_NAMES.DELETE_START;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: false,
+    canBeArray: false
 };
 function start(config, current, record) {
     invariants_1.default(invariantArgs, config, current, record);
@@ -33807,23 +34183,23 @@ function start(config, current, record) {
         return store_1.default.merge(config, current, deleteRecord);
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = start;
 
 
 /***/ }),
-/* 509 */
+/* 512 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 var invariants_1 = __webpack_require__(19);
 var constants_1 = __webpack_require__(4);
 var reducerName = constants_1.default.REDUCER_NAMES.DELETE_SUCCESS;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: false,
+    canBeArray: false
 };
 function success(config, current, record) {
     invariants_1.default(invariantArgs, config, current, record);
@@ -33834,16 +34210,16 @@ function success(config, current, record) {
     }
     return r.reject(predicate, current);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = success;
 
 
 /***/ }),
-/* 510 */
+/* 513 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var r = __webpack_require__(5);
 var assertAllHaveKeys_1 = __webpack_require__(152);
 var constants_1 = __webpack_require__(4);
@@ -33852,35 +34228,36 @@ var wrapArray_1 = __webpack_require__(58);
 var reducerName = constants_1.default.REDUCER_NAMES.FETCH_SUCCESS;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: true,
+    canBeArray: true
 };
-function success(config, current, records) {
+function success(config, current, records, emptyState, replace) {
+    if (replace === void 0) { replace = false; }
     invariants_1.default(invariantArgs, config, current, records);
     // wrap array
     records = wrapArray_1.default(records);
     // All given records must have a key
     assertAllHaveKeys_1.default(config, reducerName, records);
     var merge = r.indexBy(r.prop(config.key), records);
-    return r.merge(current, merge);
+    return r.merge(replace ? emptyState : current, merge);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = success;
 
 
 /***/ }),
-/* 511 */
+/* 514 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var error_1 = __webpack_require__(153);
 var constants_1 = __webpack_require__(4);
 var invariants_1 = __webpack_require__(19);
-var store_1 = __webpack_require__(28);
+var store_1 = __webpack_require__(29);
 var reducerName = constants_1.default.REDUCER_NAMES.UPDATE_ERROR;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: false,
+    canBeArray: false
 };
 function error(config, current, record) {
     invariants_1.default(invariantArgs, config, current, record);
@@ -33893,24 +34270,24 @@ function error(config, current, record) {
     updatedRecord = error_1.prepareRecord(updatedRecord);
     return store_1.default.merge(config, current, updatedRecord);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = error;
 
 
 /***/ }),
-/* 512 */
+/* 515 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var start_1 = __webpack_require__(154);
 var constants_1 = __webpack_require__(4);
 var invariants_1 = __webpack_require__(19);
-var store_1 = __webpack_require__(28);
+var store_1 = __webpack_require__(29);
 var reducerName = constants_1.default.REDUCER_NAMES.UPDATE_START;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: false,
+    canBeArray: false
 };
 function start(config, current, record) {
     invariants_1.default(invariantArgs, config, current, record);
@@ -33919,34 +34296,33 @@ function start(config, current, record) {
     // replace record
     return store_1.default.merge(config, current, newRecord);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = start;
 
 
 /***/ }),
-/* 513 */
+/* 516 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var constants_1 = __webpack_require__(4);
 var invariants_1 = __webpack_require__(19);
-var store_1 = __webpack_require__(28);
+var store_1 = __webpack_require__(29);
 var reducerName = constants_1.default.REDUCER_NAMES.UPDATE_SUCCESS;
 var invariantArgs = {
     reducerName: reducerName,
-    canBeArray: false,
+    canBeArray: false
 };
 function success(config, current, record) {
     invariants_1.default(invariantArgs, config, current, record);
     return store_1.default.merge(config, current, record);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = success;
 
 
 /***/ }),
-/* 514 */
+/* 517 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});var _allergens=__webpack_require__(59);Object.defineProperty(exports,'fetchAllergens',{enumerable:true,get:function get(){return _allergens.fetchAllergens;}});var _locations=__webpack_require__(60);Object.defineProperty(exports,'fetchLocations',{enumerable:true,get:function get(){return _locations.
@@ -33956,11 +34332,11 @@ fetchAllCustomerOrders;}});Object.defineProperty(exports,'fetchPastCustomerOrder
 fetchImages;}});
 
 /***/ }),
-/* 515 */
+/* 518 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});var _addresses=__webpack_require__(63);Object.defineProperty(exports,'fetchAddresses',{enumerable:true,get:function get(){return _addresses.fetchAddresses;}});Object.defineProperty(exports,'createAddress',{enumerable:true,get:function get(){return _addresses.createAddress;}});Object.defineProperty(exports,'deleteAddress',{enumerable:true,get:function get(){return _addresses.deleteAddress;}});var _menus=__webpack_require__(86);Object.defineProperty(exports,'fetchMenu',{enumerable:true,get:function get(){return _menus.
-fetchMenu;}});var _order=__webpack_require__(29);Object.defineProperty(exports,'addLineItem',{enumerable:true,get:function get(){return _order.
+fetchMenu;}});var _order=__webpack_require__(26);Object.defineProperty(exports,'addLineItem',{enumerable:true,get:function get(){return _order.
 
 addLineItem;}});Object.defineProperty(exports,'pushLineItem',{enumerable:true,get:function get(){return _order.
 pushLineItem;}});Object.defineProperty(exports,'addOptionToLineItem',{enumerable:true,get:function get(){return _order.
@@ -33993,7 +34369,7 @@ setDefaultPayment;}});var _favorites=__webpack_require__(65);Object.defineProper
 fetchFavorites;}});Object.defineProperty(exports,'createFavorite',{enumerable:true,get:function get(){return _favorites.
 createFavorite;}});Object.defineProperty(exports,'updateFavorite',{enumerable:true,get:function get(){return _favorites.
 updateFavorite;}});Object.defineProperty(exports,'deleteFavorite',{enumerable:true,get:function get(){return _favorites.
-deleteFavorite;}});var _ratings=__webpack_require__(517);Object.defineProperty(exports,'fetchRating',{enumerable:true,get:function get(){return _ratings.
+deleteFavorite;}});var _ratings=__webpack_require__(520);Object.defineProperty(exports,'fetchRating',{enumerable:true,get:function get(){return _ratings.
 
 
 fetchRating;}});Object.defineProperty(exports,'createRating',{enumerable:true,get:function get(){return _ratings.
@@ -34021,7 +34397,7 @@ addAllergens;}});Object.defineProperty(exports,'removeAllergens',{enumerable:tru
 removeAllergens;}});
 
 /***/ }),
-/* 516 */
+/* 519 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -34047,214 +34423,220 @@ var map = {
 	"./be.js": 167,
 	"./bg": 168,
 	"./bg.js": 168,
-	"./bn": 169,
-	"./bn.js": 169,
-	"./bo": 170,
-	"./bo.js": 170,
-	"./br": 171,
-	"./br.js": 171,
-	"./bs": 172,
-	"./bs.js": 172,
-	"./ca": 173,
-	"./ca.js": 173,
-	"./cs": 174,
-	"./cs.js": 174,
-	"./cv": 175,
-	"./cv.js": 175,
-	"./cy": 176,
-	"./cy.js": 176,
-	"./da": 177,
-	"./da.js": 177,
-	"./de": 178,
-	"./de-at": 179,
-	"./de-at.js": 179,
-	"./de-ch": 180,
-	"./de-ch.js": 180,
-	"./de.js": 178,
-	"./dv": 181,
-	"./dv.js": 181,
-	"./el": 182,
-	"./el.js": 182,
-	"./en-au": 183,
-	"./en-au.js": 183,
-	"./en-ca": 184,
-	"./en-ca.js": 184,
-	"./en-gb": 185,
-	"./en-gb.js": 185,
-	"./en-ie": 186,
-	"./en-ie.js": 186,
-	"./en-nz": 187,
-	"./en-nz.js": 187,
-	"./eo": 188,
-	"./eo.js": 188,
-	"./es": 189,
-	"./es-do": 190,
-	"./es-do.js": 190,
-	"./es.js": 189,
-	"./et": 191,
-	"./et.js": 191,
-	"./eu": 192,
-	"./eu.js": 192,
-	"./fa": 193,
-	"./fa.js": 193,
-	"./fi": 194,
-	"./fi.js": 194,
-	"./fo": 195,
-	"./fo.js": 195,
-	"./fr": 196,
-	"./fr-ca": 197,
-	"./fr-ca.js": 197,
-	"./fr-ch": 198,
-	"./fr-ch.js": 198,
-	"./fr.js": 196,
-	"./fy": 199,
-	"./fy.js": 199,
-	"./gd": 200,
-	"./gd.js": 200,
-	"./gl": 201,
-	"./gl.js": 201,
-	"./gom-latn": 202,
-	"./gom-latn.js": 202,
-	"./he": 203,
-	"./he.js": 203,
-	"./hi": 204,
-	"./hi.js": 204,
-	"./hr": 205,
-	"./hr.js": 205,
-	"./hu": 206,
-	"./hu.js": 206,
-	"./hy-am": 207,
-	"./hy-am.js": 207,
-	"./id": 208,
-	"./id.js": 208,
-	"./is": 209,
-	"./is.js": 209,
-	"./it": 210,
-	"./it.js": 210,
-	"./ja": 211,
-	"./ja.js": 211,
-	"./jv": 212,
-	"./jv.js": 212,
-	"./ka": 213,
-	"./ka.js": 213,
-	"./kk": 214,
-	"./kk.js": 214,
-	"./km": 215,
-	"./km.js": 215,
-	"./kn": 216,
-	"./kn.js": 216,
-	"./ko": 217,
-	"./ko.js": 217,
-	"./ky": 218,
-	"./ky.js": 218,
-	"./lb": 219,
-	"./lb.js": 219,
-	"./lo": 220,
-	"./lo.js": 220,
-	"./lt": 221,
-	"./lt.js": 221,
-	"./lv": 222,
-	"./lv.js": 222,
-	"./me": 223,
-	"./me.js": 223,
-	"./mi": 224,
-	"./mi.js": 224,
-	"./mk": 225,
-	"./mk.js": 225,
-	"./ml": 226,
-	"./ml.js": 226,
-	"./mr": 227,
-	"./mr.js": 227,
-	"./ms": 228,
-	"./ms-my": 229,
-	"./ms-my.js": 229,
-	"./ms.js": 228,
-	"./my": 230,
-	"./my.js": 230,
-	"./nb": 231,
-	"./nb.js": 231,
-	"./ne": 232,
-	"./ne.js": 232,
-	"./nl": 233,
-	"./nl-be": 234,
-	"./nl-be.js": 234,
-	"./nl.js": 233,
-	"./nn": 235,
-	"./nn.js": 235,
-	"./pa-in": 236,
-	"./pa-in.js": 236,
-	"./pl": 237,
-	"./pl.js": 237,
-	"./pt": 238,
-	"./pt-br": 239,
-	"./pt-br.js": 239,
-	"./pt.js": 238,
-	"./ro": 240,
-	"./ro.js": 240,
-	"./ru": 241,
-	"./ru.js": 241,
-	"./sd": 242,
-	"./sd.js": 242,
-	"./se": 243,
-	"./se.js": 243,
-	"./si": 244,
-	"./si.js": 244,
-	"./sk": 245,
-	"./sk.js": 245,
-	"./sl": 246,
-	"./sl.js": 246,
-	"./sq": 247,
-	"./sq.js": 247,
-	"./sr": 248,
-	"./sr-cyrl": 249,
-	"./sr-cyrl.js": 249,
-	"./sr.js": 248,
-	"./ss": 250,
-	"./ss.js": 250,
-	"./sv": 251,
-	"./sv.js": 251,
-	"./sw": 252,
-	"./sw.js": 252,
-	"./ta": 253,
-	"./ta.js": 253,
-	"./te": 254,
-	"./te.js": 254,
-	"./tet": 255,
-	"./tet.js": 255,
-	"./th": 256,
-	"./th.js": 256,
-	"./tl-ph": 257,
-	"./tl-ph.js": 257,
-	"./tlh": 258,
-	"./tlh.js": 258,
-	"./tr": 259,
-	"./tr.js": 259,
-	"./tzl": 260,
-	"./tzl.js": 260,
-	"./tzm": 261,
-	"./tzm-latn": 262,
-	"./tzm-latn.js": 262,
-	"./tzm.js": 261,
-	"./uk": 263,
-	"./uk.js": 263,
-	"./ur": 264,
-	"./ur.js": 264,
-	"./uz": 265,
-	"./uz-latn": 266,
-	"./uz-latn.js": 266,
-	"./uz.js": 265,
-	"./vi": 267,
-	"./vi.js": 267,
-	"./x-pseudo": 268,
-	"./x-pseudo.js": 268,
-	"./yo": 269,
-	"./yo.js": 269,
-	"./zh-cn": 270,
-	"./zh-cn.js": 270,
-	"./zh-hk": 271,
-	"./zh-hk.js": 271,
-	"./zh-tw": 272,
-	"./zh-tw.js": 272
+	"./bm": 169,
+	"./bm.js": 169,
+	"./bn": 170,
+	"./bn.js": 170,
+	"./bo": 171,
+	"./bo.js": 171,
+	"./br": 172,
+	"./br.js": 172,
+	"./bs": 173,
+	"./bs.js": 173,
+	"./ca": 174,
+	"./ca.js": 174,
+	"./cs": 175,
+	"./cs.js": 175,
+	"./cv": 176,
+	"./cv.js": 176,
+	"./cy": 177,
+	"./cy.js": 177,
+	"./da": 178,
+	"./da.js": 178,
+	"./de": 179,
+	"./de-at": 180,
+	"./de-at.js": 180,
+	"./de-ch": 181,
+	"./de-ch.js": 181,
+	"./de.js": 179,
+	"./dv": 182,
+	"./dv.js": 182,
+	"./el": 183,
+	"./el.js": 183,
+	"./en-au": 184,
+	"./en-au.js": 184,
+	"./en-ca": 185,
+	"./en-ca.js": 185,
+	"./en-gb": 186,
+	"./en-gb.js": 186,
+	"./en-ie": 187,
+	"./en-ie.js": 187,
+	"./en-nz": 188,
+	"./en-nz.js": 188,
+	"./eo": 189,
+	"./eo.js": 189,
+	"./es": 190,
+	"./es-do": 191,
+	"./es-do.js": 191,
+	"./es-us": 192,
+	"./es-us.js": 192,
+	"./es.js": 190,
+	"./et": 193,
+	"./et.js": 193,
+	"./eu": 194,
+	"./eu.js": 194,
+	"./fa": 195,
+	"./fa.js": 195,
+	"./fi": 196,
+	"./fi.js": 196,
+	"./fo": 197,
+	"./fo.js": 197,
+	"./fr": 198,
+	"./fr-ca": 199,
+	"./fr-ca.js": 199,
+	"./fr-ch": 200,
+	"./fr-ch.js": 200,
+	"./fr.js": 198,
+	"./fy": 201,
+	"./fy.js": 201,
+	"./gd": 202,
+	"./gd.js": 202,
+	"./gl": 203,
+	"./gl.js": 203,
+	"./gom-latn": 204,
+	"./gom-latn.js": 204,
+	"./gu": 205,
+	"./gu.js": 205,
+	"./he": 206,
+	"./he.js": 206,
+	"./hi": 207,
+	"./hi.js": 207,
+	"./hr": 208,
+	"./hr.js": 208,
+	"./hu": 209,
+	"./hu.js": 209,
+	"./hy-am": 210,
+	"./hy-am.js": 210,
+	"./id": 211,
+	"./id.js": 211,
+	"./is": 212,
+	"./is.js": 212,
+	"./it": 213,
+	"./it.js": 213,
+	"./ja": 214,
+	"./ja.js": 214,
+	"./jv": 215,
+	"./jv.js": 215,
+	"./ka": 216,
+	"./ka.js": 216,
+	"./kk": 217,
+	"./kk.js": 217,
+	"./km": 218,
+	"./km.js": 218,
+	"./kn": 219,
+	"./kn.js": 219,
+	"./ko": 220,
+	"./ko.js": 220,
+	"./ky": 221,
+	"./ky.js": 221,
+	"./lb": 222,
+	"./lb.js": 222,
+	"./lo": 223,
+	"./lo.js": 223,
+	"./lt": 224,
+	"./lt.js": 224,
+	"./lv": 225,
+	"./lv.js": 225,
+	"./me": 226,
+	"./me.js": 226,
+	"./mi": 227,
+	"./mi.js": 227,
+	"./mk": 228,
+	"./mk.js": 228,
+	"./ml": 229,
+	"./ml.js": 229,
+	"./mr": 230,
+	"./mr.js": 230,
+	"./ms": 231,
+	"./ms-my": 232,
+	"./ms-my.js": 232,
+	"./ms.js": 231,
+	"./my": 233,
+	"./my.js": 233,
+	"./nb": 234,
+	"./nb.js": 234,
+	"./ne": 235,
+	"./ne.js": 235,
+	"./nl": 236,
+	"./nl-be": 237,
+	"./nl-be.js": 237,
+	"./nl.js": 236,
+	"./nn": 238,
+	"./nn.js": 238,
+	"./pa-in": 239,
+	"./pa-in.js": 239,
+	"./pl": 240,
+	"./pl.js": 240,
+	"./pt": 241,
+	"./pt-br": 242,
+	"./pt-br.js": 242,
+	"./pt.js": 241,
+	"./ro": 243,
+	"./ro.js": 243,
+	"./ru": 244,
+	"./ru.js": 244,
+	"./sd": 245,
+	"./sd.js": 245,
+	"./se": 246,
+	"./se.js": 246,
+	"./si": 247,
+	"./si.js": 247,
+	"./sk": 248,
+	"./sk.js": 248,
+	"./sl": 249,
+	"./sl.js": 249,
+	"./sq": 250,
+	"./sq.js": 250,
+	"./sr": 251,
+	"./sr-cyrl": 252,
+	"./sr-cyrl.js": 252,
+	"./sr.js": 251,
+	"./ss": 253,
+	"./ss.js": 253,
+	"./sv": 254,
+	"./sv.js": 254,
+	"./sw": 255,
+	"./sw.js": 255,
+	"./ta": 256,
+	"./ta.js": 256,
+	"./te": 257,
+	"./te.js": 257,
+	"./tet": 258,
+	"./tet.js": 258,
+	"./th": 259,
+	"./th.js": 259,
+	"./tl-ph": 260,
+	"./tl-ph.js": 260,
+	"./tlh": 261,
+	"./tlh.js": 261,
+	"./tr": 262,
+	"./tr.js": 262,
+	"./tzl": 263,
+	"./tzl.js": 263,
+	"./tzm": 264,
+	"./tzm-latn": 265,
+	"./tzm-latn.js": 265,
+	"./tzm.js": 264,
+	"./uk": 266,
+	"./uk.js": 266,
+	"./ur": 267,
+	"./ur.js": 267,
+	"./uz": 268,
+	"./uz-latn": 269,
+	"./uz-latn.js": 269,
+	"./uz.js": 268,
+	"./vi": 270,
+	"./vi.js": 270,
+	"./x-pseudo": 271,
+	"./x-pseudo.js": 271,
+	"./yo": 272,
+	"./yo.js": 272,
+	"./zh-cn": 273,
+	"./zh-cn.js": 273,
+	"./zh-hk": 274,
+	"./zh-hk.js": 274,
+	"./zh-tw": 275,
+	"./zh-tw.js": 275
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -34270,10 +34652,10 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 516;
+webpackContext.id = 519;
 
 /***/ }),
-/* 517 */
+/* 520 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.deleteRating=exports.updateRating=exports.createRating=exports.fetchRating=undefined;
@@ -34331,16 +34713,16 @@ catch(function(_ref7){var errors=_ref7.errors;return dispatch(deleteError(errors
 };
 
 /***/ }),
-/* 518 */
+/* 521 */
 /***/ (function(module, exports, __webpack_require__) {
 
-Object.defineProperty(exports,"__esModule",{value:true});var _addresses=__webpack_require__(519);Object.keys(_addresses).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _addresses[key];}});});var _allergens=__webpack_require__(520);
-Object.keys(_allergens).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _allergens[key];}});});var _favorites=__webpack_require__(521);
-Object.keys(_favorites).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _favorites[key];}});});var _locations=__webpack_require__(522);
+Object.defineProperty(exports,"__esModule",{value:true});var _addresses=__webpack_require__(522);Object.keys(_addresses).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _addresses[key];}});});var _allergens=__webpack_require__(523);
+Object.keys(_allergens).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _allergens[key];}});});var _favorites=__webpack_require__(524);
+Object.keys(_favorites).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _favorites[key];}});});var _locations=__webpack_require__(525);
 Object.keys(_locations).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _locations[key];}});});
 
 /***/ }),
-/* 519 */
+/* 522 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.addressesAsArray=exports.addressesCollection=undefined;var _reselect=__webpack_require__(66);
@@ -34352,7 +34734,7 @@ addressesCollection,
 function(addresses){return Object.values(addresses);});
 
 /***/ }),
-/* 520 */
+/* 523 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.allergensAsArray=exports.allergensCollection=undefined;var _reselect=__webpack_require__(66);
@@ -34364,7 +34746,7 @@ allergensCollection,
 function(allergens){return Object.values(allergens);});
 
 /***/ }),
-/* 521 */
+/* 524 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.favoritesAsArray=exports.favoritesCollection=undefined;var _reselect=__webpack_require__(66);
@@ -34376,12 +34758,12 @@ favoritesCollection,
 function(favorites){return Object.values(favorites);});
 
 /***/ }),
-/* 522 */
+/* 525 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.currentLocation=exports.locationsAsArray=exports.locationsCollection=undefined;var _reselect=__webpack_require__(66);
-var _get=__webpack_require__(523);var _get2=_interopRequireDefault(_get);
-var _lodash=__webpack_require__(524);var _lodash2=_interopRequireDefault(_lodash);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}
+var _get=__webpack_require__(526);var _get2=_interopRequireDefault(_get);
+var _lodash=__webpack_require__(527);var _lodash2=_interopRequireDefault(_lodash);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}
 
 var locationsCollection=exports.locationsCollection=function locationsCollection(state){return state.data.locations.locationsById;};
 
@@ -34396,13 +34778,13 @@ function(state){return(0,_get2.default)(state,'session.order.orderData.location_
 function(locationsAsArray,location_id){return(0,_lodash2.default)(locationsAsArray,{location_id:location_id});});
 
 /***/ }),
-/* 523 */
+/* 526 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.default=function(obj){var path=arguments.length>1&&arguments[1]!==undefined?arguments[1]:'';return path.length?path.split('.').reduce(function(acc,part){return acc&&acc[part];},obj):obj;};
 
 /***/ }),
-/* 524 */
+/* 527 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {/**
@@ -36862,7 +37244,7 @@ module.exports = find;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(57), __webpack_require__(40)(module)))
 
 /***/ }),
-/* 525 */
+/* 528 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -37257,6 +37639,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /* global window performance */
 /* eslint space-infix-ops: 1, no-param-reassign: 1, no-restricted-syntax: 1, prefer-rest-params: 1, strict: 1  */
+function dasherize(str) {
+  return str.replace(/([A-Z])/g, '-$1').replace(/[-_\s]+/g, '-').toLowerCase();
+}
+
 function queryStringBuilder() {
   var queryObject = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -37355,15 +37741,18 @@ var ISO8601_PATTERN = exports.ISO8601_PATTERN = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d
 
 // http://stackoverflow.com/posts/8809472/revisions
 function generateUUID() {
+  var suffix = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
   var d = new Date().getTime();
   if (window.performance && typeof window.performance.now === 'function') {
     d += performance.now(); // use high-precision timer if available
   }
-  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+  var uuid = 'xxxxxx'.replace(/[xy]/g, function (c) {
     var r = (d + Math.random() * 16) % 16 | 0;
     d = Math.floor(d / 16);
     return (c === 'x' ? r : r & 0x3 | 0x8).toString(16);
   });
+  if (suffix && suffix.length) return uuid + '-' + dasherize(suffix);
   return uuid;
 }
 
@@ -37482,7 +37871,7 @@ var LineItem = function () {
     if (result) throw result;
 
     /* Allow uuid incase we want to rehyrate this lineItem. */
-    this.uuid = uuid || (0, _utils.generateUUID)();
+    this.uuid = uuid || (0, _utils.generateUUID)(product.name);
     this.product = product;
     this.quantity = quantity;
     this.configuration = [];
@@ -37503,7 +37892,7 @@ var LineItem = function () {
     key: 'addOption',
     value: function addOption(group, item) {
       var groupConfig = this.configurationForGroup(group);
-      var canAdd = group.max_options > (groupConfig ? groupConfig.optionItems.length : 0);
+      var canAdd = group.max_options === 0 || group.max_options > (groupConfig ? groupConfig.optionItems.length : 0);
 
       if (!canAdd) {
         var error = {
@@ -37571,7 +37960,7 @@ var LineItem = function () {
             relatedConfiguration: _this.configurationForGroup(group)
           };
         }
-        if (count > group.max_options) {
+        if (group.max_options !== 0 && count > group.max_options) {
           return {
             error: 'Too Many Options added for this Group.',
             subjectType: 'option_group',
@@ -37634,7 +38023,7 @@ var LineItem = function () {
       var maps = (0, _lodash10.default)((0, _lodash6.default)(this.optionGroups(), function (optionGroup) {
         var configGroup = _this2.configurationForGroup(optionGroup.id);
         var currentlySelectedCount = configGroup ? configGroup.optionItems.length : 0;
-        var canAddMoreToThisGroup = currentlySelectedCount < optionGroup.max_options;
+        var canAddMoreToThisGroup = optionGroup.max_options === 0 || currentlySelectedCount < optionGroup.max_options;
         var requiresMoreInThisGroup = currentlySelectedCount < optionGroup.min_options;
 
         var remainingIncludedOptions = optionGroup.included_options - currentlySelectedCount;
@@ -79624,18 +80013,18 @@ module.exports = __webpack_require__(69);
 });
 
 /***/ }),
-/* 526 */
+/* 529 */
 /***/ (function(module, exports, __webpack_require__) {
 
-Object.defineProperty(exports,"__esModule",{value:true});var _reduxThunk=__webpack_require__(527);var _reduxThunk2=_interopRequireDefault(_reduxThunk);
-var _reduxPromiseMiddleware=__webpack_require__(528);var _reduxPromiseMiddleware2=_interopRequireDefault(_reduxPromiseMiddleware);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}exports.default=
+Object.defineProperty(exports,"__esModule",{value:true});var _reduxThunk=__webpack_require__(530);var _reduxThunk2=_interopRequireDefault(_reduxThunk);
+var _reduxPromiseMiddleware=__webpack_require__(531);var _reduxPromiseMiddleware2=_interopRequireDefault(_reduxPromiseMiddleware);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}exports.default=
 
 [_reduxThunk2.default,
 
 (0,_reduxPromiseMiddleware2.default)()];
 
 /***/ }),
-/* 527 */
+/* 530 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79664,7 +80053,7 @@ thunk.withExtraArgument = createThunkMiddleware;
 exports['default'] = thunk;
 
 /***/ }),
-/* 528 */
+/* 531 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79683,7 +80072,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 exports.default = promiseMiddleware;
 
-var _isPromise = __webpack_require__(529);
+var _isPromise = __webpack_require__(532);
 
 var _isPromise2 = _interopRequireDefault(_isPromise);
 
@@ -79844,7 +80233,7 @@ function promiseMiddleware() {
 }
 
 /***/ }),
-/* 529 */
+/* 532 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79866,16 +80255,16 @@ function isPromise(value) {
 }
 
 /***/ }),
-/* 530 */
+/* 533 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});var _redux=__webpack_require__(67);
-var _data=__webpack_require__(531);var _data2=_interopRequireDefault(_data);
-var _error=__webpack_require__(537);var _error2=_interopRequireDefault(_error);
-var _ref=__webpack_require__(538);var _ref2=_interopRequireDefault(_ref);
-var _session=__webpack_require__(539);var _session2=_interopRequireDefault(_session);
-var _status=__webpack_require__(547);var _status2=_interopRequireDefault(_status);
-var _user=__webpack_require__(548);var _user2=_interopRequireDefault(_user);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}exports.default=
+var _data=__webpack_require__(534);var _data2=_interopRequireDefault(_data);
+var _error=__webpack_require__(540);var _error2=_interopRequireDefault(_error);
+var _ref=__webpack_require__(541);var _ref2=_interopRequireDefault(_ref);
+var _session=__webpack_require__(542);var _session2=_interopRequireDefault(_session);
+var _status=__webpack_require__(550);var _status2=_interopRequireDefault(_status);
+var _user=__webpack_require__(551);var _user2=_interopRequireDefault(_user);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}exports.default=
 
 (0,_redux.combineReducers)({
 data:_data2.default,
@@ -79886,15 +80275,15 @@ status:_status2.default,
 user:_user2.default});
 
 /***/ }),
-/* 531 */
+/* 534 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});var _redux=__webpack_require__(67);
-var _allergens=__webpack_require__(532);var _allergens2=_interopRequireDefault(_allergens);
-var _locations=__webpack_require__(533);var _locations2=_interopRequireDefault(_locations);
-var _geolocations=__webpack_require__(534);var _geolocations2=_interopRequireDefault(_geolocations);
-var _customerOrders=__webpack_require__(535);var _customerOrders2=_interopRequireDefault(_customerOrders);
-var _images=__webpack_require__(536);var _images2=_interopRequireDefault(_images);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}exports.default=
+var _allergens=__webpack_require__(535);var _allergens2=_interopRequireDefault(_allergens);
+var _locations=__webpack_require__(536);var _locations2=_interopRequireDefault(_locations);
+var _geolocations=__webpack_require__(537);var _geolocations2=_interopRequireDefault(_geolocations);
+var _customerOrders=__webpack_require__(538);var _customerOrders2=_interopRequireDefault(_customerOrders);
+var _images=__webpack_require__(539);var _images2=_interopRequireDefault(_images);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}exports.default=
 
 (0,_redux.combineReducers)({
 allergens:_allergens2.default,
@@ -79904,7 +80293,7 @@ customerOrders:_customerOrders2.default,
 images:_images2.default});
 
 /***/ }),
-/* 532 */
+/* 535 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.initialState=undefined;var _seamlessImmutable=__webpack_require__(32);var _seamlessImmutable2=_interopRequireDefault(_seamlessImmutable);
@@ -79928,11 +80317,11 @@ return state;}
 };
 
 /***/ }),
-/* 533 */
+/* 536 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.initialState=undefined;var _seamlessImmutable=__webpack_require__(32);var _seamlessImmutable2=_interopRequireDefault(_seamlessImmutable);
-var _order=__webpack_require__(29);
+var _order=__webpack_require__(26);
 
 
 var _locations=__webpack_require__(60);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}
@@ -79967,7 +80356,7 @@ return state;}
 };
 
 /***/ }),
-/* 534 */
+/* 537 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.initialState=undefined;var _seamlessImmutable=__webpack_require__(32);var _seamlessImmutable2=_interopRequireDefault(_seamlessImmutable);
@@ -79987,7 +80376,7 @@ return state;}
 };
 
 /***/ }),
-/* 535 */
+/* 538 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};exports.default=
@@ -80007,13 +80396,23 @@ Object.defineProperty(exports,"__esModule",{value:true});var _extends=Object.ass
 
 
 
-customerOrders;var _customerOrders=__webpack_require__(62);var _user=__webpack_require__(11);var initialState={all:null,past:null,session:[],upcoming:null};function customerOrders(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
+
+
+
+
+customerOrders;var _customerOrders=__webpack_require__(62);var _order=__webpack_require__(26);var _user=__webpack_require__(11);var initialState={all:null,past:null,recentSubmission:null,upcoming:null};function customerOrders(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
 switch(action.type){
 case _customerOrders.FETCH_ALL_CUSTOMER_ORDERS+'_FULFILLED':
 return _extends({},
 state,{
 all:action.payload});
 
+case _order.SUBMIT_ORDER+'_FULFILLED':{
+return _extends({},
+state,{
+recentSubmission:action.payload});
+
+}
 case _customerOrders.FETCH_PAST_CUSTOMER_ORDERS+'_FULFILLED':
 return _extends({},
 state,{
@@ -80032,7 +80431,7 @@ return state;}
 }
 
 /***/ }),
-/* 536 */
+/* 539 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.initialState=undefined;var _seamlessImmutable=__webpack_require__(32);var _seamlessImmutable2=_interopRequireDefault(_seamlessImmutable);
@@ -80058,7 +80457,7 @@ return state;}
 };
 
 /***/ }),
-/* 537 */
+/* 540 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.initialState=undefined;var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};exports.default=
@@ -80239,7 +80638,7 @@ Object.defineProperty(exports,"__esModule",{value:true});exports.initialState=un
 
 
 
-error;var _reduxCrud=__webpack_require__(20);var _reduxCrud2=_interopRequireDefault(_reduxCrud);var _application=__webpack_require__(41);var _addresses=__webpack_require__(63);var _allergens=__webpack_require__(59);var _menus=__webpack_require__(86);var _favorites=__webpack_require__(65);var _order=__webpack_require__(29);var _locations=__webpack_require__(60);var _geolocations=__webpack_require__(61);var _payments=__webpack_require__(64);var _customerOrders=__webpack_require__(62);var _user=__webpack_require__(11);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var _reduxCrud$actionType=_reduxCrud2.default.actionTypesFor('user'),USER_UPDATE_START=_reduxCrud$actionType.USER_UPDATE_START,USER_UPDATE_ERROR=_reduxCrud$actionType.USER_UPDATE_ERROR,USER_CREATE_START=_reduxCrud$actionType.USER_CREATE_START,USER_CREATE_ERROR=_reduxCrud$actionType.USER_CREATE_ERROR;var _reduxCrud$actionType2=_reduxCrud2.default.actionTypesFor('payments'),PAYMENTS_FETCH_START=_reduxCrud$actionType2.PAYMENTS_FETCH_START,PAYMENTS_FETCH_ERROR=_reduxCrud$actionType2.PAYMENTS_FETCH_ERROR,PAYMENTS_CREATE_START=_reduxCrud$actionType2.PAYMENTS_CREATE_START,PAYMENTS_CREATE_ERROR=_reduxCrud$actionType2.PAYMENTS_CREATE_ERROR,PAYMENTS_DELETE_START=_reduxCrud$actionType2.PAYMENTS_DELETE_START,PAYMENTS_DELETE_ERROR=_reduxCrud$actionType2.PAYMENTS_DELETE_ERROR;var _reduxCrud$actionType3=_reduxCrud2.default.actionTypesFor('ratings'),RATINGS_FETCH_START=_reduxCrud$actionType3.RATINGS_FETCH_START,RATINGS_FETCH_ERROR=_reduxCrud$actionType3.RATINGS_FETCH_ERROR,RATINGS_CREATE_START=_reduxCrud$actionType3.RATINGS_CREATE_START,RATINGS_CREATE_ERROR=_reduxCrud$actionType3.RATINGS_CREATE_ERROR,RATINGS_UPDATE_START=_reduxCrud$actionType3.RATINGS_UPDATE_START,RATINGS_UPDATE_ERROR=_reduxCrud$actionType3.RATINGS_UPDATE_ERROR,RATINGS_DELETE_START=_reduxCrud$actionType3.RATINGS_DELETE_START,RATINGS_DELETE_ERROR=_reduxCrud$actionType3.RATINGS_DELETE_ERROR;var initialState=exports.initialState={sendSupportTicket:null,setupBrandibble:null,setupBrandibbleRedux:null,fetchAllergens:null,addAllergens:null,removeAllergens:null,fetchAllCustomerOrders:null,fetchPastCustomerOrders:null,fetchUpcomingCustomerOrders:null,fetchAddresses:null,createAddress:null,deleteAddress:null,fetchLocation:null,fetchLocations:null,fetchGeolocations:null,fetchMenu:null,addLineItem:null,resolveOrder:null,submitOrder:null,setLineItemMadeFor:null,setLineItemInstructions:null,fetchPayments:null,createPayment:null,deletePayment:null,setPaymentMethod:null,setDefaultPayment:null,fetchFavorites:null,createFavorite:null,updateFavorite:null,deleteFavorite:null,fetchRating:null,createRating:null,updateRating:null,deleteRating:null,authenticateUser:null,createUser:null,fetchLevelUpLoyalty:null,fetchLevelUpQRCode:null,updateLevelUpConnection:null,connectLevelUp:null,disconnectLevelUp:null,fetchLevelUpPaymentMethod:null,fetchUser:null,resetUserPassword:null,resetLevelUpPassword:null,resolveUser:null,unauthenticateUser:null,updateUser:null,validateUser:null,validateCurrentCart:null,validateCurrentOrder:null};function error(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
+error;var _reduxCrud=__webpack_require__(20);var _reduxCrud2=_interopRequireDefault(_reduxCrud);var _application=__webpack_require__(41);var _addresses=__webpack_require__(63);var _allergens=__webpack_require__(59);var _menus=__webpack_require__(86);var _favorites=__webpack_require__(65);var _order=__webpack_require__(26);var _locations=__webpack_require__(60);var _geolocations=__webpack_require__(61);var _payments=__webpack_require__(64);var _customerOrders=__webpack_require__(62);var _user=__webpack_require__(11);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var _reduxCrud$actionType=_reduxCrud2.default.actionTypesFor('user'),USER_UPDATE_START=_reduxCrud$actionType.USER_UPDATE_START,USER_UPDATE_ERROR=_reduxCrud$actionType.USER_UPDATE_ERROR,USER_CREATE_START=_reduxCrud$actionType.USER_CREATE_START,USER_CREATE_ERROR=_reduxCrud$actionType.USER_CREATE_ERROR;var _reduxCrud$actionType2=_reduxCrud2.default.actionTypesFor('payments'),PAYMENTS_FETCH_START=_reduxCrud$actionType2.PAYMENTS_FETCH_START,PAYMENTS_FETCH_ERROR=_reduxCrud$actionType2.PAYMENTS_FETCH_ERROR,PAYMENTS_CREATE_START=_reduxCrud$actionType2.PAYMENTS_CREATE_START,PAYMENTS_CREATE_ERROR=_reduxCrud$actionType2.PAYMENTS_CREATE_ERROR,PAYMENTS_DELETE_START=_reduxCrud$actionType2.PAYMENTS_DELETE_START,PAYMENTS_DELETE_ERROR=_reduxCrud$actionType2.PAYMENTS_DELETE_ERROR;var _reduxCrud$actionType3=_reduxCrud2.default.actionTypesFor('ratings'),RATINGS_FETCH_START=_reduxCrud$actionType3.RATINGS_FETCH_START,RATINGS_FETCH_ERROR=_reduxCrud$actionType3.RATINGS_FETCH_ERROR,RATINGS_CREATE_START=_reduxCrud$actionType3.RATINGS_CREATE_START,RATINGS_CREATE_ERROR=_reduxCrud$actionType3.RATINGS_CREATE_ERROR,RATINGS_UPDATE_START=_reduxCrud$actionType3.RATINGS_UPDATE_START,RATINGS_UPDATE_ERROR=_reduxCrud$actionType3.RATINGS_UPDATE_ERROR,RATINGS_DELETE_START=_reduxCrud$actionType3.RATINGS_DELETE_START,RATINGS_DELETE_ERROR=_reduxCrud$actionType3.RATINGS_DELETE_ERROR;var initialState=exports.initialState={sendSupportTicket:null,setupBrandibble:null,setupBrandibbleRedux:null,fetchAllergens:null,addAllergens:null,removeAllergens:null,fetchAllCustomerOrders:null,fetchPastCustomerOrders:null,fetchUpcomingCustomerOrders:null,fetchAddresses:null,createAddress:null,deleteAddress:null,fetchLocation:null,fetchLocations:null,fetchGeolocations:null,fetchMenu:null,addLineItem:null,resolveOrder:null,submitOrder:null,setLineItemMadeFor:null,setLineItemInstructions:null,fetchPayments:null,createPayment:null,deletePayment:null,setPaymentMethod:null,setDefaultPayment:null,fetchFavorites:null,createFavorite:null,updateFavorite:null,deleteFavorite:null,fetchRating:null,createRating:null,updateRating:null,deleteRating:null,authenticateUser:null,createUser:null,fetchLevelUpLoyalty:null,fetchLevelUpQRCode:null,updateLevelUpConnection:null,connectLevelUp:null,disconnectLevelUp:null,fetchLevelUpPaymentMethod:null,fetchUser:null,resetUserPassword:null,resetLevelUpPassword:null,resolveUser:null,unauthenticateUser:null,updateUser:null,validateUser:null,validateCurrentCart:null,validateCurrentOrder:null};function error(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
 switch(action.type){
 
 case _application.SETUP_BRANDIBBLE+'_PENDING':return _extends({},state,{setupBrandibble:null});
@@ -80413,7 +80812,7 @@ default:return state;}
 }
 
 /***/ }),
-/* 538 */
+/* 541 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.default=
@@ -80430,16 +80829,16 @@ return state;}
 }
 
 /***/ }),
-/* 539 */
+/* 542 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});var _redux=__webpack_require__(67);
-var _addresses=__webpack_require__(540);var _addresses2=_interopRequireDefault(_addresses);
-var _menus=__webpack_require__(541);var _menus2=_interopRequireDefault(_menus);
-var _order=__webpack_require__(542);var _order2=_interopRequireDefault(_order);
-var _payments=__webpack_require__(544);var _payments2=_interopRequireDefault(_payments);
-var _favorites=__webpack_require__(545);var _favorites2=_interopRequireDefault(_favorites);
-var _ratings=__webpack_require__(546);var _ratings2=_interopRequireDefault(_ratings);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}exports.default=
+var _addresses=__webpack_require__(543);var _addresses2=_interopRequireDefault(_addresses);
+var _menus=__webpack_require__(544);var _menus2=_interopRequireDefault(_menus);
+var _order=__webpack_require__(545);var _order2=_interopRequireDefault(_order);
+var _payments=__webpack_require__(547);var _payments2=_interopRequireDefault(_payments);
+var _favorites=__webpack_require__(548);var _favorites2=_interopRequireDefault(_favorites);
+var _ratings=__webpack_require__(549);var _ratings2=_interopRequireDefault(_ratings);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}exports.default=
 
 (0,_redux.combineReducers)({
 addresses:_addresses2.default,
@@ -80450,7 +80849,7 @@ favorites:_favorites2.default,
 ratings:_ratings2.default});
 
 /***/ }),
-/* 540 */
+/* 543 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.initialState=undefined;exports.default=
@@ -80489,7 +80888,7 @@ return state;}
 }
 
 /***/ }),
-/* 541 */
+/* 544 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.default=
@@ -80505,7 +80904,7 @@ return baseReducers(state,action);}
 }
 
 /***/ }),
-/* 542 */
+/* 545 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};exports.default=
@@ -80555,7 +80954,7 @@ Object.defineProperty(exports,"__esModule",{value:true});var _extends=Object.ass
 
 
 
-order;var _lodash=__webpack_require__(543);var _lodash2=_interopRequireDefault(_lodash);var _order=__webpack_require__(29);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var initialState={ref:null,orderData:null,lineItemsData:null,validated:null,validatedCart:null};function _buildFormattedLineItemsHash(ref){return(0,_lodash2.default)(ref.cart.lineItems,function(li){var uuid=li.uuid,quantity=li.quantity,madeFor=li.madeFor,instructions=li.instructions,product=li.product,operationMaps=li.operationMaps;return{uuid:uuid,quantity:quantity,madeFor:madeFor,instructions:instructions,isValid:li.isValid(),errors:li.errors(),productData:product,optionGroupMappings:operationMaps};});}function order(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
+order;var _lodash=__webpack_require__(546);var _lodash2=_interopRequireDefault(_lodash);var _order=__webpack_require__(26);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var initialState={ref:null,orderData:null,lineItemsData:null,validated:null,validatedCart:null};function _buildFormattedLineItemsHash(ref){return(0,_lodash2.default)(ref.cart.lineItems,function(li){var uuid=li.uuid,quantity=li.quantity,madeFor=li.madeFor,instructions=li.instructions,product=li.product,operationMaps=li.operationMaps;return{uuid:uuid,quantity:quantity,madeFor:madeFor,instructions:instructions,isValid:li.isValid(),errors:li.errors(),productData:product,optionGroupMappings:operationMaps};});}function order(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
 switch(action.type){
 case _order.RESOLVE_ORDER+'_FULFILLED':
 case _order.BIND_CUSTOMER_TO_ORDER+'_FULFILLED':
@@ -80610,7 +81009,7 @@ return state;}
 }
 
 /***/ }),
-/* 543 */
+/* 546 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {/**
@@ -82983,7 +83382,7 @@ module.exports = map;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(57), __webpack_require__(40)(module)))
 
 /***/ }),
-/* 544 */
+/* 547 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};exports.default=
@@ -83015,7 +83414,7 @@ return baseReducers(state,action);}
 }
 
 /***/ }),
-/* 545 */
+/* 548 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.initialState=undefined;var _seamlessImmutable=__webpack_require__(32);var _seamlessImmutable2=_interopRequireDefault(_seamlessImmutable);
@@ -83059,7 +83458,7 @@ return state;}
 };
 
 /***/ }),
-/* 546 */
+/* 549 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.default=
@@ -83080,7 +83479,7 @@ return baseReducers(state,action);}
 }
 
 /***/ }),
-/* 547 */
+/* 550 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};exports.default=
@@ -83251,7 +83650,7 @@ Object.defineProperty(exports,"__esModule",{value:true});var _extends=Object.ass
 
 
 
-status;var _application=__webpack_require__(41);var _addresses=__webpack_require__(63);var _allergens=__webpack_require__(59);var _menus=__webpack_require__(86);var _favorites=__webpack_require__(65);var _payments=__webpack_require__(64);var _order=__webpack_require__(29);var _locations=__webpack_require__(60);var _geolocations=__webpack_require__(61);var _user=__webpack_require__(11);var _customerOrders=__webpack_require__(62);var _constants=__webpack_require__(68);var _reduxCrud=__webpack_require__(20);var _reduxCrud2=_interopRequireDefault(_reduxCrud);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var FULFILLED=_constants.Status.FULFILLED,IDLE=_constants.Status.IDLE,PENDING=_constants.Status.PENDING,REJECTED=_constants.Status.REJECTED;var _reduxCrud$actionType=_reduxCrud2.default.actionTypesFor('payments'),PAYMENTS_FETCH_START=_reduxCrud$actionType.PAYMENTS_FETCH_START,PAYMENTS_FETCH_SUCCESS=_reduxCrud$actionType.PAYMENTS_FETCH_SUCCESS,PAYMENTS_FETCH_ERROR=_reduxCrud$actionType.PAYMENTS_FETCH_ERROR,PAYMENTS_CREATE_START=_reduxCrud$actionType.PAYMENTS_CREATE_START,PAYMENTS_CREATE_SUCCESS=_reduxCrud$actionType.PAYMENTS_CREATE_SUCCESS,PAYMENTS_CREATE_ERROR=_reduxCrud$actionType.PAYMENTS_CREATE_ERROR,PAYMENTS_DELETE_START=_reduxCrud$actionType.PAYMENTS_DELETE_START,PAYMENTS_DELETE_SUCCESS=_reduxCrud$actionType.PAYMENTS_DELETE_SUCCESS,PAYMENTS_DELETE_ERROR=_reduxCrud$actionType.PAYMENTS_DELETE_ERROR;var _reduxCrud$actionType2=_reduxCrud2.default.actionTypesFor('ratings'),RATINGS_FETCH_START=_reduxCrud$actionType2.RATINGS_FETCH_START,RATINGS_FETCH_SUCCESS=_reduxCrud$actionType2.RATINGS_FETCH_SUCCESS,RATINGS_FETCH_ERROR=_reduxCrud$actionType2.RATINGS_FETCH_ERROR,RATINGS_CREATE_START=_reduxCrud$actionType2.RATINGS_CREATE_START,RATINGS_CREATE_SUCCESS=_reduxCrud$actionType2.RATINGS_CREATE_SUCCESS,RATINGS_CREATE_ERROR=_reduxCrud$actionType2.RATINGS_CREATE_ERROR,RATINGS_UPDATE_START=_reduxCrud$actionType2.RATINGS_UPDATE_START,RATINGS_UPDATE_SUCCESS=_reduxCrud$actionType2.RATINGS_UPDATE_SUCCESS,RATINGS_UPDATE_ERROR=_reduxCrud$actionType2.RATINGS_UPDATE_ERROR,RATINGS_DELETE_START=_reduxCrud$actionType2.RATINGS_DELETE_START,RATINGS_DELETE_SUCCESS=_reduxCrud$actionType2.RATINGS_DELETE_SUCCESS,RATINGS_DELETE_ERROR=_reduxCrud$actionType2.RATINGS_DELETE_ERROR;var _reduxCrud$actionType3=_reduxCrud2.default.actionTypesFor('user'),USER_UPDATE_START=_reduxCrud$actionType3.USER_UPDATE_START,USER_UPDATE_SUCCESS=_reduxCrud$actionType3.USER_UPDATE_SUCCESS,USER_UPDATE_ERROR=_reduxCrud$actionType3.USER_UPDATE_ERROR,USER_CREATE_START=_reduxCrud$actionType3.USER_CREATE_START,USER_CREATE_SUCCESS=_reduxCrud$actionType3.USER_CREATE_SUCCESS,USER_CREATE_ERROR=_reduxCrud$actionType3.USER_CREATE_ERROR;var initialState={setupBrandibble:IDLE,setupBrandibbleRedux:IDLE,sendSupportTicket:IDLE,fetchAddresses:IDLE,createAddress:IDLE,deleteAddress:IDLE,fetchAllergens:IDLE,addAllergens:IDLE,removeAllergens:IDLE,fetchLevelUpLoyalty:IDLE,fetchLevelUpQRCode:IDLE,updateLevelUpConnection:IDLE,connectLevelUp:IDLE,disconnectLevelUp:IDLE,fetchLevelUpPaymentMethod:IDLE,fetchLocation:IDLE,fetchLocations:IDLE,fetchGeolocations:IDLE,fetchAllCustomerOrders:IDLE,fetchPastCustomerOrders:IDLE,fetchUpcomingCustomerOrders:IDLE,fetchMenu:IDLE,resolveOrder:IDLE,setOrderLocationId:IDLE,submitOrder:IDLE,addLineItem:IDLE,setRequestedAt:IDLE,fetchPayments:IDLE,setPromoCode:IDLE,createPayment:IDLE,setDefaultPayment:IDLE,setPaymentMethod:IDLE,deletePayment:IDLE,fetchFavorites:IDLE,createFavorite:IDLE,updateFavorite:IDLE,deleteFavorite:IDLE,fetchRating:IDLE,createRating:IDLE,updateRating:IDLE,deleteRating:IDLE,authenticateUser:IDLE,createUser:IDLE,fetchUser:IDLE,resetUserPassword:IDLE,resetLevelUpPassword:IDLE,resolveUser:IDLE,unauthenticateUser:IDLE,updateUser:IDLE,validateUser:IDLE,validateCurrentCart:IDLE,validateCurrentOrder:IDLE,setLineItemMadeFor:IDLE,setLineItemInstructions:IDLE,createNewOrder:IDLE};function status(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
+status;var _application=__webpack_require__(41);var _addresses=__webpack_require__(63);var _allergens=__webpack_require__(59);var _menus=__webpack_require__(86);var _favorites=__webpack_require__(65);var _payments=__webpack_require__(64);var _order=__webpack_require__(26);var _locations=__webpack_require__(60);var _geolocations=__webpack_require__(61);var _user=__webpack_require__(11);var _customerOrders=__webpack_require__(62);var _constants=__webpack_require__(68);var _reduxCrud=__webpack_require__(20);var _reduxCrud2=_interopRequireDefault(_reduxCrud);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var FULFILLED=_constants.Status.FULFILLED,IDLE=_constants.Status.IDLE,PENDING=_constants.Status.PENDING,REJECTED=_constants.Status.REJECTED;var _reduxCrud$actionType=_reduxCrud2.default.actionTypesFor('payments'),PAYMENTS_FETCH_START=_reduxCrud$actionType.PAYMENTS_FETCH_START,PAYMENTS_FETCH_SUCCESS=_reduxCrud$actionType.PAYMENTS_FETCH_SUCCESS,PAYMENTS_FETCH_ERROR=_reduxCrud$actionType.PAYMENTS_FETCH_ERROR,PAYMENTS_CREATE_START=_reduxCrud$actionType.PAYMENTS_CREATE_START,PAYMENTS_CREATE_SUCCESS=_reduxCrud$actionType.PAYMENTS_CREATE_SUCCESS,PAYMENTS_CREATE_ERROR=_reduxCrud$actionType.PAYMENTS_CREATE_ERROR,PAYMENTS_DELETE_START=_reduxCrud$actionType.PAYMENTS_DELETE_START,PAYMENTS_DELETE_SUCCESS=_reduxCrud$actionType.PAYMENTS_DELETE_SUCCESS,PAYMENTS_DELETE_ERROR=_reduxCrud$actionType.PAYMENTS_DELETE_ERROR;var _reduxCrud$actionType2=_reduxCrud2.default.actionTypesFor('ratings'),RATINGS_FETCH_START=_reduxCrud$actionType2.RATINGS_FETCH_START,RATINGS_FETCH_SUCCESS=_reduxCrud$actionType2.RATINGS_FETCH_SUCCESS,RATINGS_FETCH_ERROR=_reduxCrud$actionType2.RATINGS_FETCH_ERROR,RATINGS_CREATE_START=_reduxCrud$actionType2.RATINGS_CREATE_START,RATINGS_CREATE_SUCCESS=_reduxCrud$actionType2.RATINGS_CREATE_SUCCESS,RATINGS_CREATE_ERROR=_reduxCrud$actionType2.RATINGS_CREATE_ERROR,RATINGS_UPDATE_START=_reduxCrud$actionType2.RATINGS_UPDATE_START,RATINGS_UPDATE_SUCCESS=_reduxCrud$actionType2.RATINGS_UPDATE_SUCCESS,RATINGS_UPDATE_ERROR=_reduxCrud$actionType2.RATINGS_UPDATE_ERROR,RATINGS_DELETE_START=_reduxCrud$actionType2.RATINGS_DELETE_START,RATINGS_DELETE_SUCCESS=_reduxCrud$actionType2.RATINGS_DELETE_SUCCESS,RATINGS_DELETE_ERROR=_reduxCrud$actionType2.RATINGS_DELETE_ERROR;var _reduxCrud$actionType3=_reduxCrud2.default.actionTypesFor('user'),USER_UPDATE_START=_reduxCrud$actionType3.USER_UPDATE_START,USER_UPDATE_SUCCESS=_reduxCrud$actionType3.USER_UPDATE_SUCCESS,USER_UPDATE_ERROR=_reduxCrud$actionType3.USER_UPDATE_ERROR,USER_CREATE_START=_reduxCrud$actionType3.USER_CREATE_START,USER_CREATE_SUCCESS=_reduxCrud$actionType3.USER_CREATE_SUCCESS,USER_CREATE_ERROR=_reduxCrud$actionType3.USER_CREATE_ERROR;var initialState={setupBrandibble:IDLE,setupBrandibbleRedux:IDLE,sendSupportTicket:IDLE,fetchAddresses:IDLE,createAddress:IDLE,deleteAddress:IDLE,fetchAllergens:IDLE,addAllergens:IDLE,removeAllergens:IDLE,fetchLevelUpLoyalty:IDLE,fetchLevelUpQRCode:IDLE,updateLevelUpConnection:IDLE,connectLevelUp:IDLE,disconnectLevelUp:IDLE,fetchLevelUpPaymentMethod:IDLE,fetchLocation:IDLE,fetchLocations:IDLE,fetchGeolocations:IDLE,fetchAllCustomerOrders:IDLE,fetchPastCustomerOrders:IDLE,fetchUpcomingCustomerOrders:IDLE,fetchMenu:IDLE,resolveOrder:IDLE,setOrderLocationId:IDLE,submitOrder:IDLE,addLineItem:IDLE,setRequestedAt:IDLE,fetchPayments:IDLE,setPromoCode:IDLE,createPayment:IDLE,setDefaultPayment:IDLE,setPaymentMethod:IDLE,deletePayment:IDLE,fetchFavorites:IDLE,createFavorite:IDLE,updateFavorite:IDLE,deleteFavorite:IDLE,fetchRating:IDLE,createRating:IDLE,updateRating:IDLE,deleteRating:IDLE,authenticateUser:IDLE,createUser:IDLE,fetchUser:IDLE,resetUserPassword:IDLE,resetLevelUpPassword:IDLE,resolveUser:IDLE,unauthenticateUser:IDLE,updateUser:IDLE,validateUser:IDLE,validateCurrentCart:IDLE,validateCurrentOrder:IDLE,setLineItemMadeFor:IDLE,setLineItemInstructions:IDLE,createNewOrder:IDLE};function status(){var state=arguments.length>0&&arguments[0]!==undefined?arguments[0]:initialState;var action=arguments[1];
 switch(action.type){
 case _application.SETUP_BRANDIBBLE+'_PENDING':return _extends({},state,{setupBrandibble:PENDING});
 case _application.SETUP_BRANDIBBLE+'_FULFILLED':return _extends({},state,{setupBrandibble:FULFILLED});
@@ -83478,13 +83877,13 @@ default:return state;}
 }
 
 /***/ }),
-/* 548 */
+/* 551 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});var _redux=__webpack_require__(67);
-var _attributes=__webpack_require__(549);var _attributes2=_interopRequireDefault(_attributes);
-var _levelup=__webpack_require__(550);var _levelup2=_interopRequireDefault(_levelup);
-var _validations=__webpack_require__(551);var _validations2=_interopRequireDefault(_validations);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}exports.default=
+var _attributes=__webpack_require__(552);var _attributes2=_interopRequireDefault(_attributes);
+var _levelup=__webpack_require__(553);var _levelup2=_interopRequireDefault(_levelup);
+var _validations=__webpack_require__(554);var _validations2=_interopRequireDefault(_validations);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}exports.default=
 
 (0,_redux.combineReducers)({
 attributes:_attributes2.default,
@@ -83492,7 +83891,7 @@ levelup:_levelup2.default,
 validations:_validations2.default});
 
 /***/ }),
-/* 549 */
+/* 552 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};exports.default=
@@ -83550,7 +83949,7 @@ return state;}
 }
 
 /***/ }),
-/* 550 */
+/* 553 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};exports.default=
@@ -83596,7 +83995,7 @@ return state;}
 }
 
 /***/ }),
-/* 551 */
+/* 554 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports,"__esModule",{value:true});exports.default=

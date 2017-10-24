@@ -2,17 +2,15 @@ import {
   FETCH_LEVELUP_LOYALTY,
   FETCH_LEVELUP_QR_CODE,
   FETCH_LEVELUP_PAYMENT_METHOD,
+  CONNECT_LEVELUP,
   DISCONNECT_LEVELUP,
-} from 'actions/session/user';
-
-import {
-  UNAUTHENTICATE_USER
 } from 'actions/session/user';
 
 const initialState = {
   loyalty: {},
   qr_code: null,
   payment_method: null,
+  is_levelup_connected: false,
 };
 
 export default function levelup(state = initialState, action) {
@@ -32,9 +30,16 @@ export default function levelup(state = initialState, action) {
         ...state,
         payment_method: action.payload,
       };
-    case `${UNAUTHENTICATE_USER}_FULFILLED`:
+    case `${CONNECT_LEVELUP}_FULFILLED`:
+      return {
+        ...state,
+        is_levelup_connected: action.payload,
+      };
     case `${DISCONNECT_LEVELUP}_FULFILLED`:
-      return initialState;
+      return {
+        ...state,
+        is_levelup_connected: false,
+      };
     default:
       return state;
   }

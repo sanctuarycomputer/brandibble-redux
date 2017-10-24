@@ -4,6 +4,7 @@ import {
   FETCH_LEVELUP_LOYALTY,
   FETCH_LEVELUP_QR_CODE,
   FETCH_LEVELUP_PAYMENT_METHOD,
+  CONNECT_LEVELUP,
 } from 'actions/session/user';
 import reducer from 'reducers/user/levelup';
 
@@ -11,6 +12,7 @@ const initialState = {
   loyalty: {},
   qr_code: null,
   payment_method: null,
+  is_levelup_connected: false,
 };
 
 describe('reducers/user/levelup', () => {
@@ -43,5 +45,14 @@ describe('reducers/user/levelup', () => {
       payload,
     });
     expect(reduced.payment_method).to.equal(payload);
+  });
+
+  it('handles the CONNECT_LEVELUP_FULFILLED action', () => {
+    const payload = { description: true };
+    const reduced = reducer(initialState, {
+      type: `${CONNECT_LEVELUP}_FULFILLED`,
+      payload,
+    });
+    expect(reduced.is_levelup_connected).to.equal(payload);
   });
 });

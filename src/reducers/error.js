@@ -53,7 +53,12 @@ import {
 } from 'actions/data/geolocations';
 
 //  payments
-import { SET_DEFAULT_PAYMENT } from 'actions/session/payments';
+import {
+  FETCH_PAYMENTS,
+  CREATE_PAYMENT,
+  DELETE_PAYMENT,
+  SET_DEFAULT_PAYMENT
+} from 'actions/session/payments';
 
 // customerOrders
 import {
@@ -87,16 +92,6 @@ const {
   USER_CREATE_START,
   USER_CREATE_ERROR,
 } = reduxCrud.actionTypesFor('user');
-
-// payments
-const {
-  PAYMENTS_FETCH_START,
-  PAYMENTS_FETCH_ERROR,
-  PAYMENTS_CREATE_START,
-  PAYMENTS_CREATE_ERROR,
-  PAYMENTS_DELETE_START,
-  PAYMENTS_DELETE_ERROR,
-} = reduxCrud.actionTypesFor('payments');
 
 // ratings
 const {
@@ -253,14 +248,14 @@ export default function error(state = initialState, action) {
     case `${SET_LINE_ITEM_INSTRUCTIONS}_REJECTED`: return { ...state, setLineItemInstructions: action.payload };
 
     // payments
-    case PAYMENTS_FETCH_START: return { ...state, fetchPayments: null };
-    case PAYMENTS_FETCH_ERROR: return { ...state, fetchPayments: action.error };
+    case `${FETCH_PAYMENTS}_PENDING`: return { ...state, fetchPayments: null };
+    case `${FETCH_PAYMENTS}_REJECTED`: return { ...state, fetchPayments: action.payload };
 
-    case PAYMENTS_CREATE_START: return { ...state, createPayment: null };
-    case PAYMENTS_CREATE_ERROR: return { ...state, createPayment: action.error };
+    case `${CREATE_PAYMENT}_PENDING`: return { ...state, createPayment: null };
+    case `${CREATE_PAYMENT}_REJECTED`: return { ...state, createPayment: action.payload };
 
-    case PAYMENTS_DELETE_START: return { ...state, deletePayment: null };
-    case PAYMENTS_DELETE_ERROR: return { ...state, deletePayment: action.error };
+    case `${DELETE_PAYMENT}_PENDING`: return { ...state, deletePayment: null };
+    case `${DELETE_PAYMENT}_REJECTED`: return { ...state, deletePayment: action.payload };
 
     case `${SET_DEFAULT_PAYMENT}_PENDING`: return { ...state, setDefaultPayment: null };
     case `${SET_DEFAULT_PAYMENT}_REJECTED`: return { ...state, setDefaultPayment: action.payload };

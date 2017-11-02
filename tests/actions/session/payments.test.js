@@ -2,21 +2,23 @@
 /* eslint one-var-declaration-per-line:1, one-var:1 */
 import { expect } from 'chai';
 import find from 'lodash.find';
-import reduxCrud from 'redux-crud';
 import configureStore from 'redux-mock-store';
 import reduxMiddleware from 'config/middleware';
 import { fetchPayments, createPayment, deletePayment } from 'actions/session/payments';
 import { authenticateUser } from 'actions/session/user';
 import { brandibble, cardStub, validCredentialsStub } from '../../config/stubs';
 
-const {
-  PAYMENTS_CREATE_START,
-  PAYMENTS_CREATE_SUCCESS,
-  PAYMENTS_DELETE_START,
-  PAYMENTS_DELETE_SUCCESS,
-  PAYMENTS_FETCH_START,
-  PAYMENTS_FETCH_SUCCESS,
-} = reduxCrud.actionTypesFor('payments');
+import {
+  FETCH_PAYMENTS,
+  CREATE_PAYMENT,
+  DELETE_PAYMENT,
+  SET_DEFAULT_PAYMENT,
+  fetchPayments,
+  createPayment,
+  deletePayment,
+  setDefaultPayment,
+} from 'actions/session/payments';
+
 const mockStore = configureStore(reduxMiddleware);
 
 describe('actions/session/payments', () => {
@@ -41,13 +43,13 @@ describe('actions/session/payments', () => {
 
     it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
 
-    it('should have PAYMENTS_FETCH_START action', () => {
-      action = find(actionsCalled, { type: PAYMENTS_FETCH_START });
+    it('should have FETCH_PAYMENTS_PENDING action', () => {
+      action = find(actionsCalled, { type: `${FETCH_PAYMENTS}_PENDING` });
       expect(action).to.exist;
     });
 
-    it('should have PAYMENTS_FETCH_SUCCESS action', () => {
-      action = find(actionsCalled, { type: PAYMENTS_FETCH_SUCCESS });
+    it('should have FETCH_PAYMENTS_FULFILLED action', () => {
+      action = find(actionsCalled, { type: `${FETCH_PAYMENTS}_FULFILLED` });
       expect(action).to.exist;
     });
   });
@@ -57,23 +59,46 @@ describe('actions/session/payments', () => {
     before(() => {
       return createPayment(brandibble, cardStub)(store.dispatch).then(() => {
         actionsCalled = store.getActions();
-        action = find(actionsCalled, { type: PAYMENTS_CREATE_SUCCESS });
-        id = action.record.customer_card_id;
+        action = find(actionsCalled, { type: `${CREATE_PAYMENT}_FULFILLED` });
+        id = action.payload[0].customer_card_id;
       });
     });
 
     it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
 
-    it('should have PAYMENTS_CREATE_START action', () => {
-      action = find(actionsCalled, { type: PAYMENTS_CREATE_START });
+    it('should have CREATE_PAYMENT_PENDING action', () => {
+      action = find(actionsCalled, { type: `${CREATE_PAYMENT}_PENDING` });
       expect(action).to.exist;
     });
 
-    it('should have PAYMENTS_CREATE_SUCCESS action', () => {
-      action = find(actionsCalled, { type: PAYMENTS_CREATE_SUCCESS });
+    it('should have CREATE_PAYMENT_FULFILLED action', () => {
+      action = find(actionsCalled, { type: `${CREATE_PAYMENT}_FULFILLED` });
       expect(action).to.exist;
     });
 
+    // default
+    describe('setDefaultPayment', () => {
+      before(() => {
+        store.clearActions();
+        return setDefaultPayment(brandibble, id)(store.dispatch).then(() => {
+          actionsCalled = store.getActions();
+        });
+      });
+
+      it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+
+      it('should have SET_DEFAULT_PAYMENT_PENDING action', () => {
+        action = find(actionsCalled, { type: `${SET_DEFAULT_PAYMENT}_PENDING` });
+        expect(action).to.exist;
+      });
+
+      it('should have SET_DEFAULT_PAYMENT_FULFILLED action', () => {
+        action = find(actionsCalled, { type: `${SET_DEFAULT_PAYMENT}_FULFILLED` });
+        expect(action).to.exist;
+      });
+    });
+
+    // delete
     describe('deletePayment', () => {
       before(() => {
         store.clearActions();
@@ -84,15 +109,16 @@ describe('actions/session/payments', () => {
 
       it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
 
-      it('should have PAYMENTS_DELETE_START action', () => {
-        action = find(actionsCalled, { type: PAYMENTS_DELETE_START });
+      it('should have DELETE_PAYMENT_PENDING action', () => {
+        action = find(actionsCalled, { type: `${DELETE_PAYMENT}_PENDING` });
         expect(action).to.exist;
       });
 
-      it('should have PAYMENTS_DELETE_SUCCESS action', () => {
-        action = find(actionsCalled, { type: PAYMENTS_DELETE_SUCCESS });
+      it('should have DELETE_PAYMENT_FULFILLED action', () => {
+        action = find(actionsCalled, { type: `${DELETE_PAYMENT}_FULFILLED` });
         expect(action).to.exist;
       });
     });
+
   });
 });

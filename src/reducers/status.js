@@ -17,7 +17,12 @@ import {
   FETCH_FAVORITES,
   UPDATE_FAVORITE,
 } from 'actions/session/favorites';
-import { SET_DEFAULT_PAYMENT } from 'actions/session/payments';
+import {
+  FETCH_PAYMENTS,
+  CREATE_PAYMENT,
+  DELETE_PAYMENT,
+  SET_DEFAULT_PAYMENT
+} from 'actions/session/payments';
 import {
   ADD_LINE_ITEM,
   RESOLVE_ORDER,
@@ -71,18 +76,6 @@ const {
   PENDING,
   REJECTED,
 } = Status;
-
-const {
-  PAYMENTS_FETCH_START,
-  PAYMENTS_FETCH_SUCCESS,
-  PAYMENTS_FETCH_ERROR,
-  PAYMENTS_CREATE_START,
-  PAYMENTS_CREATE_SUCCESS,
-  PAYMENTS_CREATE_ERROR,
-  PAYMENTS_DELETE_START,
-  PAYMENTS_DELETE_SUCCESS,
-  PAYMENTS_DELETE_ERROR,
-} = reduxCrud.actionTypesFor('payments');
 
 const {
   RATINGS_FETCH_START,
@@ -264,22 +257,24 @@ export default function status(state = initialState, action) {
     case `${SUBMIT_ORDER}_FULFILLED`: return { ...state, submitOrder: FULFILLED };
     case `${SUBMIT_ORDER}_REJECTED`: return { ...state, submitOrder: REJECTED };
 
-    case PAYMENTS_FETCH_START: return { ...state, fetchPayments: PENDING };
-    case PAYMENTS_FETCH_SUCCESS: return { ...state, fetchPayments: FULFILLED };
-    case PAYMENTS_FETCH_ERROR: return { ...state, fetchPayments: REJECTED };
+    // Payments
+    case `${FETCH_PAYMENTS}_PENDING`: return { ...state, fetchPayments: PENDING };
+    case `${FETCH_PAYMENTS}_FULFILLED`: return { ...state, fetchPayments: FULFILLED };
+    case `${FETCH_PAYMENTS}_REJECTED`: return { ...state, fetchPayments: REJECTED };
 
-    case PAYMENTS_CREATE_START: return { ...state, createPayment: PENDING };
-    case PAYMENTS_CREATE_SUCCESS: return { ...state, createPayment: FULFILLED };
-    case PAYMENTS_CREATE_ERROR: return { ...state, createPayment: REJECTED };
+    case `${CREATE_PAYMENT}_PENDING`: return { ...state, createPayment: PENDING };
+    case `${CREATE_PAYMENT}_FULFILLED`: return { ...state, createPayment: FULFILLED };
+    case `${CREATE_PAYMENT}_REJECTED`: return { ...state, createPayment: REJECTED };
 
-    case PAYMENTS_DELETE_START: return { ...state, deletePayment: PENDING };
-    case PAYMENTS_DELETE_SUCCESS: return { ...state, deletePayment: FULFILLED };
-    case PAYMENTS_DELETE_ERROR: return { ...state, deletePayment: REJECTED };
+    case `${DELETE_PAYMENT}_PENDING`: return { ...state, deletePayment: PENDING };
+    case `${DELETE_PAYMENT}_FULFILLED`: return { ...state, deletePayment: FULFILLED };
+    case `${DELETE_PAYMENT}_REJECTED`: return { ...state, deletePayment: REJECTED };
 
     case `${SET_DEFAULT_PAYMENT}_PENDING`: return { ...state, setDefaultPayment: PENDING };
     case `${SET_DEFAULT_PAYMENT}_FULFILLED`: return { ...state, setDefaultPayment: FULFILLED };
     case `${SET_DEFAULT_PAYMENT}_REJECTED`: return { ...state, setDefaultPayment: REJECTED };
 
+    // Favorites
     case `${FETCH_FAVORITES}_PENDING`: return { ...state, fetchFavorites: PENDING };
     case `${FETCH_FAVORITES}_FULFILLED`: return { ...state, fetchFavorites: FULFILLED };
     case `${FETCH_FAVORITES}_REJECTED`: return { ...state, fetchFavorites: REJECTED };

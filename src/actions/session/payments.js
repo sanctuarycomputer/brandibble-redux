@@ -1,75 +1,29 @@
-/* eslint no-shadow:1 */
-import reduxCrud from 'redux-crud';
-import generateUUID from 'utils/generateUUID';
+import fireAction from 'utils/fireAction';
+import handleErrors from 'utils/handleErrors';
 
-const {
-  fetchStart,
-  fetchSuccess,
-  fetchError,
-  createStart,
-  createSuccess,
-  createError,
-  deleteStart,
-  deleteSuccess,
-  deleteError,
-} = reduxCrud.actionCreatorsFor('payments', { key: 'customer_card_id' });
-
+export const FETCH_PAYMENTS      = 'FETCH_PAYMENTS';
+export const CREATE_PAYMENT      = 'CREATE_PAYMENT';
 export const SET_DEFAULT_PAYMENT = 'SET_DEFAULT_PAYMENT';
+export const DELETE_PAYMENT      = 'DELETE_PAYMENT';
 
-const NO_OP = f => f;
+export const fetchPayments = brandibble => (dispatch) => {
+  const payload = brandibble.payments.all().then(({ data }) => data).catch(handleErrors);
+  return dispatch(fireAction(FETCH_PAYMENTS, payload));
+};
 
-export function fetchPayments(brandibble) {
-  return (dispatch) => {
-    dispatch(fetchStart());
-    return brandibble.payments.all()
-      .then(({ data }) => dispatch(fetchSuccess(data)))
-      .catch((response) => {
-        const { errors } = response;
-        return dispatch(fetchError(errors || response));
-      });
-  };
+export const createPayment = (brandibble, payment = {}) => (dispatch) => {
+  const payload = brandibble.payments.create(payment).then(({ data }) => data).catch(handleErrors);
+  return dispatch(fireAction(CREATE_PAYMENT, payload));
+};
+
+
+export const setDefaultPayment = (brandibble, customer_card_id) => (dispatch) => {
+  const payload = brandibble.payments.setDefault(customer_card_id).then(() => customer_card_id).catch(handleErrors);
+  return dispatch(fireAction(SET_DEFAULT_PAYMENT, payload));
 }
 
-export function createPayment(brandibble, data = {}) {
-  return (dispatch) => {
-    const id = generateUUID();
-    dispatch(createStart({ record: data, customer_card_id: id }));
-    return brandibble.payments.create(data)
-      .then(({ data }) => dispatch(createSuccess({ customer_card_id: id, ...data[0] })))
-      .catch((response) => {
-        const { errors } = response;
-        return dispatch(createError(errors || response, { customer_card_id: id, data }));
-      });
-  };
-}
+export const deletePayment = (brandibble, id) => (dispatch) => {
+  const payload = brandibble.payments.delete(id).then(() => id).catch(handleErrors);
+  return dispatch(fireAction(DELETE_PAYMENT, payload));
+};
 
-function _setDefaultPayment(brandibble, customer_card_id, success = NO_OP, fail = NO_OP) {
-  return {
-    type: SET_DEFAULT_PAYMENT,
-    payload: brandibble.payments.setDefault(customer_card_id)
-      .then((data) => {
-        success(data);
-        return customer_card_id;
-      })
-      .catch((response) => {
-        const { errors } = response;
-        throw fail(errors || response);
-      }),
-  };
-}
-
-export function setDefaultPayment(brandibble, customer_card_id) {
-  return dispatch => dispatch(_setDefaultPayment(brandibble, customer_card_id));
-}
-
-export function deletePayment(brandibble, id) {
-  return (dispatch) => {
-    dispatch(deleteStart({ customer_card_id: id }));
-    return brandibble.payments.delete(id)
-      .then(() => dispatch(deleteSuccess({ customer_card_id: id })))
-      .catch((response) => {
-        const { errors } = response;
-        return dispatch(deleteError(errors || response, { customer_card_id: id }));
-      });
-  };
-}

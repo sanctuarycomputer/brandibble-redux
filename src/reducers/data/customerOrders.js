@@ -29,7 +29,7 @@ export default function customerOrders(state = initialState, action) {
     case `${SUBMIT_ORDER}_FULFILLED`: {
       return {
         ...state,
-        recentSubmission: action.payload
+        recentSubmission: action.payload,
       };
     }
     case `${FETCH_PAST_CUSTOMER_ORDERS}_FULFILLED`:

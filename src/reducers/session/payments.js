@@ -1,6 +1,6 @@
+import reduce from 'lodash.reduce';
+import pickBy from 'lodash.pickby';
 import { UNAUTHENTICATE_USER } from '../../actions/session/user';
-import Immutable from 'seamless-immutable';
-
 import {
   CREATE_PAYMENT,
   DELETE_PAYMENT,
@@ -8,12 +8,13 @@ import {
   SET_DEFAULT_PAYMENT,
 } from '../../actions/session/payments';
 
-export const initialState = Immutable({
-  paymentsById: Immutable({}),
-});
+export const initialState = {
+  paymentsById: {},
+};
 
 export default (state = initialState, action) => {
   const { payload, type } = action;
+  let newState;
 
   switch (type) {
     /*
@@ -23,34 +24,51 @@ export default (state = initialState, action) => {
      */
     case `${CREATE_PAYMENT}_FULFILLED`:
     case `${FETCH_PAYMENTS}_FULFILLED`:
-      return state.merge({
-        paymentsById: state.paymentsById.replace(Immutable.asObject(payload, (payment) => {
-          return [payment.customer_card_id, payment];
-        })),
-      });
+      return {
+        ...state,
+        paymentsById: reduce(
+          payload,
+          (acc, curr) => ({ ...acc, [`${curr.customer_card_id}`]: curr }),
+          {},
+        ),
+      };
 
     case `${DELETE_PAYMENT}_FULFILLED`:
-      return state.merge({
-        paymentsById: state.paymentsById.without((v, k) => {
-          return k === `${payload}` && v.customer_card_id === payload;
-        }),
-      });
+      return {
+        ...state,
+        paymentsById: pickBy(
+          state.paymentsById,
+          (v, k) => !(k === `${payload}` && v.customer_card_id === payload),
+        ),
+      };
 
     case `${SET_DEFAULT_PAYMENT}_FULFILLED`:
-      let newState = state;
-
-      let currentDefault = Object.values(state.paymentsById.asMutable()).find(p => p.is_default);
-      if (!!currentDefault) {
-        newState = state.merge({
-          paymentsById: newState.paymentsById.setIn([currentDefault.customer_card_id, 'is_default'], false)
-        });
+      const currentDefault = Object.values(state.paymentsById).find(p => p.is_default);
+      if (currentDefault) {
+        newState = {
+          ...state,
+          paymentsById: {
+            ...state.paymentsById,
+            [currentDefault.customer_card_id]: {
+              ...state.paymentsById[currentDefault.customer_card_id],
+              is_default: false,
+            },
+          },
+        };
       }
 
-      let newDefault = Object.values(state.paymentsById.asMutable()).find(p => p.customer_card_id === action.payload);
-      if (!!newDefault) {
-        newState = state.merge({
-          paymentsById: newState.paymentsById.setIn([newDefault.customer_card_id, 'is_default'], true)
-        });
+      const newDefault = Object.values(state.paymentsById).find(p => p.customer_card_id === action.payload);
+      if (newDefault) {
+        newState = {
+          ...newState,
+          paymentsById: {
+            ...newState.paymentsById,
+            [newDefault.customer_card_id]: {
+              ...newState.paymentsById[newDefault.customer_card_id],
+              is_default: true,
+            },
+          },
+        };
       }
 
       return newState;

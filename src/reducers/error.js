@@ -71,6 +71,7 @@ import {
   AUTHENTICATE_USER,
   FETCH_LEVELUP_LOYALTY,
   FETCH_LEVELUP_QR_CODE,
+  FETCH_LEVELUP_CAMPAIGN,
   UPDATE_LEVELUP_CONNECTION,
   CONNECT_LEVELUP,
   DISCONNECT_LEVELUP,
@@ -155,6 +156,7 @@ export const initialState = {
   createUser: null,
   fetchLevelUpLoyalty: null,
   fetchLevelUpQRCode: null,
+  fetchLevelUpCampaign: null,
   updateLevelUpConnection: null,
   connectLevelUp: null,
   disconnectLevelUp: null,
@@ -248,13 +250,13 @@ export default function error(state = initialState, action) {
 
     // payments
     case `${FETCH_PAYMENTS}_PENDING`: return { ...state, fetchPayments: null };
-    case `${FETCH_PAYMENTS}_REJECTED`: return { ...state, fetchPayments: action.payload };
+    case `${FETCH_PAYMENTS}_REJECTED`: return { ...state, fetchPayments: action.error };
 
     case `${CREATE_PAYMENT}_PENDING`: return { ...state, createPayment: null };
-    case `${CREATE_PAYMENT}_REJECTED`: return { ...state, createPayment: action.payload };
+    case `${CREATE_PAYMENT}_REJECTED`: return { ...state, createPayment: action.error };
 
     case `${DELETE_PAYMENT}_PENDING`: return { ...state, deletePayment: null };
-    case `${DELETE_PAYMENT}_REJECTED`: return { ...state, deletePayment: action.payload };
+    case `${DELETE_PAYMENT}_REJECTED`: return { ...state, deletePayment: action.error };
 
     case `${SET_DEFAULT_PAYMENT}_PENDING`: return { ...state, setDefaultPayment: null };
     case `${SET_DEFAULT_PAYMENT}_REJECTED`: return { ...state, setDefaultPayment: action.payload };
@@ -305,6 +307,9 @@ export default function error(state = initialState, action) {
 
     case `${FETCH_LEVELUP_LOYALTY}_PENDING`: return { ...state, fetchLevelUpLoyalty: null };
     case `${FETCH_LEVELUP_LOYALTY}_REJECTED`: return { ...state, fetchLevelUpLoyalty: action.payload };
+
+    case `${FETCH_LEVELUP_CAMPAIGN}_PENDING`: return { ...state, fetchLevelUpCampaign: null };
+    case `${FETCH_LEVELUP_CAMPAIGN}_REJECTED`: return { ...state, fetchLevelUpCampaign: action.payload };
 
     case `${FETCH_LEVELUP_QR_CODE}_PENDING`: return { ...state, fetchLevelUpQRCode: null };
     case `${FETCH_LEVELUP_QR_CODE}_REJECTED`: return { ...state, fetchLevelUpQRCode: action.payload };

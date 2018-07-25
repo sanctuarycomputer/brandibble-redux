@@ -1,7 +1,6 @@
 /* global describe it */
 import { expect } from 'chai';
 import reducer from 'reducers/session/payments';
-import Immutable from 'seamless-immutable';
 
 import {
   FETCH_PAYMENTS,
@@ -10,9 +9,9 @@ import {
   SET_DEFAULT_PAYMENT,
 } from 'actions/session/payments';
 
-export const initialState = Immutable({
-  paymentsById: Immutable({}),
-});
+export const initialState = {
+  paymentsById: {},
+};
 
 describe('reducers/session/payments', () => {
   it('should return the initial state', () => {
@@ -24,21 +23,21 @@ describe('reducers/session/payments', () => {
       type: `${FETCH_PAYMENTS}_FULFILLED`,
       payload: [{ customer_card_id: 1 }],
     });
-    let result = reduced.paymentsById.asMutable();
+    let result = reduced.paymentsById;
     expect(result).to.eql({ '1': { customer_card_id: 1 } });
   });
 
   it('handles the SET_DEFAULT_PAYMENT_FULFILLED action', () => {
-    const reduced = reducer(Immutable({
-      paymentsById: Immutable({
+    const reduced = reducer({
+      paymentsById: {
         1: { customer_card_id: 1, is_default: false },
         2: { customer_card_id: 2, is_default: true },
-      })
-    }), {
+      }
+    }, {
       type: `${SET_DEFAULT_PAYMENT}_FULFILLED`,
       payload: 1,
     });
-    let result = reduced.paymentsById.asMutable();
+    let result = reduced.paymentsById;
     expect(result[1].is_default).to.be.true;
     expect(result[2].is_default).to.be.false;
   });
@@ -48,7 +47,7 @@ describe('reducers/session/payments', () => {
       type: `${DELETE_PAYMENT}_FULFILLED`,
       payload: { customer_card_id: 1 },
     });
-    let result = reduced.paymentsById.asMutable();
+    let result = reduced.paymentsById;
     expect(result).to.eql({});
   });
 
@@ -57,7 +56,7 @@ describe('reducers/session/payments', () => {
       type: `${CREATE_PAYMENT}_FULFILLED`,
       payload: [{ customer_card_id: 1 }],
     });
-    let result = reduced.paymentsById.asMutable();
+    let result = reduced.paymentsById;
     expect(result).to.eql({ '1': { customer_card_id: 1 } });
   });
 

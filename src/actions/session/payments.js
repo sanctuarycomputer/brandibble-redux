@@ -1,6 +1,6 @@
 /* eslint no-shadow:1 */
-import fireAction from 'utils/fireAction';
-import handleErrors from 'utils/handleErrors';
+import fireAction from '../../utils/fireAction';
+import handleErrors from '../../utils/handleErrors';
 
 export const FETCH_PAYMENTS      = 'FETCH_PAYMENTS';
 export const CREATE_PAYMENT      = 'CREATE_PAYMENT';
@@ -17,14 +17,12 @@ export const createPayment = (brandibble, payment = {}) => (dispatch) => {
   return dispatch(fireAction(CREATE_PAYMENT, payload));
 };
 
-
 export const setDefaultPayment = (brandibble, customer_card_id) => (dispatch) => {
   const payload = brandibble.payments.setDefault(customer_card_id).then(() => customer_card_id).catch(handleErrors);
   return dispatch(fireAction(SET_DEFAULT_PAYMENT, payload));
-}
+};
 
 export const deletePayment = (brandibble, id) => (dispatch) => {
   const payload = brandibble.payments.delete(id).then(() => id).catch(handleErrors);
   return dispatch(fireAction(DELETE_PAYMENT, payload));
 };
-

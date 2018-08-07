@@ -15,6 +15,7 @@ import {
   addLineItem,
   pushLineItem,
   bindCustomerToOrder,
+  unbindCustomerFromOrder,
   removeLineItem,
   setLineItemQuantity,
   setLineItemMadeFor,
@@ -45,7 +46,7 @@ const mockStore = configureStore(reduxMiddleware);
 delete addressStub.customer_address_id;
 
 describe('actions/session/order', () => {
-  let store, action, actionsCalled;
+  let store, action, actionsCalled, order;
   describe('resolveOrder', () => {
     before(() => {
       store = mockStore();
@@ -175,7 +176,7 @@ describe('actions/session/order', () => {
   describe('validateCurrentCart', () => {
     before(() => {
       store = mockStore();
-      const order = makeUnpersistedOrder('pickup');
+      order = makeUnpersistedOrder('pickup');
 
       return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(store.dispatch).then(({ value: { menu }}) => {
         const product = menu[0].children[menu[0].children.length - 1].items[0];
@@ -210,7 +211,7 @@ describe('actions/session/order', () => {
   describe('validateCurrentOrder', () => {
     before(() => {
       store = mockStore();
-      const order = makeUnpersistedOrder('pickup');
+      order = makeUnpersistedOrder('pickup');
 
       return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(store.dispatch).then(({ value: { menu }}) => {
         const product = menu[0].children[menu[0].children.length - 1].items[0];
@@ -303,7 +304,7 @@ describe('actions/session/order', () => {
     });
 
     it('should throw when no location id', () => {
-      const order = makeUnpersistedOrder();
+      order = makeUnpersistedOrder();
       order.locationId = null;
       expect(() => {
         addLineItem(order, productStub, 1)(store.dispatch);
@@ -335,7 +336,7 @@ describe('actions/session/order', () => {
   describe('removeLineItem', () => {
     before(() => {
       store = mockStore();
-      const order = makeUnpersistedOrder();
+      order = makeUnpersistedOrder();
       const lineItem = order.cart.addLineItem(productStub, 1);
       const optionGroup = productStub.option_groups[0];
       const optionItem = optionGroup.option_items[0];
@@ -361,7 +362,7 @@ describe('actions/session/order', () => {
   describe('addOptionToLineItem', () => {
     before(() => {
       store = mockStore();
-      const order = makeUnpersistedOrder();
+      order = makeUnpersistedOrder();
       const lineItem = order.cart.addLineItem(productStub, 1);
       const optionGroup = productStub.option_groups[0];
       const optionItem = optionGroup.option_items[0];
@@ -386,7 +387,7 @@ describe('actions/session/order', () => {
   describe('removeOptionFromLineItem', () => {
     before(() => {
       store = mockStore();
-      const order = makeUnpersistedOrder();
+      order = makeUnpersistedOrder();
       const lineItem = order.cart.addLineItem(productStub, 1);
       const optionGroup = productStub.option_groups[0];
       const optionItem = optionGroup.option_items[0];
@@ -412,7 +413,7 @@ describe('actions/session/order', () => {
   describe('setLineItemQuantity', () => {
     before(() => {
       store = mockStore();
-      const order = makeUnpersistedOrder();
+      order = makeUnpersistedOrder();
       const lineItem = order.cart.addLineItem(productStub, 1);
       return setLineItemQuantity(order, lineItem, 10)(store.dispatch).then(() => {
         actionsCalled = store.getActions();
@@ -420,7 +421,7 @@ describe('actions/session/order', () => {
     });
 
     it('throws with a < 1 quantity', () => {
-      const order = makeUnpersistedOrder();
+      order = makeUnpersistedOrder();
       const lineItem = order.cart.addLineItem(productStub, 1);
       expect(() => {
         setLineItemQuantity(order, lineItem, 0)(store.dispatch);
@@ -443,7 +444,7 @@ describe('actions/session/order', () => {
   describe('setLineItemMadeFor', () => {
     before(() => {
       store = mockStore();
-      const order = makeUnpersistedOrder();
+      order = makeUnpersistedOrder();
       const lineItem = order.cart.addLineItem(productStub, 1);
       return setLineItemMadeFor(order, lineItem, 'user')(store.dispatch).then(() => {
         actionsCalled = store.getActions();
@@ -466,7 +467,7 @@ describe('actions/session/order', () => {
   describe('setLineItemInstructions', () => {
     before(() => {
       store = mockStore();
-      const order = makeUnpersistedOrder();
+      order = makeUnpersistedOrder();
       const lineItem = order.cart.addLineItem(productStub, 1);
       return setLineItemInstructions(order, lineItem, 'Sauce on side')(store.dispatch).then(() => {
         actionsCalled = store.getActions();
@@ -503,10 +504,37 @@ describe('actions/session/order', () => {
     });
   });
 
+  describe('unbindCustomerFromOrder', () => {
+    before(() => {
+      store = mockStore();
+      order = makeUnpersistedOrder();
+      return bindCustomerToOrder(order, authResponseStub)(store.dispatch)
+        .then(() => {
+          it('should have a non-empty customer', () => expect(order.customer).to.not.be.null);
+          return unbindCustomerFromOrder(order)(store.dispatch);
+        })
+        .then(() => {
+          actionsCalled = store.getActions();
+        });
+    });
+
+    it('should have UNBIND_CUSTOMER_FROM_ORDER_PENDING action', () => {
+      action = find(actionsCalled, { type: 'UNBIND_CUSTOMER_FROM_ORDER_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have UNBIND_CUSTOMER_FROM_ORDER_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'UNBIND_CUSTOMER_FROM_ORDER_FULFILLED' });
+      expect(action).to.exist;
+    });
+
+    it('should not have a customer', () => expect(order.customer).to.be.null);
+  });
+
   describe('submitOrder', () => {
     before(() => {
       store = mockStore();
-      const order = makeUnpersistedOrder('pickup');
+      order = makeUnpersistedOrder('pickup');
 
       return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(store.dispatch).then(({ value: { menu }}) => {
         const product = menu[0].children[menu[0].children.length - 1].items[0];

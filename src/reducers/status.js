@@ -39,6 +39,7 @@ import {
   SET_LINE_ITEM_INSTRUCTIONS,
   SET_PAYMENT_METHOD,
   BIND_CUSTOMER_TO_ORDER,
+  UNBIND_CUSTOMER_FROM_ORDER,
 } from '../actions/session/order';
 import {
   FETCH_LOCATIONS,
@@ -198,6 +199,10 @@ export default (state = initialState, action) => {
     case `${BIND_CUSTOMER_TO_ORDER}_PENDING`: return { ...state, bindCustomerToOrder: PENDING };
     case `${BIND_CUSTOMER_TO_ORDER}_FULFILLED`: return { ...state, bindCustomerToOrder: FULFILLED };
     case `${BIND_CUSTOMER_TO_ORDER}_REJECTED`: return { ...state, bindCustomerToOrder: REJECTED };
+
+    case `${UNBIND_CUSTOMER_FROM_ORDER}_PENDING`: return { ...state, unbindCustomerFromOrder: PENDING };
+    case `${UNBIND_CUSTOMER_FROM_ORDER}_FULFILLED`: return { ...state, unbindCustomerFromOrder: FULFILLED };
+    case `${UNBIND_CUSTOMER_FROM_ORDER}_REJECTED`: return { ...state, unbindCustomerFromOrder: REJECTED };
 
     case `${FETCH_ALL_CUSTOMER_ORDERS}_PENDING`: return { ...state, fetchAllCustomerOrders: PENDING };
     case `${FETCH_ALL_CUSTOMER_ORDERS}_FULFILLED`: return { ...state, fetchAllCustomerOrders: FULFILLED };

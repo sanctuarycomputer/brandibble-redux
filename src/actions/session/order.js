@@ -15,6 +15,7 @@ export const REMOVE_OPTION_FROM_LINE_ITEM = 'REMOVE_OPTION_FROM_LINE_ITEM';
 export const SET_ORDER_LOCATION_ID = 'SET_ORDER_LOCATION_ID';
 export const SUBMIT_ORDER = 'SUBMIT_ORDER';
 export const BIND_CUSTOMER_TO_ORDER = 'BIND_CUSTOMER_TO_ORDER';
+export const UNBIND_CUSTOMER_FROM_ORDER = 'UNBIND_CUSTOMER_FROM_ORDER';
 export const SET_PAYMENT_METHOD = 'SET_PAYMENT_METHOD';
 export const SET_ORDER_ADDRESS = 'SET_ORDER_ADDRESS';
 export const SET_PROMO_CODE = 'SET_PROMO_CODE';
@@ -110,6 +111,13 @@ function _bindCustomerToOrder(order, customer) {
   return {
     type: BIND_CUSTOMER_TO_ORDER,
     payload: order.setCustomer(customer).then(order => ({ order })),
+  };
+}
+
+function _unbindCustomerFromOrder(order) {
+  return {
+    type: UNBIND_CUSTOMER_FROM_ORDER,
+    payload: order.unsetCustomer().then(order => ({ order })),
   };
 }
 
@@ -283,6 +291,10 @@ export function removeOptionFromLineItem(currentOrder, lineItem, optionItem) {
 
 export function bindCustomerToOrder(...args) {
   return dispatch => dispatch(_bindCustomerToOrder(...args));
+}
+
+export function unbindCustomerFromOrder(currentOrder) {
+  return dispatch => dispatch(_unbindCustomerFromOrder(currentOrder));
 }
 
 export function submitOrder(...args) {

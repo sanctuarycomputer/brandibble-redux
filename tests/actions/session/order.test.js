@@ -40,13 +40,9 @@ import {
   validCredentialsStub,
 } from '../../config/stubs';
 
-const getNonConfigurableMenuItem = (menu) => menu.reduce((acc, section) => {
-  return section.children.reduce((acc, child) => {
-    return child.items.reduce((acc, item) => {
-      return !!item && !item.option_groups.length ? item : undefined;
-    }, []);
-  }, []);
-}, []);
+const getNonConfigurableMenuItem = menu => menu.reduce((acc, section) => acc.concat(section.children), [])
+    .reduce((acc, child) => acc.concat(child.items), [])
+    .find(item => !item.option_groups.length);
 
 const mockStore = configureStore(reduxMiddleware);
 // don't need this when creating a new address

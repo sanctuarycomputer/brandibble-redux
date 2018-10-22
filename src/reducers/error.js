@@ -269,16 +269,16 @@ export default (state = initialState, action) => {
 
     // ratings
     case `${FETCH_RATING}_PENDING`: return { ...state, fetchRating: null };
-    case `${FETCH_RATING}_REJECTED`: return { ...state, fetchRating: action.error };
+    case `${FETCH_RATING}_REJECTED`: return { ...state, fetchRating: payload };
 
     case `${CREATE_RATING}_PENDING`: return { ...state, createRating: null };
-    case `${CREATE_RATING}_REJECTED`: return { ...state, createRating: action.error };
+    case `${CREATE_RATING}_REJECTED`: return { ...state, createRating: payload };
 
     case `${UPDATE_RATING}_PENDING`: return { ...state, updateRating: null };
-    case `${UPDATE_RATING}_REJECTED`: return { ...state, updateRating: action.error };
+    case `${UPDATE_RATING}_REJECTED`: return { ...state, updateRating: payload };
 
     case `${DELETE_RATING}_PENDING`: return { ...state, deleteRating: null };
-    case `${DELETE_RATING}_REJECTED`: return { ...state, deleteRating: action.error };
+    case `${DELETE_RATING}_REJECTED`: return { ...state, deleteRating: payload };
 
     // users
     case `${AUTHENTICATE_USER}_PENDING`: return { ...state, authenticateUser: null };
@@ -286,11 +286,11 @@ export default (state = initialState, action) => {
 
     case `${ADD_ALLERGENS}_PENDING`: return { ...state, addAllergens: null };
     case `${ADD_ALLERGENS}_FULFILLED`: return { ...state, addAllergens: payload };
-    case `${ADD_ALLERGENS}_REJECTED`: return { ...state, addAllergens: action.error };
+    case `${ADD_ALLERGENS}_REJECTED`: return { ...state, addAllergens: payload };
 
     case `${REMOVE_ALLERGENS}_PENDING`: return { ...state, removeAllergens: null };
     case `${REMOVE_ALLERGENS}_FULFILLED`: return { ...state, removeAllergens: payload };
-    case `${REMOVE_ALLERGENS}_REJECTED`: return { ...state, removeAllergens: action.error };
+    case `${REMOVE_ALLERGENS}_REJECTED`: return { ...state, removeAllergens: payload };
 
     case `${RESOLVE_USER}_PENDING`: return { ...state, resolveUser: null };
     case `${RESOLVE_USER}_REJECTED`: return { ...state, resolveUser: payload };
@@ -332,13 +332,13 @@ export default (state = initialState, action) => {
     case `${FETCH_USER}_REJECTED`: return { ...state, fetchUser: payload };
 
     case `${UPDATE_USER}_PENDING`: return { ...state, updateUser: null };
-    case `${UPDATE_USER}_REJECTED`: return { ...state, updateUser: action.error };
+    case `${UPDATE_USER}_REJECTED`: return { ...state, updateUser: payload };
 
     case `${CREATE_USER}_PENDING`: return { ...state, createUser: null };
-    case `${CREATE_USER}_REJECTED`: return { ...state, createUser: action.error };
+    case `${CREATE_USER}_REJECTED`: return { ...state, createUser: payload };
 
     case `${RESET_APPLICATION}_PENDING`: return { ...state, resetApplication: null };
-    case `${RESET_APPLICATION}_REJECTED`: return { ...state, resetApplication: action.error };
+    case `${RESET_APPLICATION}_REJECTED`: return { ...state, resetApplication: payload };
 
     default: return state;
   }

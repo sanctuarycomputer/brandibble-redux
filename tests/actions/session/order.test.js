@@ -40,6 +40,10 @@ import {
   validCredentialsStub,
 } from '../../config/stubs';
 
+const getNonConfigurableMenuItem = menu => menu.reduce((acc, section) => acc.concat(section.children), [])
+    .reduce((acc, child) => acc.concat(child.items), [])
+    .find(item => !item.option_groups.length);
+
 const mockStore = configureStore(reduxMiddleware);
 // don't need this when creating a new address
 delete addressStub.customer_address_id;
@@ -178,7 +182,7 @@ describe('actions/session/order', () => {
       const order = makeUnpersistedOrder('pickup');
 
       return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(store.dispatch).then(({ value: { menu }}) => {
-        const product = menu[0].children[menu[0].children.length - 1].items[0];
+        const product = getNonConfigurableMenuItem(menu);
         order.cart.addLineItem(product, 1, product.id);
 
         return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(() => {
@@ -213,7 +217,7 @@ describe('actions/session/order', () => {
       const order = makeUnpersistedOrder('pickup');
 
       return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(store.dispatch).then(({ value: { menu }}) => {
-        const product = menu[0].children[menu[0].children.length - 1].items[0];
+        const product = getNonConfigurableMenuItem(menu);
         order.cart.addLineItem(product, 1, product.id);
 
         return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(() => {
@@ -509,7 +513,7 @@ describe('actions/session/order', () => {
       const order = makeUnpersistedOrder('pickup');
 
       return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(store.dispatch).then(({ value: { menu }}) => {
-        const product = menu[0].children[menu[0].children.length - 1].items[0];
+        const product = getNonConfigurableMenuItem(menu);
         order.cart.addLineItem(product, 1, product.id);
 
         return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(() => {

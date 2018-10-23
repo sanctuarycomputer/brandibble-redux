@@ -5,6 +5,7 @@ import generateUUID from '../../utils/generateUUID';
 
 export const UPDATE_USER = 'UPDATE_USER';
 export const CREATE_USER = 'CREATE_USER';
+export const CREATE_AND_AUTHENTICATE_USER = 'CREATE_AND_AUTHENTICATE_USER';
 export const VALIDATE_USER = 'VALIDATE_USER';
 export const AUTHENTICATE_USER = 'AUTHENTICATE_USER';
 export const UNAUTHENTICATE_USER = 'UNAUTHENTICATE_USER';
@@ -22,6 +23,14 @@ export const CONNECT_LEVELUP = 'CONNECT_LEVELUP';
 export const DISCONNECT_LEVELUP = 'DISCONNECT_LEVELUP';
 export const FETCH_LEVELUP_PAYMENT_METHOD = 'FETCH_LEVELUP_PAYMENT_METHOD';
 export const FETCH_LEVELUP_CAMPAIGN = 'FETCH_LEVELUP_CAMPAIGN';
+
+export const createAndAuthenticateUser = (brandibble, createData = {}) => (dispatch) => {
+  const payload = brandibble.customers.createAndAuthenticate(createData)
+    .then(({ data }) => (data))
+    .catch(handleErrors);
+
+  return dispatch(fireAction(CREATE_AND_AUTHENTICATE_USER, payload));
+};
 
 export const validateUser = (brandibble, email) => (dispatch) => {
   const payload = brandibble.customers.validateCustomer({ email })

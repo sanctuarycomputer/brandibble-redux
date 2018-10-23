@@ -7,6 +7,7 @@ import reduxMiddleware from 'config/middleware';
 import {
   authenticateUser,
   createUser,
+  createAndAuthenticateUser,
   fetchLevelUpLoyalty,
   fetchLevelUpQRCode,
   updateLevelUpConnection,
@@ -170,6 +171,62 @@ describe('actions/session/user', () => {
 
       it('RESOLVE_USER_FULFILLED action should have an object with no keys', () => {
         expect(Object.keys(action.payload)).to.have.length.of(0);
+      });
+    });
+  });
+
+  describe('createAndAuthenticateUser', () => {
+    let store, actionsCalled, action, userData;
+
+    describe('valid data', () => {
+      before(() => {
+        store = mockStore();
+        userData = {
+          first_name: 'Hugh',
+          last_name: 'Francis',
+          email: `sanctuary-testing-${(new Date()).valueOf().toString()}@example.com`,
+          password: 'password',
+        };
+  
+        return createAndAuthenticateUser(brandibble, userData)(store.dispatch).then(() => {
+          actionsCalled = store.getActions();
+        });
+      });
+      
+      it('should call at least 2 actions', () => expect(actionsCalled).to.have.length.of.at.least(2));
+
+      it('should have CREATE_AND_AUTHENTICATE_USER_PENDING action', () => {
+        action = find(actionsCalled, { type: 'CREATE_AND_AUTHENTICATE_USER_PENDING' });
+        expect(action).to.exist;
+      });
+
+      it('should have CREATE_AND_AUTHENTICATE_USER_FULFILLED action', () => {
+        action = find(actionsCalled, { type: 'CREATE_AND_AUTHENTICATE_USER_FULFILLED' });
+        expect(action).to.exist;
+      });
+    });
+
+    describe('throws error on bad user data', () => {
+      let badUserData;
+      before(() => {
+        badUserData = userData;
+        badUserData.email = 'blah';
+        store = mockStore();
+        return createAndAuthenticateUser(brandibble, badUserData)(store.dispatch).catch(() => {
+          actionsCalled = store.getActions();
+        });
+      });
+
+      it('should call at least 2 actions', () => expect(actionsCalled).to.have.length.of.at.least(2));
+
+      it('should have CREATE_AND_AUTHENTICATE_USER_PENDING action', () => {
+        action = find(actionsCalled, { type: 'CREATE_AND_AUTHENTICATE_USER_PENDING' });
+        expect(action).to.exist;
+      });
+
+      it('should have CREATE_AND_AUTHENTICATE_USER_REJECTED action', () => {
+        action = find(actionsCalled, { type: 'CREATE_AND_AUTHENTICATE_USER_REJECTED' });
+        expect(action).to.exist;
       });
     });
   });

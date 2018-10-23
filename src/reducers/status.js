@@ -50,6 +50,7 @@ import {
 import {
   UPDATE_USER,
   CREATE_USER,
+  CREATE_AND_AUTHENTICATE_USER,
   AUTHENTICATE_USER,
   FETCH_LEVELUP_LOYALTY,
   FETCH_LEVELUP_QR_CODE,
@@ -134,6 +135,7 @@ const initialState = {
   deleteRating: IDLE,
   authenticateUser: IDLE,
   createUser: IDLE,
+  createAndAuthenticateUser: IDLE,
   fetchUser: IDLE,
   resetUserPassword: IDLE,
   finishResetUserPassword: IDLE,
@@ -386,6 +388,10 @@ export default (state = initialState, action) => {
     case `${CREATE_USER}_PENDING`: return { ...state, createUser: PENDING };
     case `${CREATE_USER}_FULFILLED`: return { ...state, createUser: FULFILLED };
     case `${CREATE_USER}_REJECTED`: return { ...state, createUser: REJECTED };
+
+    case `${CREATE_AND_AUTHENTICATE_USER}_PENDING`: return { ...state, createAndAuthenticateUser: PENDING };
+    case `${CREATE_AND_AUTHENTICATE_USER}_FULFILLED`: return { ...state, createAndAuthenticateUser: FULFILLED };
+    case `${CREATE_AND_AUTHENTICATE_USER}_REJECTED`: return { ...state, createAndAuthenticateUser: REJECTED };
 
     case `${RESET_APPLICATION}_PENDING`: return { ...state, resetApplication: PENDING };
     case `${RESET_APPLICATION}_REJECTED`: return { ...state, resetApplication: REJECTED };

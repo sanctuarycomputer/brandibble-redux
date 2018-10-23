@@ -44,6 +44,7 @@ export {
 export {
   authenticateUser,
   createUser,
+  createAndAuthenticateUser,
   fetchLevelUpLoyalty,
   fetchLevelUpQRCode,
   fetchLevelUpCampaign,

@@ -1,6 +1,7 @@
 /* eslint no-plusplus:1 */
 import {
   CREATE_USER,
+  CREATE_AND_AUTHENTICATE_USER,
   UPDATE_USER,
   AUTHENTICATE_USER,
   FETCH_USER,
@@ -43,6 +44,7 @@ export default (state = initialState, action) => {
 
     case `${CREATE_USER}_FULFILLED`:
     case `${UPDATE_USER}_FULFILLED`:
+    case `${CREATE_AND_AUTHENTICATE_USER}_FULFILLED`:
       return payload;
     case `${UNAUTHENTICATE_USER}_FULFILLED`:
       return initialState;

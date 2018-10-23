@@ -69,6 +69,7 @@ import {
 import {
   UPDATE_USER,
   CREATE_USER,
+  CREATE_AND_AUTHENTICATE_USER,
   AUTHENTICATE_USER,
   FETCH_LEVELUP_LOYALTY,
   FETCH_LEVELUP_QR_CODE,
@@ -145,6 +146,7 @@ export const initialState = {
   // user
   authenticateUser: null,
   createUser: null,
+  createAndAuthenticateUser: null,
   fetchLevelUpLoyalty: null,
   fetchLevelUpQRCode: null,
   updateLevelUpConnection: null,
@@ -281,6 +283,9 @@ export default (state = initialState, action) => {
     case `${DELETE_RATING}_REJECTED`: return { ...state, deleteRating: payload };
 
     // users
+    case `${CREATE_AND_AUTHENTICATE_USER}_PENDING`: return { ...state, createAndAuthenticateUser: null };
+    case `${CREATE_AND_AUTHENTICATE_USER}_REJECTED`: return { ...state, createAndAuthenticateUser: payload };
+
     case `${AUTHENTICATE_USER}_PENDING`: return { ...state, authenticateUser: null };
     case `${AUTHENTICATE_USER}_REJECTED`: return { ...state, authenticateUser: payload };
 

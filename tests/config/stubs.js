@@ -138,7 +138,7 @@ export const validCredentialsStub = {
 
 export const cardStub = {
   cc_number: 4788250000121443,
-  cc_expiration: 1018,
+  cc_expiration: 1030,
   cc_cvv: 740,
   cc_zip: 10022,
 };

@@ -43,7 +43,12 @@ export default (state = initialState, action) => {
       };
 
     case `${SET_DEFAULT_PAYMENT}_FULFILLED`:
-      const currentDefault = Object.values(state.paymentsById).find(p => p.is_default);
+      newState = { ...state };
+
+      const currentDefault = Object.values(state.paymentsById).find(
+        p => p.is_default,
+      );
+
       if (currentDefault) {
         newState = {
           ...state,
@@ -57,7 +62,10 @@ export default (state = initialState, action) => {
         };
       }
 
-      const newDefault = Object.values(state.paymentsById).find(p => p.customer_card_id === action.payload);
+      const newDefault = Object.values(state.paymentsById).find(
+        p => p.customer_card_id === action.payload,
+      );
+
       if (newDefault) {
         newState = {
           ...newState,

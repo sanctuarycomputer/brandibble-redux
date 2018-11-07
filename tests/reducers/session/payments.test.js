@@ -18,26 +18,45 @@ describe('reducers/session/payments', () => {
     expect(reducer(initialState, {})).to.equal(initialState);
   });
 
-  it('handles the FETCH_PAYMENTS_FULFILLED action', () => {
+  it('handles the FETCH_PAYMENTS_FULFILLED action with multiple payment methods', () => {
     const reduced = reducer(initialState, {
       type: `${FETCH_PAYMENTS}_FULFILLED`,
       payload: [{ customer_card_id: 1 }],
     });
-    let result = reduced.paymentsById;
-    expect(result).to.eql({ '1': { customer_card_id: 1 } });
+    const result = reduced.paymentsById;
+    expect(result).to.eql({ 1: { customer_card_id: 1 } });
   });
 
-  it('handles the SET_DEFAULT_PAYMENT_FULFILLED action', () => {
-    const reduced = reducer({
-      paymentsById: {
-        1: { customer_card_id: 1, is_default: false },
-        2: { customer_card_id: 2, is_default: true },
-      }
-    }, {
-      type: `${SET_DEFAULT_PAYMENT}_FULFILLED`,
-      payload: 1,
-    });
-    let result = reduced.paymentsById;
+  it('handles the SET_DEFAULT_PAYMENT_FULFILLED action with single payment method', () => {
+    const reduced = reducer(
+      {
+        paymentsById: {
+          1: { customer_card_id: 1, is_default: false },
+        },
+      },
+      {
+        type: `${SET_DEFAULT_PAYMENT}_FULFILLED`,
+        payload: 1,
+      },
+    );
+    const result = reduced.paymentsById;
+    expect(result[1].is_default).to.be.true;
+  });
+
+  it('handles the SET_DEFAULT_PAYMENT_FULFILLED action with multiple payment method', () => {
+    const reduced = reducer(
+      {
+        paymentsById: {
+          1: { customer_card_id: 1, is_default: false },
+          2: { customer_card_id: 2, is_default: true },
+        },
+      },
+      {
+        type: `${SET_DEFAULT_PAYMENT}_FULFILLED`,
+        payload: 1,
+      },
+    );
+    const result = reduced.paymentsById;
     expect(result[1].is_default).to.be.true;
     expect(result[2].is_default).to.be.false;
   });
@@ -47,7 +66,7 @@ describe('reducers/session/payments', () => {
       type: `${DELETE_PAYMENT}_FULFILLED`,
       payload: { customer_card_id: 1 },
     });
-    let result = reduced.paymentsById;
+    const result = reduced.paymentsById;
     expect(result).to.eql({});
   });
 
@@ -56,8 +75,7 @@ describe('reducers/session/payments', () => {
       type: `${CREATE_PAYMENT}_FULFILLED`,
       payload: [{ customer_card_id: 1 }],
     });
-    let result = reduced.paymentsById;
-    expect(result).to.eql({ '1': { customer_card_id: 1 } });
+    const result = reduced.paymentsById;
+    expect(result).to.eql({ 1: { customer_card_id: 1 } });
   });
-
 });

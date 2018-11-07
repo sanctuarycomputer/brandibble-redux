@@ -25,6 +25,9 @@ import {
   SET_DEFAULT_PAYMENT,
 } from '../actions/session/payments';
 import {
+  FETCH_CUSTOMER_LOYALTIES,
+} from '../actions/session/loyalties';
+import {
   ADD_LINE_ITEM,
   RESOLVE_ORDER,
   SET_ORDER_LOCATION_ID,
@@ -275,6 +278,10 @@ export default (state = initialState, action) => {
     case `${SET_DEFAULT_PAYMENT}_PENDING`: return { ...state, setDefaultPayment: PENDING };
     case `${SET_DEFAULT_PAYMENT}_FULFILLED`: return { ...state, setDefaultPayment: FULFILLED };
     case `${SET_DEFAULT_PAYMENT}_REJECTED`: return { ...state, setDefaultPayment: REJECTED };
+
+    case `${FETCH_CUSTOMER_LOYALTIES}_PENDING`: return { ...state, loyalties: PENDING };
+    case `${FETCH_CUSTOMER_LOYALTIES}_FULFILLED`: return { ...state, loyalties: FULFILLED };
+    case `${FETCH_CUSTOMER_LOYALTIES}_REJECTED`: return { ...state, loyalties: REJECTED };
 
     // Favorites
     case `${FETCH_FAVORITES}_PENDING`: return { ...state, fetchFavorites: PENDING };

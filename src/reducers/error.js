@@ -88,6 +88,11 @@ import {
   REMOVE_ALLERGENS,
 } from '../actions/session/user';
 
+// loyalties
+import {
+  FETCH_CUSTOMER_LOYALTIES,
+} from '../actions/session/loyalties';
+
 // ratings
 import {
   FETCH_RATING,
@@ -296,6 +301,10 @@ export default (state = initialState, action) => {
     case `${REMOVE_ALLERGENS}_PENDING`: return { ...state, removeAllergens: null };
     case `${REMOVE_ALLERGENS}_FULFILLED`: return { ...state, removeAllergens: payload };
     case `${REMOVE_ALLERGENS}_REJECTED`: return { ...state, removeAllergens: payload };
+
+    case `${FETCH_CUSTOMER_LOYALTIES}_PENDING`: return { ...state, loyalties: null };
+    case `${FETCH_CUSTOMER_LOYALTIES}_FULFILLED`: return { ...state, loyalties: payload };
+    case `${FETCH_CUSTOMER_LOYALTIES}_REJECTED`: return { ...state, loyalties: payload };
 
     case `${RESOLVE_USER}_PENDING`: return { ...state, resolveUser: null };
     case `${RESOLVE_USER}_REJECTED`: return { ...state, resolveUser: payload };

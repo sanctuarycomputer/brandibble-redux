@@ -136,7 +136,7 @@ function _setRequestedAt(order, time, wantsFuture) {
 }
 
 function _submitOrder(dispatch, brandibble, order, options) {
-  let authStub; 
+  let authStub;
   let submitOptions = {};
 
   if (options) {

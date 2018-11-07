@@ -3,10 +3,7 @@ import localforage from 'localforage';
 import generateUUID from 'utils/generateUUID';
 import ENV from './environment';
 
-localforage.config({
-  name: 'brandibble-redux-test',
-  storeName: 'brandibble-redux-test',
-});
+localforage.config({ name: 'brandibble-redux-test', storeName: 'brandibble-redux-test' });
 
 export const brandibble = new Brandibble({
   apiKey: ENV.BRANDIBBLE_API_KEY,
@@ -16,11 +13,7 @@ export const brandibble = new Brandibble({
 });
 
 export function makeUnpersistedOrder() {
-  return new brandibble.Order(
-    brandibble.adapter,
-    SAMPLE_MENU_LOCATION_ID,
-    'pickup',
-  );
+  return new brandibble.Order(brandibble.adapter, SAMPLE_MENU_LOCATION_ID, 'pickup');
 }
 
 export const customersValidateStub = {
@@ -215,8 +208,7 @@ export const locationsStub = [
     has_delivery: false,
     has_pickup: true,
     hours_delivery: [],
-    hours_description:
-      '<p>Monday to Friday, 7:30am &mdash; 9pm<br />Saturday to Sunday, 8am &mdash; 9pm</p>',
+    hours_description: '<p>Monday to Friday, 7:30am &mdash; 9pm<br />Saturday to Sunday, 8am &mdash; 9pm</p>',
     hours_for_week: [
       {
         close: '9:00 PM',
@@ -315,14 +307,12 @@ export const productStub = {
   allergens: '',
   category_id: 108,
   delivery_days: null,
-  description:
-    'Charred chicken marinated w/ lemon, fennel seeds, and mustard seeds.',
+  description: 'Charred chicken marinated w/ lemon, fennel seeds, and mustard seeds.',
   display_options: 0,
   end_date: null,
   height: null,
   id: 3876,
-  large_image_url:
-    '//s3.amazonaws.com/betterboh/u/img/prod/6/1461592134_ChickenLemon_or_Charred.jpg',
+  large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461592134_ChickenLemon_or_Charred.jpg',
   length: null,
   menu_position: 2,
   name: 'Charred Chicken',
@@ -353,14 +343,12 @@ export const productStub = {
           allergen_classes: '',
           allergens: '',
           delivery_days: null,
-          description:
-            'Long grain brown rice tossed with a touch of thyme olive oil, red onions, lime juice and fresh parsley. ',
+          description: 'Long grain brown rice tossed with a touch of thyme olive oil, red onions, lime juice and fresh parsley. ',
           end_date: null,
           group_id: 63,
           height: null,
           id: 7887,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461161223_base-brownrice.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461161223_base-brownrice.jpg',
           length: null,
           menu_position: 1,
           name: 'Classic Brown Rice',
@@ -383,8 +371,7 @@ export const productStub = {
           short_name: 'Classic Brown Rice',
           shorthand: '',
           slug: 'classic-brown-rice',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461161211_brown-rice-2.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461161211_brown-rice-2.jpg',
           start_date: null,
           tag_classes: '',
           tags: '',
@@ -396,14 +383,12 @@ export const productStub = {
           allergen_classes: 'allergen-gluten',
           allergens: 'Gluten',
           delivery_days: null,
-          description:
-            'Quinoa, bulgur wheat, cucumber, kale stems, and parsley. Vegan.',
+          description: 'Quinoa, bulgur wheat, cucumber, kale stems, and parsley. Vegan.',
           end_date: null,
           group_id: 63,
           height: null,
           id: 11577,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1465827265_Tabbouleh_Large.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1465827265_Tabbouleh_Large.jpg',
           length: null,
           menu_position: 2,
           name: 'Quinoa & Bulgur Tabbouleh',
@@ -426,8 +411,7 @@ export const productStub = {
           short_name: 'Quinoa Bulgur Tabbouleh',
           shorthand: 'Q',
           slug: 'quinoa-and-bulgur-tabbouleh',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1465958166_QuinoaTabbouleh400x400_1.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1465958166_QuinoaTabbouleh400x400_1.jpg',
           start_date: null,
           tag_classes: '',
           tags: '',
@@ -444,8 +428,7 @@ export const productStub = {
           group_id: 63,
           height: null,
           id: 7901,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461245030_GreensWithChervilAndMint.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461245030_GreensWithChervilAndMint.jpg',
           length: null,
           menu_position: 3,
           name: ' Local Greens w/ Chervil & Mint',
@@ -456,8 +439,7 @@ export const productStub = {
           short_name: ' Local greens',
           shorthand: '',
           slug: '-local-greens-w-chervil-and-mint',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461245040_GreensWithChervilAndMint.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461245040_GreensWithChervilAndMint.jpg',
           start_date: null,
           tag_classes: '',
           tags: '',
@@ -510,14 +492,12 @@ export const productStub = {
           allergen_classes: 'allergen-gluten allergen-dairy',
           allergens: 'Gluten, Dairy',
           delivery_days: null,
-          description:
-            'Ithaca Milk, rBGH-free three cheese blend, whole wheat pasta, roasted cauliflower, panko bread crumb. Contains dairy.',
+          description: 'Ithaca Milk, rBGH-free three cheese blend, whole wheat pasta, roasted cauliflower, panko bread crumb. Contains dairy.',
           end_date: null,
           group_id: 64,
           height: null,
           id: 8202,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461188741_SeasonalMac.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461188741_SeasonalMac.jpg',
           length: null,
           menu_position: 1,
           name: 'Seasonal Upstate Mac w/ Roasted Cauliflower',
@@ -540,8 +520,7 @@ export const productStub = {
           short_name: 'Mac',
           shorthand: 'U',
           slug: 'seasonal-upstate-mac-w-roasted-cauliflower',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461188730_SeasonalMac.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461188730_SeasonalMac.jpg',
           start_date: null,
           tag_classes: '',
           tags: '',
@@ -553,14 +532,12 @@ export const productStub = {
           allergen_classes: '',
           allergens: '',
           delivery_days: null,
-          description:
-            'Chunked and then roasted, our sweet potatoes are dressed with a a house-made fresh rosemary & EVOO blend. Vegan. Gluten-free.',
+          description: 'Chunked and then roasted, our sweet potatoes are dressed with a a house-made fresh rosemary & EVOO blend. Vegan. Gluten-free.',
           end_date: null,
           group_id: 64,
           height: null,
           id: 7902,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461161308_Captures-424.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461161308_Captures-424.jpg',
           length: null,
           menu_position: 2,
           name: 'Roasted Sweet Potatoes',
@@ -583,8 +560,7 @@ export const productStub = {
           short_name: 'Sweet Potatoes',
           shorthand: 'P',
           slug: 'roasted-sweet-potatoes',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461161296_sweet-potato-2.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461161296_sweet-potato-2.jpg',
           start_date: null,
           tag_classes: 'tag-vegan',
           tags: 'Vegan',
@@ -596,14 +572,12 @@ export const productStub = {
           allergen_classes: '',
           allergens: '',
           delivery_days: null,
-          description:
-            'Simply sautéed cauliflower with preserved lemon and thyme. Vegan. Gluten-free.',
+          description: 'Simply sautéed cauliflower with preserved lemon and thyme. Vegan. Gluten-free.',
           end_date: null,
           group_id: 64,
           height: null,
           id: 11382,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1464989401_Cauliflower800x800.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1464989401_Cauliflower800x800.jpg',
           length: null,
           menu_position: 3,
           name: 'Sauteed Cauliflower w/ Preserved Lemon',
@@ -626,8 +600,7 @@ export const productStub = {
           short_name: 'Sauteed Cauliflower ',
           shorthand: 'SC',
           slug: 'sauteed-cauliflower-w-preserved-lemon',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1464989401_Cauliflower400x400.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1464989401_Cauliflower400x400.jpg',
           start_date: null,
           tag_classes: '',
           tags: '',
@@ -639,14 +612,12 @@ export const productStub = {
           allergen_classes: '',
           allergens: '',
           delivery_days: null,
-          description:
-            'Local kale, roasted garlic, tomato, and pepper. Vegan. Gluten-free.',
+          description: 'Local kale, roasted garlic, tomato, and pepper. Vegan. Gluten-free.',
           end_date: null,
           group_id: 64,
           height: null,
           id: 11566,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1465833754_DIG_INN_5-12-16_77434.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1465833754_DIG_INN_5-12-16_77434.jpg',
           length: null,
           menu_position: 4,
           name: 'Roasted Kale w/ Tomato & Pepper',
@@ -669,8 +640,7 @@ export const productStub = {
           short_name: 'Roasted Kale',
           shorthand: 'RK',
           slug: 'roasted-kale-w-tomato-and-pepper',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1465908972_KaleWTomato400x400.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1465908972_KaleWTomato400x400.jpg',
           start_date: null,
           tag_classes: 'tag-vegan',
           tags: 'Vegan',
@@ -682,14 +652,12 @@ export const productStub = {
           allergen_classes: '',
           allergens: '',
           delivery_days: null,
-          description:
-            'Charred broccoli, chilled and tossed with roasted garlic and toasted almonds. Vegan. Gluten-free.',
+          description: 'Charred broccoli, chilled and tossed with roasted garlic and toasted almonds. Vegan. Gluten-free.',
           end_date: null,
           group_id: 64,
           height: null,
           id: 11387,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1464149506_BrocAlmonds_BIG.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1464149506_BrocAlmonds_BIG.jpg',
           length: null,
           menu_position: 5,
           name: 'Broccoli w/ Roasted Garlic & Almonds',
@@ -700,8 +668,7 @@ export const productStub = {
           short_name: 'Broccoli w/ Roasted Garlic',
           shorthand: 'BR',
           slug: 'broccoli-w-roasted-garlic-and-almonds',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1464149473_BrocAlmonds_SMALL.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1464149473_BrocAlmonds_SMALL.jpg',
           start_date: null,
           tag_classes: '',
           tags: '',
@@ -713,14 +680,12 @@ export const productStub = {
           allergen_classes: 'allergen-dairy',
           allergens: 'Dairy',
           delivery_days: null,
-          description:
-            'Baby bok choy, spiced sweet corn, roasted red pepper, radish, and yogurt ranch dressing. Gluten-free. Contains dairy.',
+          description: 'Baby bok choy, spiced sweet corn, roasted red pepper, radish, and yogurt ranch dressing. Gluten-free. Contains dairy.',
           end_date: null,
           group_id: 64,
           height: null,
           id: 11569,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1465833893_BokChoy_Large.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1465833893_BokChoy_Large.jpg',
           length: null,
           menu_position: 6,
           name: 'Baby Bok Choy w/ Yogurt Ranch',
@@ -743,8 +708,7 @@ export const productStub = {
           short_name: 'Bok Choy',
           shorthand: 'BC',
           slug: 'baby-bok-choy-w-yogurt-ranch',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1465909027_BokChoyWRanch400x400.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1465909027_BokChoyWRanch400x400.jpg',
           start_date: null,
           tag_classes: '',
           tags: '',
@@ -756,14 +720,12 @@ export const productStub = {
           allergen_classes: '',
           allergens: '',
           delivery_days: null,
-          description:
-            'Murasaki sweet potato, cucumber, chioggia beet, and hijiki dressing. Vegan. Gluten-free.',
+          description: 'Murasaki sweet potato, cucumber, chioggia beet, and hijiki dressing. Vegan. Gluten-free.',
           end_date: null,
           group_id: 64,
           height: null,
           id: 11587,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1465908998_DIG_INN_5-12-16_77525_1.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1465908998_DIG_INN_5-12-16_77525_1.jpg',
           length: null,
           menu_position: 8,
           name: 'Summer Vegetable Poke',
@@ -786,8 +748,7 @@ export const productStub = {
           short_name: 'Poke',
           shorthand: 'VP',
           slug: 'summer-vegetable-poke',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1465908998_VegetablePoke400x400.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1465908998_VegetablePoke400x400.jpg',
           start_date: null,
           tag_classes: '',
           tags: '',
@@ -799,14 +760,12 @@ export const productStub = {
           allergen_classes: '',
           allergens: '',
           delivery_days: null,
-          description:
-            'Local cantaloupe, lime, cilantro, and wild purslane. Vegan. Gluten-free.',
+          description: 'Local cantaloupe, lime, cilantro, and wild purslane. Vegan. Gluten-free.',
           end_date: null,
           group_id: 64,
           height: null,
           id: 11580,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1465939339_DIG_INN_5-12-16_77492_1.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1465939339_DIG_INN_5-12-16_77492_1.jpg',
           length: null,
           menu_position: 9,
           name: 'Cantaloupe Fantastic',
@@ -829,8 +788,7 @@ export const productStub = {
           short_name: 'Cantaloupe',
           shorthand: 'CF',
           slug: 'cantaloupe-fantastic',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1465939321_CantaloupeFantastic400x400.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1465939321_CantaloupeFantastic400x400.jpg',
           start_date: null,
           tag_classes: 'tag-vegan',
           tags: 'Vegan',
@@ -842,14 +800,12 @@ export const productStub = {
           allergen_classes: 'allergen-honey',
           allergens: 'Honey',
           delivery_days: null,
-          description:
-            'Black kale salad with horseradish pickled beets and crunchy toasted buckwheat groats. Vegan. Gluten-free.',
+          description: 'Black kale salad with horseradish pickled beets and crunchy toasted buckwheat groats. Vegan. Gluten-free.',
           end_date: null,
           group_id: 64,
           height: null,
           id: 11052,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461245331_BlackKaleWithBeetsAndGroats.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461245331_BlackKaleWithBeetsAndGroats.jpg',
           length: null,
           menu_position: 10,
           name: 'Tuscan Kale w/ Beets',
@@ -872,8 +828,7 @@ export const productStub = {
           short_name: 'Tuscan Kale w/ Beets',
           shorthand: '',
           slug: 'tuscan-kale-w-beets',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461245322_BlackKaleWithBeetsAndGroats.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461245322_BlackKaleWithBeetsAndGroats.jpg',
           start_date: null,
           tag_classes: 'tag-vegan tag-new',
           tags: 'Vegan, New',
@@ -890,8 +845,7 @@ export const productStub = {
           group_id: 64,
           height: null,
           id: 7888,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461245657_Avo.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461245657_Avo.jpg',
           length: null,
           menu_position: 11,
           name: 'Avocado',
@@ -914,8 +868,7 @@ export const productStub = {
           short_name: 'Avocado',
           shorthand: 'Z',
           slug: 'avocado',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1465962510_1465313622_Avo_Small.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1465962510_1465313622_Avo_Small.jpg',
           start_date: null,
           tag_classes: 'tag-vegan',
           tags: 'Vegan',
@@ -932,8 +885,7 @@ export const productStub = {
           group_id: 64,
           height: null,
           id: 11070,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461586124_1461245927_Avo.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461586124_1461245927_Avo.jpg',
           length: null,
           menu_position: 12,
           name: 'Avocado (EVOO + salt and pepper)',
@@ -944,8 +896,7 @@ export const productStub = {
           short_name: 'Avocado (EVOO + salt and peppe',
           shorthand: 'Z',
           slug: 'avocado-evoo-and-salt-and-pepper',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1464140555_DIG_INN_5-13-16_78217_1.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1464140555_DIG_INN_5-13-16_78217_1.jpg',
           start_date: null,
           tag_classes: '',
           tags: '',
@@ -975,8 +926,7 @@ export const productStub = {
           group_id: 74,
           height: null,
           id: 7908,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461163484_Lemonwedge.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461163484_Lemonwedge.jpg',
           length: null,
           menu_position: 3,
           name: 'Lemon Wedge',
@@ -987,8 +937,7 @@ export const productStub = {
           short_name: 'Lemon Wedge',
           shorthand: null,
           slug: 'lemon-wedge',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461187796_EXTRASLemonwedge.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461187796_EXTRASLemonwedge.jpg',
           start_date: null,
           tag_classes: '',
           tags: '',
@@ -1018,8 +967,7 @@ export const productStub = {
           group_id: 76,
           height: null,
           id: 7917,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1461245927_Avo.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461245927_Avo.jpg',
           length: null,
           menu_position: 1,
           name: 'Avocado (plain)',
@@ -1042,8 +990,7 @@ export const productStub = {
           short_name: 'Avocado (plain)',
           shorthand: '',
           slug: 'avocado-plain',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1465313622_Avo_Small.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1465313622_Avo_Small.jpg',
           start_date: null,
           tag_classes: 'tag-vegan',
           tags: 'Vegan',
@@ -1060,8 +1007,7 @@ export const productStub = {
           group_id: 76,
           height: null,
           id: 11067,
-          large_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1465313550_DIG_INN_5-13-16_78217.jpg',
+          large_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1465313550_DIG_INN_5-13-16_78217.jpg',
           length: null,
           menu_position: 2,
           name: 'Avocado (EVOO + salt and pepper)',
@@ -1072,8 +1018,7 @@ export const productStub = {
           short_name: 'Avocado (EVOO + salt and peppe',
           shorthand: '',
           slug: 'avocado-evoo-and-salt-and-pepper',
-          small_image_url:
-            '//s3.amazonaws.com/betterboh/u/img/prod/6/1465313489_DIG_INN_5-13-16_78217_1.jpg',
+          small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1465313489_DIG_INN_5-13-16_78217_1.jpg',
           start_date: null,
           tag_classes: '',
           tags: '',
@@ -1091,8 +1036,7 @@ export const productStub = {
   short_name: 'Chicken LRG',
   shorthand: '',
   slug: 'charred-chicken',
-  small_image_url:
-    '//s3.amazonaws.com/betterboh/u/img/prod/6/1461162165_Charred-chicken-1.jpg',
+  small_image_url: '//s3.amazonaws.com/betterboh/u/img/prod/6/1461162165_Charred-chicken-1.jpg',
   start_date: null,
   tag_classes: '',
   tags: '',

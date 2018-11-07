@@ -78,4 +78,21 @@ describe('reducers/session/payments', () => {
     const result = reduced.paymentsById;
     expect(result).to.eql({ 1: { customer_card_id: 1 } });
   });
+
+  it('handles the CREATE_PAYMENT_FULFILLED action with multiple payment methods', () => {
+    const reduced = reducer(
+      {
+        paymentsById: {
+          1: { customer_card_id: 1 },
+        },
+      },
+      {
+        type: `${CREATE_PAYMENT}_FULFILLED`,
+        payload: [{ customer_card_id: 2 }],
+      },
+    );
+
+    const result = reduced.paymentsById;
+    expect(result).to.eql({ 1: { customer_card_id: 1 }, 2: { customer_card_id: 2 } });
+  });
 });

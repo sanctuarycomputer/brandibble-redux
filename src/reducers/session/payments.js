@@ -29,7 +29,7 @@ export default (state = initialState, action) => {
         paymentsById: reduce(
           payload,
           (acc, curr) => ({ ...acc, [`${curr.customer_card_id}`]: curr }),
-          {},
+          { ...state.paymentsById },
         ),
       };
 

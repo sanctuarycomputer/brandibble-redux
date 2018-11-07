@@ -43,7 +43,7 @@ describe('reducers/session/payments', () => {
     expect(result[1].is_default).to.be.true;
   });
 
-  it('handles the SET_DEFAULT_PAYMENT_FULFILLED action with multiple payment methods', () => {
+  it('handles the SET_DEFAULT_PAYMENT_FULFILLED action with multiple payment method', () => {
     const reduced = reducer(
       {
         paymentsById: {

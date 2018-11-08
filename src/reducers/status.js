@@ -25,6 +25,9 @@ import {
   SET_DEFAULT_PAYMENT,
 } from '../actions/session/payments';
 import {
+  FETCH_CUSTOMER_LOYALTIES,
+} from '../actions/user/loyalties';
+import {
   ADD_LINE_ITEM,
   RESOLVE_ORDER,
   SET_ORDER_LOCATION_ID,
@@ -99,6 +102,7 @@ const initialState = {
   fetchAllergens: IDLE,
   addAllergens: IDLE,
   removeAllergens: IDLE,
+  fetchCustomerLoyalties: IDLE,
   fetchLevelUpLoyalty: IDLE,
   fetchLevelUpQRCode: IDLE,
   updateLevelUpConnection: IDLE,
@@ -275,6 +279,10 @@ export default (state = initialState, action) => {
     case `${SET_DEFAULT_PAYMENT}_PENDING`: return { ...state, setDefaultPayment: PENDING };
     case `${SET_DEFAULT_PAYMENT}_FULFILLED`: return { ...state, setDefaultPayment: FULFILLED };
     case `${SET_DEFAULT_PAYMENT}_REJECTED`: return { ...state, setDefaultPayment: REJECTED };
+
+    case `${FETCH_CUSTOMER_LOYALTIES}_PENDING`: return { ...state, fetchCustomerLoyalties: PENDING };
+    case `${FETCH_CUSTOMER_LOYALTIES}_FULFILLED`: return { ...state, fetchCustomerLoyalties: FULFILLED };
+    case `${FETCH_CUSTOMER_LOYALTIES}_REJECTED`: return { ...state, fetchCustomerLoyalties: REJECTED };
 
     // Favorites
     case `${FETCH_FAVORITES}_PENDING`: return { ...state, fetchFavorites: PENDING };

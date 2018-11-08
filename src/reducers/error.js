@@ -88,6 +88,11 @@ import {
   REMOVE_ALLERGENS,
 } from '../actions/session/user';
 
+// loyalties
+import {
+  FETCH_CUSTOMER_LOYALTIES,
+} from '../actions/user/loyalties';
+
 // ratings
 import {
   FETCH_RATING,
@@ -147,6 +152,7 @@ export const initialState = {
   authenticateUser: null,
   createUser: null,
   createAndAuthenticateUser: null,
+  fetchCustomerLoyalties: null,
   fetchLevelUpLoyalty: null,
   fetchLevelUpQRCode: null,
   updateLevelUpConnection: null,
@@ -290,12 +296,13 @@ export default (state = initialState, action) => {
     case `${AUTHENTICATE_USER}_REJECTED`: return { ...state, authenticateUser: payload };
 
     case `${ADD_ALLERGENS}_PENDING`: return { ...state, addAllergens: null };
-    case `${ADD_ALLERGENS}_FULFILLED`: return { ...state, addAllergens: payload };
     case `${ADD_ALLERGENS}_REJECTED`: return { ...state, addAllergens: payload };
 
     case `${REMOVE_ALLERGENS}_PENDING`: return { ...state, removeAllergens: null };
-    case `${REMOVE_ALLERGENS}_FULFILLED`: return { ...state, removeAllergens: payload };
     case `${REMOVE_ALLERGENS}_REJECTED`: return { ...state, removeAllergens: payload };
+
+    case `${FETCH_CUSTOMER_LOYALTIES}_PENDING`: return { ...state, fetchCustomerLoyalties: null };
+    case `${FETCH_CUSTOMER_LOYALTIES}_REJECTED`: return { ...state, fetchCustomerLoyalties: payload };
 
     case `${RESOLVE_USER}_PENDING`: return { ...state, resolveUser: null };
     case `${RESOLVE_USER}_REJECTED`: return { ...state, resolveUser: payload };

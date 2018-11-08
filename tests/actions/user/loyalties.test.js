@@ -13,7 +13,7 @@ import { brandibble, cardStub, validCredentialsStub } from '../../config/stubs';
 
 const mockStore = configureStore(reduxMiddleware);
 
-describe('actions/session/loyalties', () => {
+describe('actions/user/loyalties', () => {
   let store, actionsCalled, first, last, customerId;
 
   before(() => {

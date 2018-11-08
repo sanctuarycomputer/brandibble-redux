@@ -42,9 +42,6 @@ export {
   deleteRating,
 } from './ratings';
 export {
-  fetchLoyalties,
-} from './loyalties';
-export {
   authenticateUser,
   createUser,
   createAndAuthenticateUser,

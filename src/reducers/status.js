@@ -26,7 +26,7 @@ import {
 } from '../actions/session/payments';
 import {
   FETCH_CUSTOMER_LOYALTIES,
-} from '../actions/session/loyalties';
+} from '../actions/user/loyalties';
 import {
   ADD_LINE_ITEM,
   RESOLVE_ORDER,

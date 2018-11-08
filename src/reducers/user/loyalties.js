@@ -1,4 +1,4 @@
-import { FETCH_CUSTOMER_LOYALTIES } from '../../actions/session/loyalties';
+import { FETCH_CUSTOMER_LOYALTIES } from '../../actions/user/loyalties';
 
 export const initialState = {
   loyalties: [],

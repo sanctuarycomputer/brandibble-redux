@@ -8,7 +8,7 @@ import { authenticateUser } from 'actions/session/user';
 import {
   FETCH_CUSTOMER_LOYALTIES,
   fetchLoyalties
-} from 'actions/session/loyalties';
+} from 'actions/user/loyalties';
 import { brandibble, cardStub, validCredentialsStub } from '../../config/stubs';
 
 const mockStore = configureStore(reduxMiddleware);

@@ -152,6 +152,7 @@ export const initialState = {
   authenticateUser: null,
   createUser: null,
   createAndAuthenticateUser: null,
+  fetchCustomerLoyalties: null,
   fetchLevelUpLoyalty: null,
   fetchLevelUpQRCode: null,
   updateLevelUpConnection: null,
@@ -300,8 +301,8 @@ export default (state = initialState, action) => {
     case `${REMOVE_ALLERGENS}_PENDING`: return { ...state, removeAllergens: null };
     case `${REMOVE_ALLERGENS}_REJECTED`: return { ...state, removeAllergens: payload };
 
-    case `${FETCH_CUSTOMER_LOYALTIES}_PENDING`: return { ...state, loyalties: null };
-    case `${FETCH_CUSTOMER_LOYALTIES}_REJECTED`: return { ...state, loyalties: payload };
+    case `${FETCH_CUSTOMER_LOYALTIES}_PENDING`: return { ...state, fetchCustomerLoyalties: null };
+    case `${FETCH_CUSTOMER_LOYALTIES}_REJECTED`: return { ...state, fetchCustomerLoyalties: payload };
 
     case `${RESOLVE_USER}_PENDING`: return { ...state, resolveUser: null };
     case `${RESOLVE_USER}_REJECTED`: return { ...state, resolveUser: payload };

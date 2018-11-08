@@ -14,7 +14,7 @@ export const initialState = {
 describe('reducers/user/loyalties', () => {
   it('handles the FETCH_CUSTOMER_LOYALTIES action', () => {
     const reduced = reducer(initialState, {
-      type: `${FETCH_CUSTOMER_CATERING_REWARDS}_FULFILLED`,
+      type: `${FETCH_CUSTOMER_LOYALTIES}_FULFILLED`,
       payload,
     });
 

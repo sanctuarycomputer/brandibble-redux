@@ -125,3 +125,8 @@ export {
   FETCH_WAIT_TIMES,
 } from './data/locations';
 
+// Loyalties
+export {
+  FETCH_CUSTOMER_LOYALTIES,
+} from './user/loyalties';
+

@@ -26,6 +26,8 @@ export const VALIDATE_CURRENT_ORDER = 'VALIDATE_CURRENT_ORDER';
 export const VALIDATE_CURRENT_CART = 'VALIDATE_CURRENT_CART';
 export const SET_LINE_ITEM_MADE_FOR = 'SET_LINE_ITEM_MADE_FOR';
 export const SET_LINE_ITEM_INSTRUCTIONS = 'SET_LINE_ITEM_INSTRUCTIONS';
+export const ADD_APPLIED_DISCOUNT = 'ADD_APPLIED_DISCOUNT';
+export const REMOVE_APPLIED_DISCOUNT = 'REMOVE_APPLIED_DISCOUNT';
 
 /* Private Action Creators */
 function _resolveOrder(payload) {
@@ -125,6 +127,20 @@ function _setPromoCode(order, promo) {
   return {
     type: SET_PROMO_CODE,
     payload: order.setPromoCode(promo).then(order => ({ order })),
+  };
+}
+
+function _addAppliedDiscount(order, discount) {
+  return {
+    type: ADD_APPLIED_DISCOUNT,
+    payload: order.addAppliedDiscount(discount).then(order => ({ order })),
+  };
+}
+
+function _removeAppliedDiscount(order, discount) {
+  return {
+    type: REMOVE_APPLIED_DISCOUNT,
+    payload: order.removeAppliedDiscount(discount).then(order => ({ order })),
   };
 }
 
@@ -282,6 +298,14 @@ export function setRequestedAt(currentOrder, time, wantsFuture = false) {
 
 export function setPromoCode(currentOrder, promo) {
   return dispatch => dispatch(_setPromoCode(currentOrder, promo));
+}
+
+export function addAppliedDiscount(currentOrder, discount) {
+  return dispatch => dispatch(_addAppliedDiscount(currentOrder, discount));
+}
+
+export function removeAppliedDiscount(currentOrder, discount) {
+  return dispatch => dispatch(_removeAppliedDiscount(currentOrder, discount));
 }
 
 export const setMiscOptions = (currentOrder, opts) => (dispatch) => {

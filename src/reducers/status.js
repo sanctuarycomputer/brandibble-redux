@@ -42,6 +42,8 @@ import {
   SET_LINE_ITEM_INSTRUCTIONS,
   SET_PAYMENT_METHOD,
   BIND_CUSTOMER_TO_ORDER,
+  ADD_APPLIED_DISCOUNT,
+  REMOVE_APPLIED_DISCOUNT,
 } from '../actions/session/order';
 import {
   FETCH_LOCATIONS,
@@ -123,6 +125,8 @@ const initialState = {
   setRequestedAt: IDLE,
   fetchPayments: IDLE,
   setPromoCode: IDLE,
+  addAppliedDiscount: IDLE,
+  removeAppliedDiscount: IDLE,
   setMiscOptions: IDLE,
   createPayment: IDLE,
   setDefaultPayment: IDLE,
@@ -254,6 +258,14 @@ export default (state = initialState, action) => {
     case `${SET_PROMO_CODE}_PENDING`: return { ...state, setPromoCode: PENDING };
     case `${SET_PROMO_CODE}_FULFILLED`: return { ...state, setPromoCode: FULFILLED };
     case `${SET_PROMO_CODE}_REJECTED`: return { ...state, setPromoCode: REJECTED };
+
+    case `${ADD_APPLIED_DISCOUNT}_PENDING`: return { ...state, addAppliedDiscount: PENDING };
+    case `${ADD_APPLIED_DISCOUNT}_FULFILLED`: return { ...state, addAppliedDiscount: FULFILLED };
+    case `${ADD_APPLIED_DISCOUNT}_REJECTED`: return { ...state, addAppliedDiscount: REJECTED };
+
+    case `${REMOVE_APPLIED_DISCOUNT}_PENDING`: return { ...state, removeAppliedDiscount: PENDING };
+    case `${REMOVE_APPLIED_DISCOUNT}_FULFILLED`: return { ...state, removeAppliedDiscount: FULFILLED };
+    case `${REMOVE_APPLIED_DISCOUNT}_REJECTED`: return { ...state, removeAppliedDiscount: REJECTED };
 
     case `${SET_MISC_OPTIONS}_PENDING`: return { ...state, setMiscOptions: PENDING };
     case `${SET_MISC_OPTIONS}_FULFILLED`: return { ...state, setMiscOptions: FULFILLED };

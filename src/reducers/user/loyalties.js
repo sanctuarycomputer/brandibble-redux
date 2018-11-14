@@ -6,8 +6,6 @@ export const initialState = {
 
 export default (state = initialState, action) => {
   const { payload, type } = action;
-  let newState;
-
   switch (type) {
     case `${FETCH_CUSTOMER_LOYALTIES}_FULFILLED`:
       return {

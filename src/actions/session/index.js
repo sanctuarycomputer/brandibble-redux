@@ -22,6 +22,8 @@ export {
   createNewOrder,
   validateCurrentCart,
   validateCurrentOrder,
+  addAppliedDiscount,
+  removeAppliedDiscount,
 } from './order';
 export {
   fetchPayments,

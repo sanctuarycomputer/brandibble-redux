@@ -27,6 +27,8 @@ import {
   setRequestedAt,
   validateCurrentCart,
   validateCurrentOrder,
+  addAppliedDiscount,
+  removeAppliedDiscount,
 } from 'actions/session/order';
 import {
   addressStub,
@@ -134,6 +136,39 @@ describe('actions/session/order', () => {
     it('should have a payload', () => {
       action = find(actionsCalled, { type: 'SET_PROMO_CODE_FULFILLED' });
       expect(action).to.have.a.property('payload');
+    });
+  });
+
+  describe('addAppliedDiscount', () => {
+    before(() => {
+      store = mockStore();
+      return addAppliedDiscount(makeUnpersistedOrder(), {discount_id: 123})(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
+
+    it('should have ADD_APPLIED_DISCOUNT_PENDING action', () => {
+      action = find(actionsCalled, { type: 'ADD_APPLIED_DISCOUNT_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have a payload', () => {
+      action = find(actionsCalled, { type: 'ADD_APPLIED_DISCOUNT_FULFILLED' });
+      expect(action).to.have.a.property('payload');
+    });
+  });
+
+  describe('removeAppliedDiscount', () => {
+    before(() => {
+      store = mockStore();
+      return removeAppliedDiscount(makeUnpersistedOrder(), {discount_id: 123})(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
+
+    it('should have REMOVE_APPLIED_DISCOUNT_PENDING action', () => {
+      action = find(actionsCalled, { type: 'REMOVE_APPLIED_DISCOUNT_PENDING' });
+      expect(action).to.exist;
     });
   });
 

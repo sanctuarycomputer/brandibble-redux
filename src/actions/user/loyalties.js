@@ -1,4 +1,3 @@
-/* eslint no-shadow:1 */
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
 

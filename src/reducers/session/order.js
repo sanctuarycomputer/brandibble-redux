@@ -20,6 +20,8 @@ import {
   SUBMIT_ORDER,
   SET_LINE_ITEM_MADE_FOR,
   SET_LINE_ITEM_INSTRUCTIONS,
+  ADD_APPLIED_DISCOUNT,
+  REMOVE_APPLIED_DISCOUNT,
 } from '../../actions/session/order';
 
 const initialState = {

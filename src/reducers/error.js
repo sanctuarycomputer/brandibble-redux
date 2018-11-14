@@ -37,6 +37,8 @@ import {
   SET_LINE_ITEM_MADE_FOR,
   SET_PAYMENT_METHOD,
   SET_LINE_ITEM_INSTRUCTIONS,
+  ADD_APPLIED_DISCOUNT,
+  REMOVE_APPLIED_DISCOUNT,
 } from '../actions/session/order';
 
 // locations
@@ -86,8 +88,6 @@ import {
   VALIDATE_USER,
   ADD_ALLERGENS,
   REMOVE_ALLERGENS,
-  ADD_APPLIED_DISCOUNT,
-  REMOVE_APPLIED_DISCOUNT,
 } from '../actions/session/user';
 
 // loyalties

@@ -86,6 +86,8 @@ import {
   VALIDATE_USER,
   ADD_ALLERGENS,
   REMOVE_ALLERGENS,
+  ADD_APPLIED_DISCOUNT,
+  REMOVE_APPLIED_DISCOUNT,
 } from '../actions/session/user';
 
 // loyalties
@@ -169,6 +171,8 @@ export const initialState = {
   validateUser: null,
   validateCurrentCart: null,
   validateCurrentOrder: null,
+  addAppliedDiscount: null,
+  removeAppliedDiscount: null,
 };
 
 export default (state = initialState, action) => {
@@ -300,6 +304,12 @@ export default (state = initialState, action) => {
 
     case `${REMOVE_ALLERGENS}_PENDING`: return { ...state, removeAllergens: null };
     case `${REMOVE_ALLERGENS}_REJECTED`: return { ...state, removeAllergens: payload };
+
+    case `${ADD_APPLIED_DISCOUNT}_PENDING`: return { ...state, addAppliedDiscount: null };
+    case `${ADD_APPLIED_DISCOUNT}_REJECTED`: return { ...state, addAppliedDiscount: payload };
+
+    case `${REMOVE_APPLIED_DISCOUNT}_PENDING`: return { ...state, removeAppliedDiscount: null };
+    case `${REMOVE_APPLIED_DISCOUNT}_REJECTED`: return { ...state, removeAppliedDiscount: payload };
 
     case `${FETCH_CUSTOMER_LOYALTIES}_PENDING`: return { ...state, fetchCustomerLoyalties: null };
     case `${FETCH_CUSTOMER_LOYALTIES}_REJECTED`: return { ...state, fetchCustomerLoyalties: payload };

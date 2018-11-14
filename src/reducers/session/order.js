@@ -68,7 +68,9 @@ export default (state = initialState, action) => {
     case `${SET_MISC_OPTIONS}_FULFILLED`:
     case `${SET_REQUESTED_AT}_FULFILLED`:
     case `${REMOVE_OPTION_FROM_LINE_ITEM}_FULFILLED`:
-    case `${CREATE_NEW_ORDER}_FULFILLED`: {
+    case `${CREATE_NEW_ORDER}_FULFILLED`:
+    case `${ADD_APPLIED_DISCOUNT}_FULFILLED`:
+    case `${REMOVE_APPLIED_DISCOUNT}_FULFILLED`: {
       const ref = payload.order;
       return {
         ...state,

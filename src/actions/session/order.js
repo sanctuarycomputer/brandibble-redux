@@ -217,10 +217,10 @@ export function resolveOrder(brandibble, locationId = null, serviceType = 'picku
   const order = orders.current();
   const payload = order ? Promise.resolve({ order }) : orders.create(locationId, serviceType, paymentType, miscOptions).then(res => ({ order: res }));
 
-  return dispatch => dispatch(_resolveOrder(payload)).then(res => {
-    const orderLocationId = get(res, 'order.location_id');
+  return dispatch => dispatch(_resolveOrder(payload)).then((res) => {
+    const orderLocationId = get(res, 'value.order.locationId');
 
-    if (!locationId) return;
+    if (!orderLocationId) return;
 
     const NOW = new Date();
     const menuType = {
@@ -229,7 +229,7 @@ export function resolveOrder(brandibble, locationId = null, serviceType = 'picku
       serviceType: 'delivery',
     };
 
-    return fetchMenu(brandibble.ref, menuType);
+    return dispatch(fetchMenu(brandibble, menuType));
   });
 }
 

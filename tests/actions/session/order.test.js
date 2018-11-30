@@ -76,6 +76,31 @@ describe('actions/session/order', () => {
     });
   });
 
+  describe('resolveOrder with locationId', () => {
+    before(() => {
+      store = mockStore();
+      return setOrderLocationId(makeUnpersistedOrder(), 19)(store.dispatch).then(() => {
+        return resolveOrder(brandibble)(store.dispatch).then(() => {
+          actionsCalled = store.getActions();
+        });
+      });
+    });
+
+    it('should call 6 actions', () => {
+      expect(actionsCalled).to.have.length.of(6);
+    });
+
+    it('should have FETCH_MENU_PENDING action', () => {
+      action = find(actionsCalled, { type: 'FETCH_MENU_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have FETCH_MENU_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'FETCH_MENU_FULFILLED' });
+      expect(action).to.exist;
+    });
+  });
+
   describe('resolveOrderLocation', () => {
     before(() => {
       store = mockStore();

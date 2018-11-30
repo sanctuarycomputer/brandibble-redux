@@ -1,3 +1,3 @@
-export default (type, payload) => {
-  return { type, payload };
+export default (type, payload, meta) => {
+  return { type, payload, meta };
 };

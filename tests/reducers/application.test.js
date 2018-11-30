@@ -6,7 +6,7 @@ import { FETCH_GEOLOCATIONS } from 'actions/data/geolocations';
 import { FETCH_MENU } from 'actions/session/menus';
 import { VALIDATE_USER } from 'actions/session/user';
 import { RESET_APPLICATION } from 'actions/application';
-import { locationsStub, menusStub, customersValidateStub } from '../config/stubs';
+import { locationsStub, menusStub, menuMetaStub, customersValidateStub } from '../config/stubs';
 
 const store = createStore(rootReducer);
 const initialState = store.getState();
@@ -20,6 +20,7 @@ describe('application reducers', () => {
     store.dispatch({
       type: `${FETCH_MENU}_FULFILLED`,
       payload: menusStub,
+      meta: menuMetaStub,
     });
     store.dispatch({
       type: `${VALIDATE_USER}_FULFILLED`,

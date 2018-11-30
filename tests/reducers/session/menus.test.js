@@ -2,10 +2,11 @@
 import { expect } from 'chai';
 import reducer from 'reducers/session/menus';
 import { FETCH_MENU } from 'actions/session/menus';
-import { menusStub } from '../../config/stubs';
+import { menusStub, menuMetaStub } from '../../config/stubs';
 
 const initialState = {};
 const payload = menusStub;
+const meta = menuMetaStub;
 
 describe('reducers/session/menus', () => {
   it('should return the initial state', () => {
@@ -16,7 +17,8 @@ describe('reducers/session/menus', () => {
     const reduced = reducer(initialState, {
       type: `${FETCH_MENU}_FULFILLED`,
       payload,
+      meta,
     });
-    expect(reduced[payload.id]).to.equal(payload);
+    expect(reduced[meta.menuKey]).to.equal(payload);
   });
 });

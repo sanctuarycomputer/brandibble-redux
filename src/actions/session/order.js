@@ -3,7 +3,9 @@ import BrandibbleReduxException from '../../utils/exception';
 import { Defaults } from '../../utils/constants';
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
+import get from '../../utils/get';
 import { authenticateUser } from './user';
+import { fetchMenu } from './menus';
 
 export const RESOLVE_ORDER = 'RESOLVE_ORDER';
 export const RESOLVE_ORDER_LOCATION = 'RESOLVE_ORDER_LOCATION';
@@ -214,7 +216,21 @@ export function resolveOrder(brandibble, locationId = null, serviceType = 'picku
   const { orders } = brandibble;
   const order = orders.current();
   const payload = order ? Promise.resolve({ order }) : orders.create(locationId, serviceType, paymentType, miscOptions).then(res => ({ order: res }));
-  return dispatch => dispatch(_resolveOrder(payload));
+
+  return dispatch => dispatch(_resolveOrder(payload)).then(res => {
+    const orderLocationId = get(res, 'order.location_id');
+
+    if (!locationId) return;
+
+    const NOW = new Date();
+    const menuType = {
+      locationId: orderLocationId,
+      requestedAt: NOW,
+      serviceType: 'delivery',
+    };
+
+    return fetchMenu(brandibble.ref, menuType);
+  });
 }
 
 export function resolveOrderLocation(brandibble) {

@@ -269,6 +269,9 @@ export function resolveOrder(
       if (orderRequestedAt === Asap) {
         requestedAt = NOW;
       } else {
+        // If order requested at was in the past
+        // set requestedAt to NOW
+        // otherwise set it to the orders requestedAt time
         const orderRequestedAtAsDate = new Date(orderRequestedAt);
         requestedAt = orderRequestedAtAsDate < NOW ? NOW : orderRequestedAt;
       }

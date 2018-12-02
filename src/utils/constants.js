@@ -13,3 +13,5 @@ export const Defaults = {
     promo_code: '',
   },
 };
+
+export const Asap = 'asap';

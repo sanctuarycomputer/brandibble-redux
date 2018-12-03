@@ -23,7 +23,7 @@ export const fetchMenu = (brandibble, menuType = defaultMenuType) => (dispatch) 
   const payload = brandibble.menus.build(locationId, serviceType, requestedAtFormatted)
     .then(({ data }) => data).catch(handleErrors);
 
-  const meta = { menuKey: `${locationId}_${requestedAt}_${serviceType}` };
+  const meta = { menuKey: `${locationId}_${serviceType}_${requestedAt}` };
 
   return dispatch(fireAction(FETCH_MENU, payload, meta));
 };

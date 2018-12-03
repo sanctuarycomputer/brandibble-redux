@@ -41,7 +41,7 @@ describe('actions/session/menus', () => {
         action = find(actionsCalled, { type: `${FETCH_MENU}_FULFILLED` });
         expect(action).to.exist;
         expect(action).to.have.property('meta');
-        expect(action.meta).to.have.property('menuKey', `${menuType.locationId}_${menuType.requestedAt}_${menuType.serviceType}`);
+        expect(action.meta).to.have.property('menuKey', `${menuType.locationId}_${menuType.serviceType}_${menuType.requestedAt}`);
       });
     });
   });

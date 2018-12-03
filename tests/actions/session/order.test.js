@@ -41,6 +41,7 @@ import {
   buildLineItem,
   validCredentialsStub,
 } from '../../config/stubs';
+import { Asap } from "utils/constants";
 
 const getNonConfigurableMenuItem = menu => menu.reduce((acc, section) => acc.concat(section.children), [])
     .reduce((acc, child) => acc.concat(child.items), [])
@@ -98,6 +99,49 @@ describe('actions/session/order', () => {
     it('should have FETCH_MENU_FULFILLED action', () => {
       action = find(actionsCalled, { type: 'FETCH_MENU_FULFILLED' });
       expect(action).to.exist;
+    });
+  });
+
+  describe('resolveOrder with requestedAt in the past and locationId', () => {
+    before(() => {
+      store = mockStore();
+
+      return setRequestedAt(makeUnpersistedOrder(), '2017-03-22T17:50:29Z')(store.dispatch).then(res => {
+        return setOrderLocationId(res.value.order, 19)(store.dispatch).then(() => {
+          return resolveOrder(brandibble)(store.dispatch).then(() => {
+            actionsCalled = store.getActions();
+          });
+        });
+      });
+    });
+
+    it('should call 10 actions', () => {
+      expect(actionsCalled).to.have.length.of(10);
+    });
+
+    it('should have SET_REQUESTED_AT_PENDING action', () => {
+      action = find(actionsCalled, { type: 'SET_REQUESTED_AT_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have SET_REQUESTED_AT_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'SET_REQUESTED_AT_FULFILLED' });
+      expect(action).to.exist;
+    });
+
+    it('should have FETCH_MENU_PENDING action', () => {
+      action = find(actionsCalled, { type: 'FETCH_MENU_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have FETCH_MENU_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'FETCH_MENU_FULFILLED' });
+      expect(action).to.exist;
+    });
+
+    it('the updated order should have a requested_at of "asap"', () => {
+      action = find(actionsCalled, { type: 'SET_REQUESTED_AT_FULFILLED' });
+      expect(action.payload.order.requestedAt).to.equal(Asap);
     });
   });
 

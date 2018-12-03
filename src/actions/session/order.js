@@ -285,12 +285,13 @@ export function resolveOrder(
           // and push that into the array of promises 
           // to be resolved
           requestedAt = NOW;
-          return promises.push(dispatch(setRequestedAt(order, Asap)));
+          promises.push(dispatch(setRequestedAt(order, Asap)));
+        } else {
+          // In the case that it is not in the past
+          // we set the new requestedAt to the orders requested at
+          // and continue with fetching the menu
+          requestedAt = orderRequestedAt;
         }
-        // In the case that it is not in the past
-        // we set the new requestedAt to the orders requested at
-        // and continue with fetching the menu
-        requestedAt = orderRequestedAt;
       }
 
       const menuType = {

@@ -171,6 +171,10 @@ export const menusStub = {
   ],
 };
 
+export const menuMetaStub = {
+  menuKey: 'testKey',
+};
+
 export const locationsStub = [
   {
     city: 'Rye Brook',

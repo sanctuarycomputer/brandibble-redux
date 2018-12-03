@@ -11,12 +11,19 @@ const mockStore = configureStore(reduxMiddleware);
 
 describe('actions/session/menus', () => {
   describe('fetchMenu', () => {
-    let store, actionsCalled, action;
+    let store, actionsCalled, action, menuType;
 
     describe('calls actions', () => {
       before(() => {
         store = mockStore();
-        return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(store.dispatch).then(() => {
+
+        menuType = {
+          locationId: SAMPLE_MENU_LOCATION_ID,
+          requestedAt: 1,
+          serviceType: 'delivery',
+        };
+
+        return fetchMenu(brandibble, menuType)(store.dispatch).then(() => {
           actionsCalled = store.getActions();
         });
       });
@@ -33,6 +40,8 @@ describe('actions/session/menus', () => {
       it(`should have ${FETCH_MENU}_FULFILLED action`, () => {
         action = find(actionsCalled, { type: `${FETCH_MENU}_FULFILLED` });
         expect(action).to.exist;
+        expect(action).to.have.property('meta');
+        expect(action.meta).to.have.property('menuKey', `${menuType.locationId}_${menuType.serviceType}_${menuType.requestedAt}`);
       });
     });
   });

@@ -260,6 +260,7 @@ export function resolveOrder(
     dispatch(_resolveOrder(payload)).then(res => {
       const orderLocationId = get(res, "value.order.locationId");
       const orderRequestedAt = get(res, "value.order.requestedAt");
+      const orderServiceType = get(res, "value.order.serviceType");
 
       if (!orderLocationId) return;
 
@@ -279,7 +280,7 @@ export function resolveOrder(
       const menuType = {
         locationId: orderLocationId,
         requestedAt: requestedAt,
-        serviceType: "delivery"
+        serviceType: orderServiceType 
       };
 
       return dispatch(fetchMenu(brandibble, menuType));

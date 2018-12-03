@@ -258,32 +258,49 @@ export function resolveOrder(
 
   return dispatch =>
     dispatch(_resolveOrder(payload)).then(res => {
-      const orderLocationId = get(res, "value.order.locationId");
-      const orderRequestedAt = get(res, "value.order.requestedAt");
-      const orderServiceType = get(res, "value.order.serviceType");
+      const order = get(res, 'value.order');
+      const orderLocationId = get(order, "locationId");
+      const orderRequestedAt = get(order, "requestedAt");
+      const orderServiceType = get(order, "serviceType");
 
       if (!orderLocationId) return;
 
+      const promises = [];
       let requestedAt;
+
       const NOW = new Date();
 
+      // If the orders requested at
+      // is 'asap' then we fetch the menu for NOW
+      // and leave the order untouched
       if (orderRequestedAt === Asap) {
         requestedAt = NOW;
       } else {
-        // If order requested at was in the past
-        // set requestedAt to NOW
-        // otherwise set it to the orders requestedAt time
+        // Otherwise, we check to see if the resolved order's
+        // requested at is in the past
         const orderRequestedAtAsDate = new Date(orderRequestedAt);
-        requestedAt = orderRequestedAtAsDate < NOW ? NOW : orderRequestedAt;
+        if (orderRequestedAtAsDate < NOW) {
+          // In the case that it is in the past
+          // we update the orders requested at to 'asap'
+          // and push that into the array of promises 
+          // to be resolved
+          requestedAt = NOW;
+          return promises.push(dispatch(setRequestedAt(order, Asap)));
+        }
+        // In the case that it is not in the past
+        // we set the new requestedAt to the orders requested at
+        // and continue with fetching the menu
+        requestedAt = orderRequestedAt;
       }
 
       const menuType = {
         locationId: orderLocationId,
         requestedAt: requestedAt,
-        serviceType: orderServiceType 
+        serviceType: orderServiceType,
       };
 
-      return dispatch(fetchMenu(brandibble, menuType));
+      promises.push(dispatch(fetchMenu(brandibble, menuType)));
+      return Promise.all(promises);
     });
 }
 

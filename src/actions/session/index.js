@@ -17,6 +17,7 @@ export {
   setPaymentMethod,
   submitOrder,
   setPromoCode,
+  setServiceType,
   setMiscOptions,
   setRequestedAt,
   createNewOrder,

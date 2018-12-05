@@ -23,6 +23,7 @@ import {
   addOptionToLineItem,
   removeOptionFromLineItem,
   setPromoCode,
+  setServiceType,
   setMiscOptions,
   setRequestedAt,
   validateCurrentCart,
@@ -204,6 +205,25 @@ describe('actions/session/order', () => {
 
     it('should have a payload', () => {
       action = find(actionsCalled, { type: 'SET_PROMO_CODE_FULFILLED' });
+      expect(action).to.have.a.property('payload');
+    });
+  });
+
+  describe('setServiceType', () => {
+    before(() => {
+      store = mockStore();
+      return setServiceType(makeUnpersistedOrder(), 'pickup')(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
+
+    it('should have SET_SERVICE_TYPE_PENDING action', () => {
+      action = find(actionsCalled, { type: 'SET_SERVICE_TYPE_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have a payload', () => {
+      action = find(actionsCalled, { type: 'SET_SERVICE_TYPE_FULFILLED' });
       expect(action).to.have.a.property('payload');
     });
   });

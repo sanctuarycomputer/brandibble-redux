@@ -103,6 +103,7 @@ const initialState = {
   fetchAddresses: IDLE,
   createAddress: IDLE,
   deleteAddress: IDLE,
+  setDefaultAddress: IDLE,
   fetchAllergens: IDLE,
   addAllergens: IDLE,
   removeAllergens: IDLE,

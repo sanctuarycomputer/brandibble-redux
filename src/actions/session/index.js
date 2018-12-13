@@ -15,6 +15,7 @@ export {
   setOrderAddress,
   setOrderLocationId,
   setPaymentMethod,
+  setTip,
   submitOrder,
   setPromoCode,
   setServiceType,

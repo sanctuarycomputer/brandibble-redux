@@ -19,6 +19,7 @@ export const SET_ORDER_LOCATION_ID = "SET_ORDER_LOCATION_ID";
 export const SUBMIT_ORDER = "SUBMIT_ORDER";
 export const BIND_CUSTOMER_TO_ORDER = "BIND_CUSTOMER_TO_ORDER";
 export const SET_PAYMENT_METHOD = "SET_PAYMENT_METHOD";
+export const SET_TIP = "SET_TIP";
 export const SET_ORDER_ADDRESS = "SET_ORDER_ADDRESS";
 export const SET_PROMO_CODE = "SET_PROMO_CODE";
 export const SET_SERVICE_TYPE = "SET_SERVICE_TYPE";
@@ -139,6 +140,13 @@ function _setPaymentMethod(order, type, card) {
   return {
     type: SET_PAYMENT_METHOD,
     payload: order.setPaymentMethod(type, card).then(order => ({ order }))
+  };
+}
+
+function _setTip(order, paymentType, tip) {
+  return {
+    type: SET_TIP,
+    payload: order.setTip(paymentType, tip).then(order => ({ order }))
   };
 }
 
@@ -393,6 +401,10 @@ export function setLineItemInstructions(
 
 export function setPaymentMethod(currentOrder, type, card) {
   return dispatch => dispatch(_setPaymentMethod(currentOrder, type, card));
+}
+
+export function setTip(currentOrder, paymentType, tip) {
+  return dispatch => dispatch(_setTip(currentOrder, paymentType, tip));
 }
 
 export function setRequestedAt(currentOrder, time, wantsFuture = false) {

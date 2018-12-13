@@ -126,6 +126,7 @@ const initialState = {
   setRequestedAt: IDLE,
   fetchPayments: IDLE,
   setPromoCode: IDLE,
+  setServiceType: IDLE,
   addAppliedDiscount: IDLE,
   removeAppliedDiscount: IDLE,
   setMiscOptions: IDLE,

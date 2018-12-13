@@ -79,6 +79,53 @@ describe('actions/data/locations', () => {
     });
   });
 
+  describe('fetchLocation with specified serviceType', () => {
+    before(() => {
+      store.clearActions();
+      const serviceType = 'pickup';
+
+      return fetchLocation(brandibble, data[0].location_id, null, null, serviceType)(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
+
+    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+
+    it(`first action should be ${FETCH_LOCATION}_PENDING`, () => {
+      action = find(actionsCalled, { type: `${FETCH_LOCATION}_PENDING` });
+      expect(action).to.exist;
+    });
+
+    it(`last action should be ${FETCH_LOCATION}_FULFILLED`, () => {
+      action = find(actionsCalled, { type: `${FETCH_LOCATION}_FULFILLED` });
+      expect(action).to.exist;
+    });
+  });
+
+  describe('fetchLocation with specified serviceType and requestedAt', () => {
+    before(() => {
+      store.clearActions();
+      const serviceType = 'pickup';
+      const requestedAt = new Date();
+
+      return fetchLocation(brandibble, data[0].location_id, null, null, serviceType, requestedAt)(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
+
+    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+
+    it(`first action should be ${FETCH_LOCATION}_PENDING`, () => {
+      action = find(actionsCalled, { type: `${FETCH_LOCATION}_PENDING` });
+      expect(action).to.exist;
+    });
+
+    it(`last action should be ${FETCH_LOCATION}_FULFILLED`, () => {
+      action = find(actionsCalled, { type: `${FETCH_LOCATION}_FULFILLED` });
+      expect(action).to.exist;
+    });
+  });
+
   describe('fetchWaitTimes', () => {
     before(() => {
       store.clearActions();

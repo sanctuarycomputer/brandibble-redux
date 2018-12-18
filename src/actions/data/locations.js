@@ -7,22 +7,33 @@ export const FETCH_LOCATION = 'FETCH_LOCATION';
 export const PUSH_GEOLOCATION = 'PUSH_GEOLOCATION';
 export const FETCH_WAIT_TIMES = 'FETCH_WAIT_TIMES';
 
-export const pushGeolocation = location => dispatch => {
+export const pushGeolocation = location => (dispatch) => {
   return dispatch(fireAction(PUSH_GEOLOCATION, location));
 };
 
-export const fetchLocation = (brandibble, locationId, lat, lng) => {
+export const fetchLocation = (
+  brandibble,
+  locationId,
+  lat,
+  lng,
+  serviceType,
+  requestedAt,
+) => {
   return (dispatch) => {
-    const payload = brandibble.locations.show(locationId, lat, lng)
-      .then(({ data }) => data).catch(handleErrors);
+    const payload = brandibble.locations
+      .show(locationId, lat, lng, serviceType, requestedAt)
+      .then(({ data }) => data)
+      .catch(handleErrors);
     return dispatch(fireAction(FETCH_LOCATION, payload));
   };
 };
 
 export const fetchWaitTimes = (brandibble, locationId) => {
   return (dispatch) => {
-    const payload = brandibble.locations.waitTimes(locationId)
-      .then(({ data }) => ({ data, locationId })).catch(handleErrors);
+    const payload = brandibble.locations
+      .waitTimes(locationId)
+      .then(({ data }) => ({ data, locationId }))
+      .catch(handleErrors);
     return dispatch(fireAction(FETCH_WAIT_TIMES, payload));
   };
 };
@@ -37,16 +48,19 @@ export const fetchWaitTimes = (brandibble, locationId) => {
  * restaurant business grows in location data
  */
 export const fetchLocations = (brandibble, query = {}) => (dispatch) => {
-  const payload = brandibble.locations.index(query).then(({ data }) => {
-    // TODO: This is a temporary fix that should be taken out
-    // when JC properly implements the orderable flag.
-    // Pls Note: is_closed does not correspond to opening hours,
-    // it's related to temporary & permanently closed locations.
-    const orderableLocations = filter(data, (location) => {
-      return (!location.is_closed && !location.is_coming_soon);
-    });
-    return orderableLocations;
-  }).catch(handleErrors);
+  const payload = brandibble.locations
+    .index(query)
+    .then(({ data }) => {
+      // TODO: This is a temporary fix that should be taken out
+      // when JC properly implements the orderable flag.
+      // Pls Note: is_closed does not correspond to opening hours,
+      // it's related to temporary & permanently closed locations.
+      const orderableLocations = filter(data, (location) => {
+        return !location.is_closed && !location.is_coming_soon;
+      });
+      return orderableLocations;
+    })
+    .catch(handleErrors);
 
   return dispatch(fireAction(FETCH_LOCATIONS, payload));
 };

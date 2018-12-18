@@ -19,15 +19,24 @@ const setupBrandibbleReduxDefaults = {
   locationId: null,
   serviceType: 'pickup',
 };
-export const setupBrandibbleRedux = (brandibble, data = setupBrandibbleReduxDefaults) => (dispatch) => {
-  const { locationId, serviceType } = Object.assign({}, setupBrandibbleReduxDefaults, data);
-  const payload = dispatch(setupBrandibble(brandibble)).then(({ value }) => {
-    return Promise.all([
-      dispatch(resolveUser(value)),
-      dispatch(resolveOrder(value, locationId, serviceType)),
-      dispatch(resolveOrderLocation(value)),
-    ]);
-  }).catch(handleErrors);
+export const setupBrandibbleRedux = (
+  brandibble,
+  data = setupBrandibbleReduxDefaults,
+) => (dispatch) => {
+  const { locationId, serviceType } = Object.assign(
+    {},
+    setupBrandibbleReduxDefaults,
+    data,
+  );
+  const payload = dispatch(setupBrandibble(brandibble))
+    .then(({ value }) => {
+      return Promise.all([
+        dispatch(resolveUser(value)),
+        dispatch(resolveOrder(value, locationId, serviceType)),
+        dispatch(resolveOrderLocation(value)),
+      ]);
+    })
+    .catch(handleErrors);
 
   return dispatch(fireAction(SETUP_BRANDIBBLE_REDUX, payload));
 };
@@ -39,7 +48,10 @@ const sendSupportTicketDefaults = {
   name: null,
   subject: null,
 };
-export const sendSupportTicket = (brandibble, data = sendSupportTicketDefaults) => (dispatch) => {
+export const sendSupportTicket = (
+  brandibble,
+  data = sendSupportTicketDefaults,
+) => (dispatch) => {
   const payload = brandibble
     .sendSupportTicket(Object.assign({}, sendSupportTicketDefaults, data))
     .catch(handleErrors);
@@ -48,7 +60,9 @@ export const sendSupportTicket = (brandibble, data = sendSupportTicketDefaults) 
 
 export const resetApplication = brandibble => (dispatch) => {
   const payload = brandibble.reset().catch(handleErrors);
-  return dispatch(fireAction(RESET_APPLICATION, payload)).then(() => {
-    return dispatch(setupBrandibbleRedux(brandibble));
-  }).catch(handleErrors);
+  return dispatch(fireAction(RESET_APPLICATION, payload))
+    .then(() => {
+      return dispatch(setupBrandibbleRedux(brandibble));
+    })
+    .catch(handleErrors);
 };

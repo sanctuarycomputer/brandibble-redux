@@ -7,6 +7,7 @@ import {
   PUSH_LINE_ITEM,
   ADD_OPTION_TO_LINE_ITEM,
   SET_PROMO_CODE,
+  SET_SERVICE_TYPE,
   SET_MISC_OPTIONS,
   SET_REQUESTED_AT,
   VALIDATE_CURRENT_CART,
@@ -62,6 +63,17 @@ describe('reducers/session/order', () => {
     expect(reduced.ref).to.deep.equal(dummyOrder);
     expect(reduced.orderData).to.be.present;
     expect(reduced.orderData.promo_code).to.be.present;
+  });
+
+  it('handles the SET_SERVICE_TYPE action', () => {
+    const dummyOrder = makeUnpersistedOrder();
+    const reduced = reducer(initialState, {
+      type: `${SET_SERVICE_TYPE}_FULFILLED`,
+      payload: { order: dummyOrder },
+    });
+    expect(reduced.ref).to.deep.equal(dummyOrder);
+    expect(reduced.orderData).to.be.present;
+    expect(reduced.orderData.serviceType).to.be.present;
   });
 
   it('handles the SET_MISC_OPTIONS action', () => {

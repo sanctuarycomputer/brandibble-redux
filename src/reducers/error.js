@@ -37,6 +37,7 @@ import {
   SET_LINE_ITEM_MADE_FOR,
   SET_PAYMENT_METHOD,
   SET_LINE_ITEM_INSTRUCTIONS,
+  SET_SERVICE_TYPE,
   ADD_APPLIED_DISCOUNT,
   REMOVE_APPLIED_DISCOUNT,
 } from '../actions/session/order';
@@ -134,6 +135,7 @@ export const initialState = {
   submitOrder: null,
   setLineItemMadeFor: null,
   setLineItemInstructions: null,
+  setServiceType: null,
   // payments
   fetchPayments: null,
   createPayment: null,
@@ -252,6 +254,9 @@ export default (state = initialState, action) => {
 
     case `${SET_LINE_ITEM_INSTRUCTIONS}_PENDING`: return { ...state, setLineItemInstructions: null };
     case `${SET_LINE_ITEM_INSTRUCTIONS}_REJECTED`: return { ...state, setLineItemInstructions: payload };
+
+    case `${SET_SERVICE_TYPE}_PENDING`: return { ...state, setServiceType: null };
+    case `${SET_SERVICE_TYPE}_REJECTED`: return { ...state, setServiceType: payload };
 
     // payments
     case `${FETCH_PAYMENTS}_PENDING`: return { ...state, fetchPayments: null };

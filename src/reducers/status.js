@@ -33,6 +33,7 @@ import {
   SET_ORDER_LOCATION_ID,
   SUBMIT_ORDER,
   SET_PROMO_CODE,
+  SET_SERVICE_TYPE,
   SET_MISC_OPTIONS,
   VALIDATE_CURRENT_CART,
   VALIDATE_CURRENT_ORDER,
@@ -125,6 +126,7 @@ const initialState = {
   setRequestedAt: IDLE,
   fetchPayments: IDLE,
   setPromoCode: IDLE,
+  setServiceType: IDLE,
   addAppliedDiscount: IDLE,
   removeAppliedDiscount: IDLE,
   setMiscOptions: IDLE,
@@ -258,6 +260,10 @@ export default (state = initialState, action) => {
     case `${SET_PROMO_CODE}_PENDING`: return { ...state, setPromoCode: PENDING };
     case `${SET_PROMO_CODE}_FULFILLED`: return { ...state, setPromoCode: FULFILLED };
     case `${SET_PROMO_CODE}_REJECTED`: return { ...state, setPromoCode: REJECTED };
+
+    case `${SET_SERVICE_TYPE}_PENDING`: return { ...state, setServiceType: PENDING };
+    case `${SET_SERVICE_TYPE}_FULFILLED`: return { ...state, setServiceType: FULFILLED };
+    case `${SET_SERVICE_TYPE}_REJECTED`: return { ...state, setServiceType: REJECTED };
 
     case `${ADD_APPLIED_DISCOUNT}_PENDING`: return { ...state, addAppliedDiscount: PENDING };
     case `${ADD_APPLIED_DISCOUNT}_FULFILLED`: return { ...state, addAppliedDiscount: FULFILLED };

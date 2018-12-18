@@ -21,6 +21,7 @@ export const BIND_CUSTOMER_TO_ORDER = "BIND_CUSTOMER_TO_ORDER";
 export const SET_PAYMENT_METHOD = "SET_PAYMENT_METHOD";
 export const SET_ORDER_ADDRESS = "SET_ORDER_ADDRESS";
 export const SET_PROMO_CODE = "SET_PROMO_CODE";
+export const SET_SERVICE_TYPE = "SET_SERVICE_TYPE";
 export const SET_MISC_OPTIONS = "SET_MISC_OPTIONS";
 export const SET_REQUESTED_AT = "SET_REQUESTED_AT";
 export const CREATE_NEW_ORDER = "CREATE_NEW_ORDER";
@@ -145,6 +146,13 @@ function _setPromoCode(order, promo) {
   return {
     type: SET_PROMO_CODE,
     payload: order.setPromoCode(promo).then(order => ({ order }))
+  };
+}
+
+function _setServiceType(order, serviceType) {
+  return {
+    type: SET_SERVICE_TYPE,
+    payload: order.setServiceType(serviceType).then(order => ({ order }))
   };
 }
 
@@ -282,7 +290,7 @@ export function resolveOrder(
         if (orderRequestedAtAsDate < NOW) {
           // In the case that it is in the past
           // we update the orders requested at to 'asap'
-          // and push that into the array of promises 
+          // and push that into the array of promises
           // to be resolved
           requestedAt = NOW;
           promises.push(dispatch(setRequestedAt(order, Asap)));
@@ -393,6 +401,10 @@ export function setRequestedAt(currentOrder, time, wantsFuture = false) {
 
 export function setPromoCode(currentOrder, promo) {
   return dispatch => dispatch(_setPromoCode(currentOrder, promo));
+}
+
+export function setServiceType(currentOrder, serviceType) {
+  return dispatch => dispatch(_setServiceType(currentOrder, serviceType));
 }
 
 export function addAppliedDiscount(currentOrder, discount) {

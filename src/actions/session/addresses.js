@@ -4,6 +4,7 @@ import handleErrors from '../../utils/handleErrors';
 export const FETCH_ADDRESSES = 'FETCH_ADDRESSES';
 export const CREATE_ADDRESS = 'CREATE_ADDRESS';
 export const DELETE_ADDRESS = 'DELETE_ADDRESS';
+export const SET_DEFAULT_ADDRESS = 'SET_DEFAULT_ADDRESS';
 
 export const fetchAddresses = brandibble => (dispatch) => {
   const payload = brandibble.addresses.all().then(({ data }) => data).catch(handleErrors);
@@ -18,4 +19,9 @@ export const createAddress = (brandibble, address = {}) => (dispatch) => {
 export const deleteAddress = (brandibble, id) => (dispatch) => {
   const payload = brandibble.addresses.delete(id).then(() => id).catch(handleErrors);
   return dispatch(fireAction(DELETE_ADDRESS, payload));
+};
+
+export const setDefaultAddress = (brandibble, id) => (dispatch) => {
+  const payload = brandibble.addresses.setDefault(id).then(({ data }) => ({ ...data[0] })).catch(handleErrors);
+  return dispatch(fireAction(SET_DEFAULT_ADDRESS, payload));
 };

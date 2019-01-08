@@ -1,4 +1,9 @@
-export { fetchAddresses, createAddress, deleteAddress } from './addresses';
+export {
+  fetchAddresses,
+  createAddress,
+  deleteAddress,
+  setDefaultAddress, 
+} from './addresses';
 export { fetchMenu } from './menus';
 export {
   addLineItem,

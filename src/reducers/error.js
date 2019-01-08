@@ -11,6 +11,7 @@ import {
   CREATE_ADDRESS,
   DELETE_ADDRESS,
   FETCH_ADDRESSES,
+  SET_DEFAULT_ADDRESS,
 } from '../actions/session/addresses';
 
 // allergens
@@ -122,6 +123,7 @@ export const initialState = {
   fetchAddresses: null,
   createAddress: null,
   deleteAddress: null,
+  setDefaultAddress: null,
   // locations
   fetchLocation: null,
   fetchLocations: null,
@@ -217,6 +219,9 @@ export default (state = initialState, action) => {
 
     case `${DELETE_ADDRESS}_PENDING`: return { ...state, deleteAddress: null };
     case `${DELETE_ADDRESS}_REJECTED`: return { ...state, deleteAddress: payload };
+
+    case `${SET_DEFAULT_ADDRESS}_PENDING`: return { ...state, setDefaultAddress: null };
+    case `${SET_DEFAULT_ADDRESS}_REJECTED`: return { ...state, setDefaultAddress: payload };
 
     // locations
     case `${FETCH_LOCATIONS}_PENDING`: return { ...state, fetchLocations: null };

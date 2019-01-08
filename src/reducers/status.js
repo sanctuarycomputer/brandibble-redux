@@ -9,6 +9,7 @@ import {
   CREATE_ADDRESS,
   DELETE_ADDRESS,
   FETCH_ADDRESSES,
+  SET_DEFAULT_ADDRESS,
 } from '../actions/session/addresses';
 import { FETCH_ALLERGENS } from '../actions/data/allergens';
 import { FETCH_MENU } from '../actions/session/menus';
@@ -102,6 +103,7 @@ const initialState = {
   fetchAddresses: IDLE,
   createAddress: IDLE,
   deleteAddress: IDLE,
+  setDefaultAddress: IDLE,
   fetchAllergens: IDLE,
   addAllergens: IDLE,
   removeAllergens: IDLE,
@@ -192,6 +194,10 @@ export default (state = initialState, action) => {
     case `${DELETE_ADDRESS}_PENDING`: return { ...state, deleteAddress: PENDING };
     case `${DELETE_ADDRESS}_FULFILLED`: return { ...state, deleteAddress: FULFILLED };
     case `${DELETE_ADDRESS}_REJECTED`: return { ...state, deleteAddress: REJECTED };
+
+    case `${SET_DEFAULT_ADDRESS}_PENDING`: return { ...state, setDefaultAddress: PENDING };
+    case `${SET_DEFAULT_ADDRESS}_FULFILLED`: return { ...state, setDefaultAddress: FULFILLED };
+    case `${SET_DEFAULT_ADDRESS}_REJECTED`: return { ...state, setDefaultAddress: REJECTED };
 
     case `${FETCH_LOCATIONS}_PENDING`: return { ...state, fetchLocations: PENDING };
     case `${FETCH_LOCATIONS}_FULFILLED`: return { ...state, fetchLocations: FULFILLED };

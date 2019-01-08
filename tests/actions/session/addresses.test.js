@@ -8,9 +8,11 @@ import {
   CREATE_ADDRESS,
   DELETE_ADDRESS,
   FETCH_ADDRESSES,
+  SET_DEFAULT_ADDRESS,
   createAddress,
   deleteAddress,
   fetchAddresses,
+  setDefaultAddress,
 } from 'actions/session/addresses';
 import { authenticateUser } from 'actions/session/user';
 import { brandibble, addressStub, validCredentialsStub } from '../../config/stubs';
@@ -94,6 +96,27 @@ describe('actions/session/addresses', () => {
 
       it(`should have ${DELETE_ADDRESS}_FULFILLED action`, () => {
         action = find(actionsCalled, { type: `${DELETE_ADDRESS}_FULFILLED` });
+        expect(action).to.exist;
+      });
+    });
+
+    describe('setDefaultAddress', () => {
+      before(() => {
+        store.clearActions();
+        return setDefaultAddress(brandibble, id)(store.dispatch).then(() => {
+          actionsCalled = store.getActions();
+        });
+      });
+
+      it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+
+      it(`should have ${SET_DEFAULT_ADDRESS}_PENDING action`, () => {
+        action = find(actionsCalled, { type: `${SET_DEFAULT_ADDRESS}_PENDING` });
+        expect(action).to.exist;
+      });
+
+      it(`should have ${SET_DEFAULT_ADDRESS}_FULFILLED action`, () => {
+        action = find(actionsCalled, { type: `${SET_DEFAULT_ADDRESS}_FULFILLED` });
         expect(action).to.exist;
       });
     });

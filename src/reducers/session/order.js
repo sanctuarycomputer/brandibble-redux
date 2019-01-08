@@ -11,6 +11,7 @@ import {
   SET_ORDER_ADDRESS,
   SET_ORDER_LOCATION_ID,
   SET_PAYMENT_METHOD,
+  SET_TIP,
   SET_PROMO_CODE,
   SET_SERVICE_TYPE,
   SET_MISC_OPTIONS,
@@ -65,6 +66,7 @@ export default (state = initialState, action) => {
     case `${REMOVE_LINE_ITEM}_FULFILLED`:
     case `${ADD_OPTION_TO_LINE_ITEM}_FULFILLED`:
     case `${SET_PAYMENT_METHOD}_FULFILLED`:
+    case `${SET_TIP}_FULFILLED`:
     case `${SET_PROMO_CODE}_FULFILLED`:
     case `${SET_SERVICE_TYPE}_FULFILLED`:
     case `${SET_MISC_OPTIONS}_FULFILLED`:

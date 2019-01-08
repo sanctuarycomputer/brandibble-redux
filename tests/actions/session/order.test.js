@@ -10,6 +10,7 @@ import {
   setOrderAddress,
   setOrderLocationId,
   setPaymentMethod,
+  setTip,
   resolveOrder,
   resolveOrderLocation,
   addLineItem,
@@ -407,6 +408,22 @@ describe('actions/session/order', () => {
     it('should have SET_PAYMENT_METHOD_FULFILLED action', () => {
       action = find(actionsCalled, { type: 'SET_PAYMENT_METHOD_FULFILLED' });
       expect(action).to.exist.and.have.property('payload').to.have.property('order');
+    });
+  });
+
+  describe('setTip', () => {
+    before(() => {
+      store = mockStore();
+      return setTip(makeUnpersistedOrder(), 'credit', 2.50)(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
+
+    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+
+    it('should have SET_TIP_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'SET_TIP_FULFILLED' });
+      expect(action.payload.order).to.exist.and.have.property('miscOptions').to.have.property('tip');
     });
   });
 

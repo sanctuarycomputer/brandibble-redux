@@ -47,6 +47,7 @@ import {
   BIND_CUSTOMER_TO_ORDER,
   ADD_APPLIED_DISCOUNT,
   REMOVE_APPLIED_DISCOUNT,
+  SET_ORDER_ADDRESS,
 } from '../actions/session/order';
 import {
   FETCH_LOCATIONS,
@@ -132,6 +133,7 @@ const initialState = {
   setServiceType: IDLE,
   addAppliedDiscount: IDLE,
   removeAppliedDiscount: IDLE,
+  setOrderAddress: IDLE,
   setMiscOptions: IDLE,
   createPayment: IDLE,
   setDefaultPayment: IDLE,
@@ -284,6 +286,10 @@ export default (state = initialState, action) => {
     case `${REMOVE_APPLIED_DISCOUNT}_PENDING`: return { ...state, removeAppliedDiscount: PENDING };
     case `${REMOVE_APPLIED_DISCOUNT}_FULFILLED`: return { ...state, removeAppliedDiscount: FULFILLED };
     case `${REMOVE_APPLIED_DISCOUNT}_REJECTED`: return { ...state, removeAppliedDiscount: REJECTED };
+
+    case `${SET_ORDER_ADDRESS}_PENDING`: return { ...state, setOrderAddress: PENDING };
+    case `${SET_ORDER_ADDRESS}_FULFILLED`: return { ...state, setOrderAddress: FULFILLED };
+    case `${SET_ORDER_ADDRESS}_REJECTED`: return { ...state, setOrderAddress: REJECTED };
 
     case `${SET_MISC_OPTIONS}_PENDING`: return { ...state, setMiscOptions: PENDING };
     case `${SET_MISC_OPTIONS}_FULFILLED`: return { ...state, setMiscOptions: FULFILLED };

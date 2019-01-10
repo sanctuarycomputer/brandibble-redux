@@ -1,5 +1,5 @@
 import BrandibbleRef from 'brandibble';
-
+import { Constants as ConstantsRef} from 'brandibble';
 import middleware from './config/middleware';
 import reducers from './reducers';
 
@@ -9,3 +9,4 @@ export * from './selectors';
 export const Brandibble = BrandibbleRef;
 export const reducer = reducers;
 export const brandibbleMiddleware = middleware;
+export const BrandibbleConstants = ConstantsRef;

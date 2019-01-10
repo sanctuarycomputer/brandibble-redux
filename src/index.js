@@ -9,4 +9,4 @@ export * from './selectors';
 export const Brandibble = BrandibbleRef;
 export const reducer = reducers;
 export const brandibbleMiddleware = middleware;
-export const Constants = ConstantsRef;
+export const BrandibbleConstants = ConstantsRef;

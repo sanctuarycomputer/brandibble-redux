@@ -14,4 +14,14 @@ export const Defaults = {
   },
 };
 
+export const OrderTypes = {
+  ONLINE_ORDERING: 'olo',
+  CATERING: 'catering'
+};
+
+export const ServiceTypes = {
+  PICKUP: 'pickup',
+  DELIVERY: 'delivery'
+};
+
 export const Asap = 'asap';

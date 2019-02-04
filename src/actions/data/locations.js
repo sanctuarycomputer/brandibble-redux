@@ -18,10 +18,11 @@ export const fetchLocation = (
   lng,
   serviceType,
   requestedAt,
+  includeTimes,
 ) => {
   return (dispatch) => {
     const payload = brandibble.locations
-      .show(locationId, lat, lng, serviceType, requestedAt)
+      .show(locationId, lat, lng, serviceType, requestedAt, includeTimes)
       .then(({ data }) => data)
       .catch(handleErrors);
     return dispatch(fireAction(FETCH_LOCATION, payload));

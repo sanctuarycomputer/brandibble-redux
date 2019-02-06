@@ -19,7 +19,10 @@ import { brandibble } from '../../config/stubs';
 const mockStore = configureStore(reduxMiddleware);
 
 describe('actions/data/locations', () => {
-  let store, actionsCalled, data, action;
+  let store, 
+actionsCalled, 
+data, 
+action;
 
   before(() => {
     store = mockStore();
@@ -30,7 +33,8 @@ describe('actions/data/locations', () => {
   });
 
   describe('fetchLocations', () => {
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it(`first action should be ${FETCH_LOCATIONS}_PENDING`, () => {
       action = find(actionsCalled, { type: `${FETCH_LOCATIONS}_PENDING` });
@@ -50,7 +54,8 @@ describe('actions/data/locations', () => {
       actionsCalled = store.getActions();
     });
 
-    it('should call 1 action', () => expect(actionsCalled).to.have.length.of(1));
+    it('should call 1 action', () =>
+      expect(actionsCalled).to.have.length.of(1));
 
     it(`action should be ${PUSH_GEOLOCATION}`, () => {
       action = find(actionsCalled, { type: PUSH_GEOLOCATION });
@@ -61,12 +66,15 @@ describe('actions/data/locations', () => {
   describe('fetchLocation', () => {
     before(() => {
       store.clearActions();
-      return fetchLocation(brandibble, data[0].location_id)(store.dispatch).then(() => {
+      return fetchLocation(brandibble, data[0].location_id)(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it(`first action should be ${FETCH_LOCATION}_PENDING`, () => {
       action = find(actionsCalled, { type: `${FETCH_LOCATION}_PENDING` });
@@ -84,12 +92,19 @@ describe('actions/data/locations', () => {
       store.clearActions();
       const serviceType = 'pickup';
 
-      return fetchLocation(brandibble, data[0].location_id, null, null, serviceType)(store.dispatch).then(() => {
+      return fetchLocation(
+        brandibble,
+        data[0].location_id,
+        null,
+        null,
+        serviceType,
+      )(store.dispatch).then(() => {
         actionsCalled = store.getActions();
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it(`first action should be ${FETCH_LOCATION}_PENDING`, () => {
       action = find(actionsCalled, { type: `${FETCH_LOCATION}_PENDING` });
@@ -108,12 +123,49 @@ describe('actions/data/locations', () => {
       const serviceType = 'pickup';
       const requestedAt = new Date();
 
-      return fetchLocation(brandibble, data[0].location_id, null, null, serviceType, requestedAt)(store.dispatch).then(() => {
+      return fetchLocation(
+        brandibble,
+        data[0].location_id,
+        null,
+        null,
+        serviceType,
+        requestedAt,
+      )(store.dispatch).then(() => {
         actionsCalled = store.getActions();
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
+
+    it(`first action should be ${FETCH_LOCATION}_PENDING`, () => {
+      action = find(actionsCalled, { type: `${FETCH_LOCATION}_PENDING` });
+      expect(action).to.exist;
+    });
+
+    it(`last action should be ${FETCH_LOCATION}_FULFILLED`, () => {
+      action = find(actionsCalled, { type: `${FETCH_LOCATION}_FULFILLED` });
+      expect(action).to.exist;
+    });
+  });
+
+  describe('fetchLocation with query object', () => {
+    before(() => {
+      store.clearActions();
+      const queryObject = {
+        service_type: 'pickup',
+        requested_at: new Date(),
+      };
+
+      return fetchLocation(brandibble, data[0].location_id, queryObject)(
+        store.dispatch,
+      ).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
+
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it(`first action should be ${FETCH_LOCATION}_PENDING`, () => {
       action = find(actionsCalled, { type: `${FETCH_LOCATION}_PENDING` });
@@ -129,12 +181,15 @@ describe('actions/data/locations', () => {
   describe('fetchWaitTimes', () => {
     before(() => {
       store.clearActions();
-      return fetchWaitTimes(brandibble, data[0].location_id)(store.dispatch).then(() => {
+      return fetchWaitTimes(brandibble, data[0].location_id)(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it(`first action should be ${FETCH_WAIT_TIMES}_PENDING`, () => {
       action = find(actionsCalled, { type: `${FETCH_WAIT_TIMES}_PENDING` });

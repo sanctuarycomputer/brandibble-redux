@@ -335,9 +335,7 @@ export function resolveOrderLocation(brandibble) {
   const order = orders.current();
   const payload =
     order && order.locationId
-      ? brandibble.locations
-          .show(order.locationId, null, null, null, null, true)
-          .then(({ data }) => data)
+      ? brandibble.locations.show(order.locationId).then(({ data }) => data)
       : Promise.resolve(null);
   return dispatch => dispatch(_resolveOrderLocation(payload));
 }

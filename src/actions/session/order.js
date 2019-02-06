@@ -274,7 +274,7 @@ export function resolveOrder(
 
   return dispatch =>
     dispatch(_resolveOrder(payload)).then(res => {
-      const order = get(res, 'value.order');
+      const order = get(res, "value.order");
       const orderLocationId = get(order, "locationId");
       const orderRequestedAt = get(order, "requestedAt");
       const orderServiceType = get(order, "serviceType");
@@ -313,7 +313,7 @@ export function resolveOrder(
       const menuType = {
         locationId: orderLocationId,
         requestedAt: requestedAt,
-        serviceType: orderServiceType,
+        serviceType: orderServiceType
       };
 
       promises.push(dispatch(fetchMenu(brandibble, menuType)));
@@ -326,7 +326,9 @@ export function resolveOrderLocation(brandibble) {
   const order = orders.current();
   const payload =
     order && order.locationId
-      ? brandibble.locations.show(order.locationId).then(({ data }) => data)
+      ? brandibble.locations
+          .show(order.locationId, null, null, null, null, true)
+          .then(({ data }) => data)
       : Promise.resolve(null);
   return dispatch => dispatch(_resolveOrderLocation(payload));
 }

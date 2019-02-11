@@ -16,10 +16,9 @@ export const fetchMenu = (
   menuType = defaultMenuType,
 ) => (dispatch) => {
   const { locationId, requestedAt, serviceType } = menuType;
-  const requestedAtFormatted = brandibble.DateTime(requestedAt).toDate();
 
   const payload = brandibble.menus
-    .build(locationId, serviceType, requestedAtFormatted)
+    .build(locationId, serviceType, requestedAt)
     .then(({ data }) => data)
     .catch(handleErrors);
 

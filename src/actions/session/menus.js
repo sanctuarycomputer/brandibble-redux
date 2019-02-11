@@ -1,4 +1,3 @@
-import moment from 'moment';
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
 
@@ -12,16 +11,17 @@ const defaultMenuType = {
   serviceType: 'delivery',
 };
 
-export const fetchMenu = (brandibble, menuType = defaultMenuType) => (dispatch) => {
-  const {
-    locationId,
-    requestedAt,
-    serviceType,
-  } = menuType;
-  const requestedAtFormatted = new Date(moment(requestedAt));
+export const fetchMenu = (
+  brandibble,
+  menuType = defaultMenuType,
+) => (dispatch) => {
+  const { locationId, requestedAt, serviceType } = menuType;
+  const requestedAtFormatted = brandibble.DateTime(requestedAt).toDate();
 
-  const payload = brandibble.menus.build(locationId, serviceType, requestedAtFormatted)
-    .then(({ data }) => data).catch(handleErrors);
+  const payload = brandibble.menus
+    .build(locationId, serviceType, requestedAtFormatted)
+    .then(({ data }) => data)
+    .catch(handleErrors);
 
   const meta = { menuKey: `${locationId}_${serviceType}_${requestedAt}` };
 

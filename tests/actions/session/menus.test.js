@@ -22,7 +22,7 @@ describe('actions/session/menus', () => {
 
         menuType = {
           locationId: SAMPLE_MENU_LOCATION_ID,
-          requestedAt: 1,
+          requestedAt: new Date(),
           serviceType: 'delivery',
         };
 

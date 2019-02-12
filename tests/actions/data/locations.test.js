@@ -19,10 +19,10 @@ import { brandibble } from '../../config/stubs';
 const mockStore = configureStore(reduxMiddleware);
 
 describe('actions/data/locations', () => {
-  let store, 
-actionsCalled, 
-data, 
-action;
+  let store;
+  let actionsCalled;
+  let data;
+  let action;
 
   before(() => {
     store = mockStore();

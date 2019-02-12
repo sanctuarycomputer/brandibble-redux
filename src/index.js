@@ -1,5 +1,4 @@
-import BrandibbleRef from 'brandibble';
-import { Constants as ConstantsRef} from 'brandibble';
+import BrandibbleRef, { Constants as ConstantsRef } from 'brandibble';
 import middleware from './config/middleware';
 import reducers from './reducers';
 

@@ -15,7 +15,7 @@ const cateringLocationId = 886;
 const serviceType = 'pickup';
 
 describe('selectors/validOrderTimeForNow', () => {
-  it('it should return the valid first time object for a olo order location', () => {
+  it("it should return the valid first time object for the current order's location payload", () => {
     const testValidOrderTimeForNowWithOloOrderStub = validOrderTimeForNow(
       brandibbleStateForOloOrderStub,
     );

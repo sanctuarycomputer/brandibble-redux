@@ -18,7 +18,6 @@ export const validOrderTimeForNow = createSelector(
     );
 
     if (!locationForCurrentOrder) return null;
-
     return get(
       locationForCurrentOrder,
       `first_times.${serviceTypeForCurrentOrder}`,

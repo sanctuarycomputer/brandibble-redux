@@ -1,5 +1,8 @@
 /* global describe it */
 import { expect } from 'chai';
+import { DateTime } from 'luxon';
+import luxonDateTimeFromRequestedAt from '../../src/utils/luxonDateTimeFromRequestedAt';
+
 import {
   brandibbleStateForOloOrderStub,
   brandibbleStateForCateringOrderStub,
@@ -8,20 +11,11 @@ import {
 } from '../config/stubsForMenuStatusSelector';
 import { validOrderTimeForOrder } from '../../src/selectors';
 
-describe('selectors/validOrderTimeForNow', () => {
+describe('selectors/validOrderTimeForOrder', () => {
   it('it should return an object based on the', () => {
-    const testValidOrderTimeForNowWithOloOrderStub = validOrderTimeForNow(
-      brandibbleStateForOloOrderStub,
-    );
-    const testValidOrderTimeForNowWithCateringOrderStub = validOrderTimeForNow(
+    const testValidOrderTimeForOrder = validOrderTimeForOrder(
       brandibbleStateForCateringOrderStub,
-    );
-
-    expect(testValidOrderTimeForNowWithOloOrderStub).to.deep.equal(
-      firstTimeForOloLocationStub,
-    );
-    expect(testValidOrderTimeForNowWithCateringOrderStub).to.deep.equal(
-      firstTimeForCateringLocationStub,
-    );
+    )(luxonDateTimeFromRequestedAt('asap'));
+    // test here
   });
 });

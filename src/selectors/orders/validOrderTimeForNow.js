@@ -12,14 +12,11 @@ export const validOrderTimeForNow = createSelector(
   state => get(state, 'session.order.orderData.service_type'),
   state => get(state, 'data.locations.locationsById'),
   (locationIdForCurrentOrder, serviceTypeForCurrentOrder, allLocationsById) => {
-<<<<<<< HEAD
     const locationForCurrentOrder = get(
       allLocationsById,
       `${locationIdForCurrentOrder}`,
     );
-=======
-    const locationForCurrentOrder = allLocationsById[locationIdForCurrentOrder];
->>>>>>> adds validOrderTimeForNow selector and tests
+
     return get(
       locationForCurrentOrder,
       `first_times.${serviceTypeForCurrentOrder}`,

@@ -6,10 +6,10 @@ import {
   firstTimeForOloLocationStub,
   firstTimeForCateringLocationStub,
 } from '../config/stubsForMenuStatusSelector';
-import { validOrderTimeForNow } from '../../src/selectors';
+import { validOrderTimeForOrder } from '../../src/selectors';
 
 describe('selectors/validOrderTimeForNow', () => {
-  it("it should return the valid first time object for the current order's location payload", () => {
+  it('it should return an object based on the', () => {
     const testValidOrderTimeForNowWithOloOrderStub = validOrderTimeForNow(
       brandibbleStateForOloOrderStub,
     );

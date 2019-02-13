@@ -37,7 +37,7 @@ export const validOrderTimeForOrder = createSelector(
         if (!locationForCurrentOrder) return null;
 
         /**
-         * Ensure timezone is correctly set
+         * Ensure timezone is correctly setx
          */
         const locationForCurrentOrderTimezone =
           SystemTimezoneMap[get(locationForCurrentOrder, 'timezone')];

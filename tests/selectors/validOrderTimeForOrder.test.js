@@ -1,6 +1,6 @@
 /* global describe before it */
 import { expect } from 'chai';
-import { Settings, DateTime } from 'luxon';
+import { DateTime, Settings } from 'luxon';
 
 import {
   stateForCateringOrderStub,

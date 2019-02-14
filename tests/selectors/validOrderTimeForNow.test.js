@@ -1,13 +1,25 @@
 /* global describe it */
 import { expect } from 'chai';
+// import {
+//   brandibbleStateForOloOrderStub,
+//   brandibbleStateForCateringOrderStub,
+//   brandibbleStateForUnconfiguredOrderStub,
+//   firstTimeForOloLocationStub,
+//   firstTimeForCateringLocationStub,
+// } from '../config/stubsForMenuStatusSelector';
+
 import {
-  brandibbleStateForOloOrderStub,
   brandibbleStateForCateringOrderStub,
+  brandibbleStateForOloOrderStub,
   brandibbleStateForUnconfiguredOrderStub,
-  firstTimeForOloLocationStub,
-  firstTimeForCateringLocationStub,
-} from '../config/stubsForMenuStatusSelector';
+} from '../config/brandibbleStateStubs';
+
 import { validOrderTimeForNow } from '../../src/selectors';
+
+const oloLocationId = 885;
+const cateringLocationId = 886;
+
+const serviceType = 'pickup';
 
 describe('selectors/validOrderTimeForNow', () => {
   it('it should return the valid first time object for a olo order location', () => {
@@ -15,8 +27,12 @@ describe('selectors/validOrderTimeForNow', () => {
       brandibbleStateForOloOrderStub,
     );
 
+    const firstTimeForOloLocation =
+      brandibbleStateForOloOrderStub.data.locations.locationsById[oloLocationId]
+        .first_times[serviceType];
+
     expect(testValidOrderTimeForNowWithOloOrderStub).to.deep.equal(
-      firstTimeForOloLocationStub,
+      firstTimeForOloLocation,
     );
   });
 
@@ -25,8 +41,13 @@ describe('selectors/validOrderTimeForNow', () => {
       brandibbleStateForCateringOrderStub,
     );
 
+    const firstTimeForCateringLocation =
+      brandibbleStateForCateringOrderStub.data.locations.locationsById[
+        cateringLocationId
+      ].first_times[serviceType];
+
     expect(testValidOrderTimeForNowWithCateringOrderStub).to.deep.equal(
-      firstTimeForCateringLocationStub,
+      firstTimeForCateringLocation,
     );
   });
 

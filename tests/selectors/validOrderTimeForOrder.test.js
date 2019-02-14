@@ -15,7 +15,9 @@ describe('selectors/validOrderTimeForOrder', () => {
   /**
    * OLO Orders
    */
-  it('it should return an object based on the', () => {
+
+  // TODO: write better it statment
+  it("It should return a match in the case an order's requested_at matches a valid order time exactly", () => {
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
       brandibbleStateForCateringOrderStub,
     )(luxonDateTimeFromRequestedAt('asap'));

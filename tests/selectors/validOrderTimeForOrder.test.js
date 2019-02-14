@@ -12,6 +12,9 @@ import {
 import { validOrderTimeForOrder } from '../../src/selectors';
 
 describe('selectors/validOrderTimeForOrder', () => {
+  /**
+   * OLO Orders
+   */
   it('it should return an object based on the', () => {
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
       brandibbleStateForCateringOrderStub,

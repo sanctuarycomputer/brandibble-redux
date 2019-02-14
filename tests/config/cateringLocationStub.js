@@ -1,6 +1,6 @@
 // Requested_at 12/14/2020 12:45 pm (PST)
 
-export default {
+export const cateringLocationStub = {
   886: {
     current_daypart: {
       delivery: {

@@ -94,6 +94,12 @@ export const cateringOrderDataStub = {
   service_type: 'pickup',
 };
 
+// NO LOCATION
+export const unconfiguredOrderDataStub = {
+  location_id: undefined,
+  service_type: undefined,
+};
+
 /**
  * Brandibble State
  */
@@ -122,6 +128,17 @@ export const brandibbleStateForCateringOrderStub = {
   session: {
     order: {
       orderData: cateringOrderDataStub,
+    },
+  },
+};
+
+export const brandibbleStateForUnconfiguredOrder = {
+  data: {
+    locations: {},
+  },
+  session: {
+    order: {
+      orderData: unconfiguredOrderDataStub,
     },
   },
 };

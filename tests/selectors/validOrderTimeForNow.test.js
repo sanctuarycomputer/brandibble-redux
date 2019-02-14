@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import {
   brandibbleStateForOloOrderStub,
   brandibbleStateForCateringOrderStub,
+  brandibbleStateForUnconfiguredOrderStub,
   firstTimeForOloLocationStub,
   firstTimeForCateringLocationStub,
 } from '../config/stubsForMenuStatusSelector';
@@ -27,5 +28,13 @@ describe('selectors/validOrderTimeForNow', () => {
     expect(testValidOrderTimeForNowWithCateringOrderStub).to.deep.equal(
       firstTimeForCateringLocationStub,
     );
+  });
+
+  it('it should return the undefined for a non configured order that (lacks a location_id)', () => {
+    const testValidOrderTimeForNowWithUnconfiguredOrderStub = validOrderTimeForNow(
+      brandibbleStateForUnconfiguredOrderStub,
+    );
+
+    expect(testValidOrderTimeForNowWithUnconfiguredOrderStub).to.be.undefined;
   });
 });

@@ -9,17 +9,21 @@ import {
 import { validOrderTimeForNow } from '../../src/selectors';
 
 describe('selectors/validOrderTimeForNow', () => {
-  it("it should return the valid first time object for the current order's location payload", () => {
+  it('it should return the valid first time object for a olo order location', () => {
     const testValidOrderTimeForNowWithOloOrderStub = validOrderTimeForNow(
       brandibbleStateForOloOrderStub,
-    );
-    const testValidOrderTimeForNowWithCateringOrderStub = validOrderTimeForNow(
-      brandibbleStateForCateringOrderStub,
     );
 
     expect(testValidOrderTimeForNowWithOloOrderStub).to.deep.equal(
       firstTimeForOloLocationStub,
     );
+  });
+
+  it('it should return the valid first time object for a catering order location', () => {
+    const testValidOrderTimeForNowWithCateringOrderStub = validOrderTimeForNow(
+      brandibbleStateForCateringOrderStub,
+    );
+
     expect(testValidOrderTimeForNowWithCateringOrderStub).to.deep.equal(
       firstTimeForCateringLocationStub,
     );

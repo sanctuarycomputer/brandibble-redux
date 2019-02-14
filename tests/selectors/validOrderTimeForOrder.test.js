@@ -19,3 +19,16 @@ describe('selectors/validOrderTimeForOrder', () => {
     // test here
   });
 });
+
+/**
+ * 1. Test that requestedAt as luxon DateTime 
+ * returns valid 
+ */
+{
+  date: "2019-02-14",
+  daypart: "Breakfast",
+  minutes: 480,
+  time: "8:00 AM",
+  utc: "2019-02-14T16:00:00Z",
+  weekday: "thursday"
+}

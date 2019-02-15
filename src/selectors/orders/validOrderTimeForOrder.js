@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { DateTime } from 'luxon';
-import _memoize from 'lodash.memoize';
+import memoize from 'lodash.memoize';
 import get from '../../utils/get';
 import { DateTimeFormats } from '../../utils/constants';
 
@@ -20,10 +20,11 @@ export const validOrderTimeForOrder = createSelector(
   state => get(state, 'session.order.orderData.service_type'),
   state => get(state, 'data.locations.locationsById'),
   (locationIdForCurrentOrder, serviceTypeForCurrentOrder, allLocationsById) =>
-    _memoize(
+    memoize(
       (
         luxonDateTimeFromOrderRequestedAt,
         todayAsLuxonDateTime = DateTime.local(),
+        z,
       ) => {
         const locationForCurrentOrder = get(
           allLocationsById,

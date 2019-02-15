@@ -1,7 +1,6 @@
 /* global describe before it */
 import { expect } from 'chai';
 import { Settings, DateTime } from 'luxon';
-import luxonDateTimeFromRequestedAt from '../../src/utils/luxonDateTimeFromRequestedAt';
 
 import {
   stateForCateringOrderStub,
@@ -209,4 +208,5 @@ describe('selectors/orders/validOrderTimeForOrder', () => {
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
     expect(testValidOrderTimeForOrder).to.equal.null;
+  });
 });

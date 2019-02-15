@@ -65,6 +65,8 @@ describe('selectors/validOrderTimeForOrder', () => {
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
       brandibbleStateForOloOrderStub,
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
+
+    debugger;
   });
 });
 

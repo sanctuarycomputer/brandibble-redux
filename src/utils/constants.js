@@ -29,6 +29,7 @@ export const Timezones = {
 export const DateTimeFormats = {
   HOURS_MINUTES: 'h:mm',
   HOURS_MINUTES_MERIDIEM: 'h:mm a',
+  YEAR_MONTH_DAY: 'yyyy-MM-dd',
 };
 
 export const Asap = 'asap';

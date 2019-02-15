@@ -1,6 +1,7 @@
 import { Duration, DateTime } from 'luxon';
+import { DateTimeFormats } from './constants';
 
-const TIME_FORMAT = 'h:mm';
+const { HOURS_MINUTES } = DateTimeFormats;
 
 export default (minutes) => {
   /**
@@ -8,12 +9,12 @@ export default (minutes) => {
    * our time in minutes to a 24 hr time string
    */
   const minutesAsDuration = Duration.fromObject({ minutes }).toFormat(
-    TIME_FORMAT,
+    HOURS_MINUTES,
   );
 
   /**
    * We then create a valid DateTime object
    * from that Duration
    */
-  return DateTime.fromFormat(minutesAsDuration, TIME_FORMAT);
+  return DateTime.fromFormat(minutesAsDuration, HOURS_MINUTES);
 };

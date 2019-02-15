@@ -2,8 +2,12 @@ import { createSelector } from 'reselect';
 import { DateTime } from 'luxon';
 import _memoize from 'lodash.memoize';
 import get from '../../utils/get';
+import { DateTimeFormats } from '../../utils/constants';
 
 import convertDateTimeToMinutes from '../../utils/convertDateTimeToMinutes';
+import convertMinutesToDateTime from '../../utils/convertMinutesToDateTime';
+
+const { HOURS_MINUTES_MERIDIEM, YEAR_MONTH_DAY } = DateTimeFormats;
 
 /**
  * The validOrderTimeForNow
@@ -53,32 +57,103 @@ export const validOrderTimeForOrder = createSelector(
             .toObject().days;
 
           /**
-           * The requested_at is too far in advance
-           * so we return null
+           * If the requested_at is too far in advance we return null
            */
           if (differenceInDays > daysAheadForServiceType) return null;
 
           /**
-           * The requested_at is in the past
-           * so we return null
+           * if the requested_at is in the past we return null
            */
           if (differenceInDays < 0) return null;
         }
 
-        const currentDaypart = get(
+        const validTimesForLocationForCurrentOrder = get(
           locationForCurrentOrder,
-          `current_daypart.${serviceTypeForCurrentOrder}`,
+          `valid_times.${serviceTypeForCurrentOrder}`,
         );
-
+        const orderRequestedAtWeekday = luxonDateTimeFromOrderRequestedAt.weekdayLong.toLowerCase();
         const orderRequestedAtInMinutes = convertDateTimeToMinutes(
           luxonDateTimeFromOrderRequestedAt,
         );
 
-        debugger;
+        /**
+         * We find the daypart (which contains the exact timeslot)
+         * that our requested at fall within
+         */
+        const validTimeDaypartMatch = get(
+          validTimesForLocationForCurrentOrder,
+          `${orderRequestedAtWeekday}`,
+        ).find(
+          daypartForWeekday =>
+            orderRequestedAtInMinutes > get(daypartForWeekday, 'start_min') &&
+            orderRequestedAtInMinutes <= get(daypartForWeekday, 'end_min'),
+        );
 
-        // 1. Check if the requested at is the same as the first_time
+        /**
+         * If we found a match, but the daypart is not orderable/does not
+         * have an array of timeslots to match against we return null
+         */
+        if (
+          !get(validTimeDaypartMatch, 'is_orderable') ||
+          !get(validTimeDaypartMatch, 'times', []).length
+        ) {
+          return null;
+        }
 
-        // 2. If it's not,
+        /**
+         * We find the exact/earliest timeslot that applies to our requested at
+         */
+        const earliestValidTimeslot = get(
+          validTimeDaypartMatch,
+          'times',
+          [],
+        ).reduce((lastTimeObject, currentTimeObject) => {
+          if (!lastTimeObject) return currentTimeObject;
+
+          if (
+            orderRequestedAtInMinutes >= lastTimeObject.minutes &&
+            orderRequestedAtInMinutes < currentTimeObject.minutes
+          ) {
+            return lastTimeObject;
+          }
+
+          return currentTimeObject;
+        }, null);
+
+        const luxonDateTimeFromEarliestValidTimeslot = convertMinutesToDateTime(
+          get(earliestValidTimeslot, 'minutes'),
+        );
+
+        const {
+          hour,
+          minute,
+        } = luxonDateTimeFromEarliestValidTimeslot.toObject();
+
+        /**
+         * We create a new luxon DateTime object from our order's requested at
+         * with the hours and minutes set to that of the earliest valid timeslot
+         */
+        const validOrderTimeForOrderAsLuxonDateTime = luxonDateTimeFromOrderRequestedAt.set(
+          { hour, minute, seconds: 0 },
+        );
+
+        /**
+         * The object we return mirrors that returned by the validOrderTimeForNow Selector
+         */
+        return {
+          date: validOrderTimeForOrderAsLuxonDateTime.toFormat(YEAR_MONTH_DAY),
+          daypart: validTimeDaypartMatch.daypart,
+          minutes: convertDateTimeToMinutes(
+            validOrderTimeForOrderAsLuxonDateTime,
+          ),
+          time: validOrderTimeForOrderAsLuxonDateTime.toFormat(
+            HOURS_MINUTES_MERIDIEM,
+          ),
+          utc: `${
+            validOrderTimeForOrderAsLuxonDateTime.toISO().split('.')[0]
+          }Z`,
+          weekday: orderRequestedAtWeekday,
+        };
       },
     ),
 );

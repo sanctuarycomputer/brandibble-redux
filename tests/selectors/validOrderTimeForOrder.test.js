@@ -1,6 +1,7 @@
 /* global describe before it */
 import { expect } from 'chai';
-import { DateTime, Settings } from 'luxon';
+import { Settings, DateTime } from 'luxon';
+import luxonDateTimeFromRequestedAt from '../../src/utils/luxonDateTimeFromRequestedAt';
 
 import {
   stateForCateringOrderStub,
@@ -208,39 +209,4 @@ describe('selectors/orders/validOrderTimeForOrder', () => {
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
     expect(testValidOrderTimeForOrder).to.equal.null;
-  });
 });
-
-/**
- * Should mirror valid order time for now shape
- *
-  {
-   date: "2019-02-14",
-    daypart: "Breakfast",
-    minutes: 480,
-    time: "8:00 AM",
-    utc: "2019-02-14T16:00:00Z",
-    weekday: "thursday"
-  }
- */
-
-/**
- * 1. Test selector returns
- * correct data when a match is possible
- */
-
-/**
- * 2. Test selector returns null
- * when a match is not possible
- */
-
-/**
- * 3. Test against catering order
- * - Does this need to take into account skipped dayparts/first available time
- * - This should NOT take into account days_ahead, as catering locations have days_ahead of null
- */
-
-/**
- * 4. Test against olo order
- * - This SHOULD take into account days_ahead
- */

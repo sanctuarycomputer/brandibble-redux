@@ -1,6 +1,6 @@
 /**
  * OLO Location
- * Requested_at 12/14/2020 12:45 pm (PST)
+ * Requested_at 12/14/2019 12:45 pm (PST)
  */
 export const oloLocationsStub = {
   885: {

@@ -50,12 +50,4 @@ describe('selectors/orders/validOrderTimeForNow', () => {
 
     expect(testValidOrderTimeForNowWithUnconfiguredOrderStub).to.be.null;
   });
-
-  it('it should return the undefined for a non configured order that (lacks a location_id)', () => {
-    const testValidOrderTimeForNowWithUnconfiguredOrderStub = validOrderTimeForNow(
-      brandibbleStateForUnconfiguredOrderStub,
-    );
-
-    expect(testValidOrderTimeForNowWithUnconfiguredOrderStub).to.be.undefined;
-  });
 });

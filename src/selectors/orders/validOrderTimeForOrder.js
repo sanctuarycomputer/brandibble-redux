@@ -150,7 +150,10 @@ export const validOrderTimeForOrder = createSelector(
             HOURS_MINUTES_MERIDIEM,
           ),
           utc: `${
-            validOrderTimeForOrderAsLuxonDateTime.toISO().split('.')[0]
+            validOrderTimeForOrderAsLuxonDateTime
+              .setZone('utc')
+              .toISO()
+              .split('.')[0]
           }Z`,
           weekday: orderRequestedAtWeekday,
         };

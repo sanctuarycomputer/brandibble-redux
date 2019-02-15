@@ -30,7 +30,7 @@ describe('selectors/validOrderTimeForOrder', () => {
    * OLO Orders
    */
 
-  it('should return null, if the requestedAt is in the past', () => {
+  it('returns null, if the requestedAt is in the past', () => {
     const todayAsLuxonDateTime = DateTime.local();
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T21:00:00Z');
 
@@ -41,7 +41,7 @@ describe('selectors/validOrderTimeForOrder', () => {
     expect(testValidOrderTimeForOrder).to.be.null;
   });
 
-  it('should return null, if the requestedAt is greater than the days_ahead threshold', () => {
+  it('returns null, if the requestedAt is greater than the days_ahead threshold', () => {
     /**
      * days_ahead for our OLO mocks
      * is 6, which implies 7 days (0 being today)
@@ -56,50 +56,50 @@ describe('selectors/validOrderTimeForOrder', () => {
     expect(testValidOrderTimeForOrder).to.be.null;
   });
 
-  // TODO: Cleanup IT statement
-  it('should return expected match', () => {
-    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
+  it('returns null if requested at is outside the time bounds of the location valid times', () => {
+    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T23:45:00Z');
+    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T23:45:00Z');
 
+    const testValidOrderTimeForOrder = validOrderTimeForOrder(
+      brandibbleStateForOloOrderStub,
+    )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
+
+    expect(testValidOrderTimeForOrder).to.equal.null;
+  });
+
+  it('returns correct shape for a requested at that matches a valid timeslot exactly', () => {
+    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
 
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
       brandibbleStateForOloOrderStub,
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
-    debugger;
+    expect(testValidOrderTimeForOrder).to.deep.equal({
+      date: '2019-02-14',
+      daypart: 'Lunch',
+      minutes: 765,
+      time: '12:45 PM',
+      utc: '2019-02-14T20:45:00Z',
+      weekday: 'thursday',
+    });
+  });
+
+  it('returns correct shape with time set to earliest of two timeslots if requested at is in between', () => {
+    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
+    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:59:00Z');
+
+    const testValidOrderTimeForOrder = validOrderTimeForOrder(
+      brandibbleStateForOloOrderStub,
+    )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
+
+    expect(testValidOrderTimeForOrder).to.deep.equal({
+      date: '2019-02-14',
+      daypart: 'Lunch',
+      minutes: 765,
+      time: '12:45 PM',
+      utc: '2019-02-14T20:45:00Z',
+      weekday: 'thursday',
+    });
   });
 });
-
-/**
- * Should mirror valid order time for now shape
- *
-  {
-   date: "2019-02-14",
-    daypart: "Breakfast",
-    minutes: 480,
-    time: "8:00 AM",
-    utc: "2019-02-14T16:00:00Z",
-    weekday: "thursday"
-  }
- */
-
-/**
- * 1. Test selector returns
- * correct data when a match is possible
- */
-
-/**
- * 2. Test selector returns null
- * when a match is not possible
- */
-
-/**
- * 3. Test against catering order
- * - Does this need to take into account skipped dayparts/first available time
- * - This should NOT take into account days_ahead, as catering locations have days_ahead of null
- */
-
-/**
- * 4. Test against olo order
- * - This SHOULD take into account days_ahead
- */

@@ -1,12 +1,5 @@
 /* global describe it */
 import { expect } from 'chai';
-// import {
-//   brandibbleStateForOloOrderStub,
-//   brandibbleStateForCateringOrderStub,
-//   brandibbleStateForUnconfiguredOrderStub,
-//   firstTimeForOloLocationStub,
-//   firstTimeForCateringLocationStub,
-// } from '../config/stubsForMenuStatusSelector';
 
 import {
   brandibbleStateForCateringOrderStub,
@@ -56,6 +49,6 @@ describe('selectors/validOrderTimeForNow', () => {
       brandibbleStateForUnconfiguredOrderStub,
     );
 
-    expect(testValidOrderTimeForNowWithUnconfiguredOrderStub).to.be.undefined;
+    expect(testValidOrderTimeForNowWithUnconfiguredOrderStub).to.be.null;
   });
 });

@@ -1,27 +1,70 @@
-/* global describe it */
+/* global describe before it */
 import { expect } from 'chai';
-import { DateTime } from 'luxon';
+import { Settings, DateTime } from 'luxon';
 import luxonDateTimeFromRequestedAt from '../../src/utils/luxonDateTimeFromRequestedAt';
 
 import {
-  brandibbleStateForOloOrderStub,
   brandibbleStateForCateringOrderStub,
-  firstTimeForOloLocationStub,
-  firstTimeForCateringLocationStub,
-} from '../config/stubsForMenuStatusSelector';
+  brandibbleStateForOloOrderStub,
+  brandibbleStateForUnconfiguredOrderStub,
+} from '../config/brandibbleStateStubs';
+import { Timezones } from '../../src/utils/constants';
+
 import { validOrderTimeForOrder } from '../../src/selectors';
 
+const { PACIFIC } = Timezones;
+
 describe('selectors/validOrderTimeForOrder', () => {
+  before(() => {
+    /**
+     * Globally set Timezone to that
+     * of test locations (in our case 'America/Los_Angeles')
+     */
+    Settings.defaultZoneName = PACIFIC;
+    const testDateTime = DateTime.local();
+
+    expect(testDateTime.zoneName).to.equal(PACIFIC);
+  });
+
   /**
    * OLO Orders
    */
 
-  // TODO: write better it statment
-  it("It should return a match in the case an order's requested_at matches a valid order time exactly", () => {
+  it('should return null, if the requestedAt is in the past', () => {
+    const todayAsLuxonDateTime = DateTime.local();
+    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T21:00:00Z');
+
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
-      brandibbleStateForCateringOrderStub,
-    )(luxonDateTimeFromRequestedAt('asap'));
-    // test here
+      brandibbleStateForOloOrderStub,
+    )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
+
+    expect(testValidOrderTimeForOrder).to.be.null;
+  });
+
+  it('should return null, if the requestedAt is greater than the days_ahead threshold', () => {
+    /**
+     * days_ahead for our OLO mocks
+     * is 6, which implies 7 days (0 being today)
+     */
+    const todayAsLuxonDateTime = DateTime.local();
+    const requestedAtAsLuxonDateTime = todayAsLuxonDateTime.plus({ days: 7 });
+
+    const testValidOrderTimeForOrder = validOrderTimeForOrder(
+      brandibbleStateForOloOrderStub,
+    )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
+
+    expect(testValidOrderTimeForOrder).to.be.null;
+  });
+
+  // TODO: Cleanup IT statement
+  it('should return expected match', () => {
+    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
+
+    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
+
+    const testValidOrderTimeForOrder = validOrderTimeForOrder(
+      brandibbleStateForOloOrderStub,
+    )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
   });
 });
 

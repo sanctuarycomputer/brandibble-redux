@@ -37,7 +37,7 @@ export const validOrderTimeForOrder = createSelector(
         if (!locationForCurrentOrder) return null;
 
         /**
-         * Ensure timezone is correctly setx
+         * Ensure timezone is correctly set
          */
         const locationForCurrentOrderTimezone =
           BrandibbleTimezoneMap[get(locationForCurrentOrder, 'timezone')];

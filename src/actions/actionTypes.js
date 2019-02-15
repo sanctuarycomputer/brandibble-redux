@@ -102,7 +102,7 @@ export {
 
 // Brands
 export {
-  FETCH_BRANDS,
+  FETCH_BRAND,
 } from './data/brands';
 
 // Customer Orders

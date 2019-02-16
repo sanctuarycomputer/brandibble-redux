@@ -24,7 +24,6 @@ export const validOrderTimeForOrder = createSelector(
       (
         luxonDateTimeFromOrderRequestedAt,
         todayAsLuxonDateTime = DateTime.local(),
-        z,
       ) => {
         const locationForCurrentOrder = get(
           allLocationsById,

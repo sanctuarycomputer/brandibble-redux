@@ -24,7 +24,6 @@ export const validOrderTimeForOrder = createSelector(
       (
         luxonDateTimeFromOrderRequestedAt,
         todayAsLuxonDateTime = DateTime.local(),
-        z,
       ) => {
         const locationForCurrentOrder = get(
           allLocationsById,
@@ -36,6 +35,13 @@ export const validOrderTimeForOrder = createSelector(
          * So we return null
          */
         if (!locationForCurrentOrder) return null;
+
+        /**
+         * If the requested at is in the past we return null
+         */
+        if (luxonDateTimeFromOrderRequestedAt < todayAsLuxonDateTime) {
+          return null;
+        }
 
         /**
          * Days Ahead
@@ -61,11 +67,6 @@ export const validOrderTimeForOrder = createSelector(
            * If the requested_at is too far in advance we return null
            */
           if (differenceInDays > daysAheadForServiceType) return null;
-
-          /**
-           * if the requested_at is in the past we return null
-           */
-          if (differenceInDays < 0) return null;
         }
 
         const validTimesForLocationForCurrentOrder = get(

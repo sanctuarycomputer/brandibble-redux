@@ -3,7 +3,7 @@ import handleErrors from '../../utils/handleErrors';
 
 export const FETCH_BRAND = 'FETCH_BRAND';
 
-export const fetchBrand = brandibble => {
+export const fetchBrand = brandibble => dispatch => {
   const payload = brandibble.brands.current()
     .then(({ data }) => data)
     .catch(handleErrors);

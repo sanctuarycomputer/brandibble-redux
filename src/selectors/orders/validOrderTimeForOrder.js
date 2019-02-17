@@ -56,7 +56,7 @@ export const validOrderTimeForOrder = createSelector(
         /**
          * If days ahead exists
          * Let's ensure the requested_at is
-         * within that range
+         * within that threshold
          */
         if (daysAheadForServiceType) {
           const differenceInDays = luxonDateTimeFromOrderRequestedAt
@@ -133,14 +133,15 @@ export const validOrderTimeForOrder = createSelector(
 
         /**
          * We create a new luxon DateTime object from our order's requested at
-         * with the hours and minutes set to that of the earliest valid timeslot
+         * with the hours and minutes set to that of the earliest valid timeslot,
+         * we also reset seconds back to 0
          */
         const validOrderTimeForOrderAsLuxonDateTime = luxonDateTimeFromOrderRequestedAt.set(
           { hour, minute, seconds: 0 },
         );
 
         /**
-         * The object we return mirrors that returned by the validOrderTimeForNow Selector
+         * The object we return mirrors that returned by the validOrderTimeForNow selector
          */
         return {
           date: validOrderTimeForOrderAsLuxonDateTime.toFormat(YEAR_MONTH_DAY),

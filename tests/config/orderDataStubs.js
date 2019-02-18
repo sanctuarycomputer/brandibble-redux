@@ -4,6 +4,7 @@
 export const oloOrderDataStub = {
   location_id: 885,
   service_type: 'pickup',
+  wantsFutureOrder: false,
 };
 
 /**

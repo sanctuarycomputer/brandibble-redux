@@ -11,7 +11,7 @@ import { Timezones } from '../../src/utils/constants';
 
 import { validOrderTimeForOrder } from '../../src/selectors';
 
-const { PACIFIC } = Timezones;
+const { PACIFIC, EASTERN } = Timezones;
 
 describe('selectors/validOrderTimeForOrder', () => {
   before(() => {
@@ -175,6 +175,26 @@ describe('selectors/validOrderTimeForOrder', () => {
     });
   });
 
+  it('returns correct response when attempted from different timezone', () => {
+    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-16T20:45:00Z', {
+      zone: EASTERN,
+    });
+    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-16T20:45:00Z');
+
+    const testValidOrderTimeForOrder = validOrderTimeForOrder(
+      brandibbleStateForCateringOrderStub,
+    )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
+
+    expect(testValidOrderTimeForOrder).to.deep.equal({
+      date: '2019-02-16',
+      daypart: 'Lunch ', // Note the trailing space
+      minutes: 765,
+      time: '12:45 PM',
+      utc: '2019-02-16T20:45:00Z',
+      weekday: 'saturday',
+    });
+  });
+
   /**
    * Unconfigured order
    */
@@ -189,8 +209,4 @@ describe('selectors/validOrderTimeForOrder', () => {
 
     expect(testValidOrderTimeForOrder).to.equal.null;
   });
-
-  /**
-   * TODO: Write test against another timezone, to ensure things still works as expected
-   */
 });

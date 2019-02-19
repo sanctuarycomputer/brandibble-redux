@@ -4,6 +4,7 @@
  */
 export const oloLocationsStub = {
   885: {
+    timezone: 'US/Pacific',
     current_daypart: {
       delivery: {
         daypart: 'Lunch',

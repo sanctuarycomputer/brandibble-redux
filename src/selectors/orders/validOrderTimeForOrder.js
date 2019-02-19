@@ -2,7 +2,7 @@ import { createSelector } from 'reselect';
 import { DateTime } from 'luxon';
 import memoize from 'lodash.memoize';
 import get from '../../utils/get';
-import { DateTimeFormats } from '../../utils/constants';
+import { BrandibbleTimezoneMap, DateTimeFormats } from '../../utils/constants';
 
 import convertDateTimeToMinutes from '../../utils/convertDateTimeToMinutes';
 import convertMinutesToDateTime from '../../utils/convertMinutesToDateTime';
@@ -35,6 +35,19 @@ export const validOrderTimeForOrder = createSelector(
          * So we return null
          */
         if (!locationForCurrentOrder) return null;
+
+        /**
+         * Ensure timezone is correctly set
+         */
+        const locationForCurrentOrderTimezone =
+          BrandibbleTimezoneMap[get(locationForCurrentOrder, 'timezone')];
+        const localTimezone = get(todayAsLuxonDateTime, 'zone.zoneName');
+
+        if (locationForCurrentOrderTimezone !== localTimezone) {
+          todayAsLuxonDateTime = todayAsLuxonDateTime.setZone(
+            locationForCurrentOrderTimezone,
+          );
+        }
 
         /**
          * If the requested at is in the past we return null

@@ -21,6 +21,13 @@ export const Timezones = {
   EASTERN: 'America/New_York',
 };
 
+export const BrandibbleTimezoneMap = {
+  'US/Pacific': Timezones.PACIFIC,
+  'US/Mountain': Timezones.MOUNTAIN,
+  'US/Central': Timezones.CENTRAL,
+  'US/Eastern': Timezones.EASTERN,
+};
+
 /**
  * These date time formats
  * work for Luxon and not

@@ -4,6 +4,7 @@
  */
 export const cateringLocationStub = {
   886: {
+    timezone: 'US/Pacific',
     current_daypart: {
       delivery: {
         daypart: 'Lunch ',
@@ -4115,6 +4116,7 @@ export const cateringLocationStub = {
  */
 export const oloLocationStub = {
   885: {
+    timezone: 'US/Pacific',
     current_daypart: {
       delivery: {
         daypart: 'Lunch',

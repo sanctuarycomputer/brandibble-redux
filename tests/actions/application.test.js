@@ -18,6 +18,7 @@ describe('actions/application', () => {
   let store;
   let action;
   let actionsCalled;
+
   describe('setupBrandibble', () => {
     before(() => {
       store = mockStore();

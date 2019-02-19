@@ -28,21 +28,13 @@ describe('selectors/menuStatusForOrder', () => {
     expect(testDateTime.zoneName).to.equal(PACIFIC);
   });
 
-  /**
-   * OLO Orders
-   */
-
-  it('returns null, if the requestedAt is in the past', () => {
-    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
-    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
-
-    const testMenuStatusForOrder = menuStatusForOrder(
-      brandibbleStateForOloOrderStub,
-    )(
-      validOrderTimeForOrder(brandibbleStateForOloOrderStub)(
-        requestedAtAsLuxonDateTime,
-        todayAsLuxonDateTime,
-      ),
-    );
-  });
+  /** 1. Test wants future order */
+  /** 2. Test 'asap' requested at */
+  /** 3. Test 'asap' restaurant CURRENTLY closed */
+  /** 4. Test invalid validOrderTimeForOrder */
+  /** 5. passed validOrderTimeForOrder */
+  /** 6. validOrderTimeForOrder is current */
+  /** 7. validOrderTimeForOrder is current */
+  /** 8. validOrderTimeForOrder is current restaurant CURRENTLY closed */
+  /** 9. validOrderTimeForOrder is future */
 });

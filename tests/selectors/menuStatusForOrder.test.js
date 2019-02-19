@@ -60,7 +60,6 @@ describe('selectors/orders/_menuStatusForOrder', () => {
 
     expect(testDateTime.zoneName).to.equal(PACIFIC);
   });
-
   /**
    * OLO
    */

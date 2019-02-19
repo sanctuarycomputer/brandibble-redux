@@ -8,7 +8,7 @@ import {
 /**
  * Catering
  */
-export const brandibbleStateForCateringOrderStub = {
+export const stateForCateringOrderStub = {
   data: {
     locations: {
       locationsById: cateringLocationStub,
@@ -24,7 +24,7 @@ export const brandibbleStateForCateringOrderStub = {
 /**
  * OLO
  */
-export const brandibbleStateForOloOrderStub = {
+export const stateForOloOrderStub = {
   data: {
     locations: {
       locationsById: oloLocationStub,
@@ -37,10 +37,26 @@ export const brandibbleStateForOloOrderStub = {
   },
 };
 
+export const stateForOloOrderStubWithWantsFutureOrder = {
+  data: {
+    locations: {
+      locationsById: oloLocationStub,
+    },
+  },
+  session: {
+    order: {
+      orderData: {
+        ...oloOrderDataStub,
+        wantsFutureOrder: true,
+      },
+    },
+  },
+};
+
 /**
  * Unconfigured
  */
-export const brandibbleStateForUnconfiguredOrderStub = {
+export const stateForUnconfiguredOrderStub = {
   data: {
     locations: {},
   },

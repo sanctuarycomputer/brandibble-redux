@@ -3,15 +3,17 @@ import { expect } from 'chai';
 import { Settings, DateTime } from 'luxon';
 
 import {
-  brandibbleStateForCateringOrderStub,
-  brandibbleStateForOloOrderStub,
-  brandibbleStateForUnconfiguredOrderStub,
-} from '../config/brandibbleStateStubs';
+  stateForCateringOrderStub,
+  stateForOloOrderStub,
+  stateForOloOrderStubWithWantsFutureOrder,
+  stateForUnconfiguredOrderStub,
+} from '../config/stateStubs';
 import { Timezones } from '../../src/utils/constants';
 
 import {
   validOrderTimeForOrder,
   menuStatusForOrder,
+  validOrderTimeForNow,
 } from '../../src/selectors';
 
 const { PACIFIC } = Timezones;
@@ -26,6 +28,26 @@ describe('selectors/menuStatusForOrder', () => {
     const testDateTime = DateTime.local();
 
     expect(testDateTime.zoneName).to.equal(PACIFIC);
+  });
+
+  /**
+   * OLO
+   */
+
+  it('returns correct response when wantsFutureOrder is true', () => {
+    const todayAsLuxonDateTime = DateTime.local();
+    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T21:00:00Z');
+
+    const testMenuStatusForOrder = menuStatusForOrder(
+      stateForOloOrderStubWithWantsFutureOrder,
+    )(
+      validOrderTimeForOrder(stateForOloOrderStub)(
+        requestedAtAsLuxonDateTime,
+        todayAsLuxonDateTime,
+      ),
+    );
+
+    expect(testMenuStatusForOrder.statusCode).to.equal('FUTURE_ORDER_REQUEST');
   });
 
   /** 1. Test wants future order */

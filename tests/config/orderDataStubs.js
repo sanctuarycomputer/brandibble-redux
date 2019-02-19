@@ -13,6 +13,7 @@ export const oloOrderDataStub = {
 export const cateringOrderDataStub = {
   location_id: 886,
   service_type: 'pickup',
+  wantsFutureOrder: false,
 };
 
 /**
@@ -21,4 +22,5 @@ export const cateringOrderDataStub = {
 export const unconfiguredOrderDataStub = {
   location_id: undefined,
   service_type: undefined,
+  wantsFutureOrder: false,
 };

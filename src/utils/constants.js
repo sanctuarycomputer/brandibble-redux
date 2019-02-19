@@ -21,7 +21,13 @@ export const Timezones = {
   EASTERN: 'America/New_York',
 };
 
-export const BrandibbleTimezoneMap = {
+/**
+ * System refers to Brandibble,
+ * as Brandibble's timezones are inconsistent
+ * with those used by most timezone libs (in our case luxon)
+ */
+
+export const SystemTimezoneMap = {
   'US/Pacific': Timezones.PACIFIC,
   'US/Mountain': Timezones.MOUNTAIN,
   'US/Central': Timezones.CENTRAL,

@@ -5,7 +5,6 @@ import get from '../../utils/get';
 import { Asap } from '../../utils/constants';
 
 import { validOrderTimeForNow } from './validOrderTimeForNow';
-import { validOrderTimeForOrder } from './validOrderTimeForOrder';
 
 // STATUSES
 

@@ -3,10 +3,10 @@ import { expect } from 'chai';
 import { Settings, DateTime } from 'luxon';
 
 import {
-  brandibbleStateForCateringOrderStub,
-  brandibbleStateForOloOrderStub,
-  brandibbleStateForUnconfiguredOrderStub,
-} from '../config/brandibbleStateStubs';
+  stateForCateringOrderStub,
+  stateForOloOrderStub,
+  stateForUnconfiguredOrderStub,
+} from '../config/stateStubs';
 import { Timezones } from '../../src/utils/constants';
 
 import { validOrderTimeForOrder } from '../../src/selectors';
@@ -34,7 +34,7 @@ describe('selectors/validOrderTimeForOrder', () => {
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T21:00:00Z');
 
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
-      brandibbleStateForOloOrderStub,
+      stateForOloOrderStub,
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
     expect(testValidOrderTimeForOrder).to.be.null;
@@ -49,7 +49,7 @@ describe('selectors/validOrderTimeForOrder', () => {
     const requestedAtAsLuxonDateTime = todayAsLuxonDateTime.plus({ days: 7 });
 
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
-      brandibbleStateForOloOrderStub,
+      stateForOloOrderStub,
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
     expect(testValidOrderTimeForOrder).to.be.null;
@@ -60,7 +60,7 @@ describe('selectors/validOrderTimeForOrder', () => {
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T23:45:00Z');
 
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
-      brandibbleStateForOloOrderStub,
+      stateForOloOrderStub,
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
     expect(testValidOrderTimeForOrder).to.equal.null;
@@ -71,7 +71,7 @@ describe('selectors/validOrderTimeForOrder', () => {
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
 
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
-      brandibbleStateForOloOrderStub,
+      stateForOloOrderStub,
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
     expect(testValidOrderTimeForOrder).to.deep.equal({
@@ -89,7 +89,7 @@ describe('selectors/validOrderTimeForOrder', () => {
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:59:00Z');
 
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
-      brandibbleStateForOloOrderStub,
+      stateForOloOrderStub,
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
     expect(testValidOrderTimeForOrder).to.deep.equal({
@@ -111,7 +111,7 @@ describe('selectors/validOrderTimeForOrder', () => {
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T21:00:00Z');
 
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
-      brandibbleStateForCateringOrderStub,
+      stateForCateringOrderStub,
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
     expect(testValidOrderTimeForOrder).to.be.null;
@@ -122,7 +122,7 @@ describe('selectors/validOrderTimeForOrder', () => {
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T23:45:00Z');
 
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
-      brandibbleStateForCateringOrderStub,
+      stateForCateringOrderStub,
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
     expect(testValidOrderTimeForOrder).to.equal.null;
@@ -133,7 +133,7 @@ describe('selectors/validOrderTimeForOrder', () => {
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-15T20:45:00Z');
 
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
-      brandibbleStateForCateringOrderStub,
+      stateForCateringOrderStub,
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
     expect(testValidOrderTimeForOrder).to.equal.null;
@@ -144,7 +144,7 @@ describe('selectors/validOrderTimeForOrder', () => {
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-16T20:45:00Z');
 
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
-      brandibbleStateForCateringOrderStub,
+      stateForCateringOrderStub,
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
     expect(testValidOrderTimeForOrder).to.deep.equal({
@@ -162,7 +162,7 @@ describe('selectors/validOrderTimeForOrder', () => {
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-16T20:59:00Z');
 
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
-      brandibbleStateForCateringOrderStub,
+      stateForCateringOrderStub,
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
     expect(testValidOrderTimeForOrder).to.deep.equal({
@@ -182,7 +182,7 @@ describe('selectors/validOrderTimeForOrder', () => {
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-16T20:45:00Z');
 
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
-      brandibbleStateForCateringOrderStub,
+      stateForCateringOrderStub,
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
     expect(testValidOrderTimeForOrder).to.deep.equal({
@@ -204,7 +204,7 @@ describe('selectors/validOrderTimeForOrder', () => {
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
 
     const testValidOrderTimeForOrder = validOrderTimeForOrder(
-      brandibbleStateForUnconfiguredOrderStub,
+      stateForUnconfiguredOrderStub,
     )(requestedAtAsLuxonDateTime, todayAsLuxonDateTime);
 
     expect(testValidOrderTimeForOrder).to.equal.null;

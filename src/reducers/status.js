@@ -12,6 +12,7 @@ import {
   SET_DEFAULT_ADDRESS,
 } from '../actions/session/addresses';
 import { FETCH_ALLERGENS } from '../actions/data/allergens';
+import { FETCH_BRAND } from '../actions/data/brands';
 import { FETCH_MENU } from '../actions/session/menus';
 import {
   CREATE_FAVORITE,
@@ -109,6 +110,7 @@ const initialState = {
   fetchAllergens: IDLE,
   addAllergens: IDLE,
   removeAllergens: IDLE,
+  fetchBrand: IDLE,
   fetchCustomerLoyalties: IDLE,
   fetchLevelUpLoyalty: IDLE,
   fetchLevelUpQRCode: IDLE,
@@ -186,6 +188,10 @@ export default (state = initialState, action) => {
     case `${FETCH_ALLERGENS}_PENDING`: return { ...state, fetchAllergens: PENDING };
     case `${FETCH_ALLERGENS}_FULFILLED`: return { ...state, fetchAllergens: FULFILLED };
     case `${FETCH_ALLERGENS}_REJECTED`: return { ...state, fetchAllergens: REJECTED };
+
+    case `${FETCH_BRAND}_PENDING`: return { ...state, fetchBrand: PENDING };
+    case `${FETCH_BRAND}_FULFILLED`: return { ...state, fetchBrand: FULFILLED };
+    case `${FETCH_BRAND}_REJECTED`: return { ...state, fetchBrand: REJECTED };
 
     case `${FETCH_ADDRESSES}_PENDING`: return { ...state, fetchAddresses: PENDING };
     case `${FETCH_ADDRESSES}_FULFILLED`: return { ...state, fetchAddresses: FULFILLED };

@@ -1,21 +1,22 @@
 /* global describe before it */
-import { expect } from 'chai';
-import { Settings, DateTime } from 'luxon';
-import get from 'utils/get';
+import { expect } from "chai";
+import { Settings, DateTime } from "luxon";
+import get from "utils/get";
 
 import {
   stateForOloOrderStub,
   stateForOloOrderStubWithWantsFutureOrder,
-  stateForOloOrderStubWithAsapRequestedAt,
-} from '../config/stateStubs';
-import { Timezones, MenuStatusCodes } from '../../src/utils/constants';
+  stateForOloOrderStubWithAsapRequestedAt
+} from "../config/stateStubs";
+import { Timezones, MenuStatusCodes } from "../../src/utils/constants";
 
 import {
   validOrderTimeForOrder,
   menuStatusForOrder,
-} from '../../src/selectors';
+  validOrderTimeForNow
+} from "../../src/selectors";
 /** This implementation is useful for testing purposes */
-import { _menuStatusForOrder } from '../../src/selectors/orders/menuStatusForOrder';
+import { _menuStatusForOrder } from "../../src/selectors/orders/menuStatusForOrder";
 
 const { PACIFIC } = Timezones;
 const {
@@ -24,15 +25,15 @@ const {
   INVALID_REQUESTED_AT,
   REQUESTED_AT_HAS_PASSED,
   ORDERING_FOR_FIRST_AVAILABLE_VALID_TIME,
-  ORDERING_FOR_FUTURE_DAYPART,
+  ORDERING_FOR_FUTURE_DAYPART
 } = MenuStatusCodes;
 
 /** Tests public implementation */
 
-describe('selectors/orders/menuStatusForOrder', () => {
-  it('returns a valid payload', () => {
+describe("selectors/orders/menuStatusForOrder", () => {
+  it("returns a valid payload", () => {
     const testPublicMenuStatusForOrder = menuStatusForOrder(
-      stateForOloOrderStub,
+      stateForOloOrderStub
     );
 
     expect(testPublicMenuStatusForOrder.statusCode).to.exist;
@@ -42,14 +43,14 @@ describe('selectors/orders/menuStatusForOrder', () => {
       INVALID_REQUESTED_AT,
       REQUESTED_AT_HAS_PASSED,
       ORDERING_FOR_FIRST_AVAILABLE_VALID_TIME,
-      ORDERING_FOR_FUTURE_DAYPART,
+      ORDERING_FOR_FUTURE_DAYPART
     ]);
   });
 });
 
 /** Tests private/internal implementation */
 
-describe('selectors/orders/_menuStatusForOrder', () => {
+describe("selectors/orders/_menuStatusForOrder", () => {
   before(() => {
     /**
      * Globally set Timezone to that
@@ -74,29 +75,29 @@ describe('selectors/orders/_menuStatusForOrder', () => {
    * to return a status code of FUTURE_ORDER_REQUEST
    * and a pyload with the validOrderTimeForOrder
    */
-  it('returns correct response when wantsFutureOrder is true', () => {
-    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
-    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-16T20:45:00Z');
+  it("returns correct response when wantsFutureOrder is true", () => {
+    const todayAsLuxonDateTime = DateTime.fromISO("2019-02-14T20:45:00Z");
+    const requestedAtAsLuxonDateTime = DateTime.fromISO("2019-02-16T20:45:00Z");
 
     const testMenuStatusForOrder = _menuStatusForOrder(
-      stateForOloOrderStubWithWantsFutureOrder,
+      stateForOloOrderStubWithWantsFutureOrder
     )(
       validOrderTimeForOrder(stateForOloOrderStubWithWantsFutureOrder)(
         requestedAtAsLuxonDateTime,
-        todayAsLuxonDateTime,
-      ),
+        todayAsLuxonDateTime
+      )
     );
 
     expect(testMenuStatusForOrder.statusCode).to.equal(FUTURE_ORDER_REQUEST);
     expect(testMenuStatusForOrder.meta).to.deep.equal({
       validOrderTimeForOrder: {
-        date: '2019-02-16',
-        daypart: 'Lunch ', // Note the trailing space
+        date: "2019-02-16",
+        daypart: "Lunch ", // Note the trailing space
         minutes: 765,
-        time: '12:45 PM',
-        utc: '2019-02-16T20:45:00Z',
-        weekday: 'saturday',
-      },
+        time: "12:45 PM",
+        utc: "2019-02-16T20:45:00Z",
+        weekday: "saturday"
+      }
     });
   });
 
@@ -122,28 +123,28 @@ describe('selectors/orders/_menuStatusForOrder', () => {
    *
    */
   it("returns correct response when wantsFutureOrder is false, and requested at is 'asap'", () => {
-    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
-    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
+    const todayAsLuxonDateTime = DateTime.fromISO("2019-02-14T20:45:00Z");
+    const requestedAtAsLuxonDateTime = DateTime.fromISO("2019-02-14T20:45:00Z");
     const testLocationId = get(
       stateForOloOrderStubWithAsapRequestedAt,
-      'session.order.orderData.location_id',
+      "session.order.orderData.location_id"
     );
     const testServiceType = get(
       stateForOloOrderStubWithAsapRequestedAt,
-      'session.order.orderData.service_type',
+      "session.order.orderData.service_type"
     );
     const testLocation = get(
       stateForOloOrderStubWithAsapRequestedAt,
-      `data.locations.locationsById.${testLocationId}`,
+      `data.locations.locationsById.${testLocationId}`
     );
 
     const testMenuStatusForOrder = _menuStatusForOrder(
-      stateForOloOrderStubWithAsapRequestedAt,
+      stateForOloOrderStubWithAsapRequestedAt
     )(
       validOrderTimeForOrder(stateForOloOrderStubWithAsapRequestedAt)(
         requestedAtAsLuxonDateTime,
-        todayAsLuxonDateTime,
-      ),
+        todayAsLuxonDateTime
+      )
     );
 
     expect(testMenuStatusForOrder.statusCode).to.equal(ASAP_ORDER_REQUEST);
@@ -151,19 +152,19 @@ describe('selectors/orders/_menuStatusForOrder', () => {
       currentDaypart: get(testLocation, `current_daypart.${testServiceType}`),
       currentDaypartIsOrderable: get(
         testLocation,
-        `current_daypart.${testServiceType}.is_orderable`,
+        `current_daypart.${testServiceType}.is_orderable`
       ),
       currentDaypartIsInTheFuture:
         get(testLocation, `current_daypart.${testServiceType}.is_orderable`) &&
         !get(testLocation, `current_daypart.${testServiceType}.is_current`),
       validOrderTimeForOrder: {
-        date: '2019-02-14',
-        daypart: 'Lunch ', // Note the trailing space
+        date: "2019-02-14",
+        daypart: "Lunch ", // Note the trailing space
         minutes: 765,
-        time: '12:45 PM',
-        utc: '2019-02-14T20:45:00Z',
-        weekday: 'thursday',
-      },
+        time: "12:45 PM",
+        utc: "2019-02-14T20:45:00Z",
+        weekday: "thursday"
+      }
     });
   });
 
@@ -178,15 +179,15 @@ describe('selectors/orders/_menuStatusForOrder', () => {
    * and no meta data, as this should trigger the scheduled updateInvalidOrderRequestedAt
    * observer.
    */
-  it('returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder cannot be found', () => {
+  it("returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder cannot be found", () => {
     const todayAsLuxonDateTime = DateTime.local();
-    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T21:00:00Z');
+    const requestedAtAsLuxonDateTime = DateTime.fromISO("2019-02-14T21:00:00Z");
 
     const testMenuStatusForOrder = _menuStatusForOrder(stateForOloOrderStub)(
       validOrderTimeForOrder(stateForOloOrderStub)(
         requestedAtAsLuxonDateTime,
-        todayAsLuxonDateTime,
-      ),
+        todayAsLuxonDateTime
+      )
     );
 
     expect(testMenuStatusForOrder.statusCode).to.equal(INVALID_REQUESTED_AT);
@@ -202,15 +203,15 @@ describe('selectors/orders/_menuStatusForOrder', () => {
    * observer to update the order's requested at to 'asap' for olo orders, and the current date time
    * in ISO8601 format for catering orders.
    */
-  it('returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder is before validOrderTimeForNow', () => {
-    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T18:45:00Z');
-    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T18:45:00Z');
+  it("returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder is before validOrderTimeForNow", () => {
+    const todayAsLuxonDateTime = DateTime.fromISO("2019-02-14T18:45:00Z");
+    const requestedAtAsLuxonDateTime = DateTime.fromISO("2019-02-14T18:45:00Z");
 
     const testMenuStatusForOrder = _menuStatusForOrder(stateForOloOrderStub)(
       validOrderTimeForOrder(stateForOloOrderStub)(
         requestedAtAsLuxonDateTime,
-        todayAsLuxonDateTime,
-      ),
+        todayAsLuxonDateTime
+      )
     );
 
     expect(testMenuStatusForOrder.statusCode).to.equal(REQUESTED_AT_HAS_PASSED);
@@ -235,49 +236,49 @@ describe('selectors/orders/_menuStatusForOrder', () => {
    *   validOrderTimeForOrder: Object
    * }
    */
-  it('returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder matches the validOrderTimeForNow', () => {
-    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:35:00Z');
-    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
+  it("returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder matches the validOrderTimeForNow", () => {
+    const todayAsLuxonDateTime = DateTime.fromISO("2019-02-14T20:35:00Z");
+    const requestedAtAsLuxonDateTime = DateTime.fromISO("2019-02-14T20:45:00Z");
     const testLocationId = get(
       stateForOloOrderStub,
-      'session.order.orderData.location_id',
+      "session.order.orderData.location_id"
     );
     const testServiceType = get(
       stateForOloOrderStub,
-      'session.order.orderData.service_type',
+      "session.order.orderData.service_type"
     );
     const testLocation = get(
       stateForOloOrderStub,
-      `data.locations.locationsById.${testLocationId}`,
+      `data.locations.locationsById.${testLocationId}`
     );
 
     const testMenuStatusForOrder = _menuStatusForOrder(stateForOloOrderStub)(
       validOrderTimeForOrder(stateForOloOrderStub)(
         requestedAtAsLuxonDateTime,
-        todayAsLuxonDateTime,
-      ),
+        todayAsLuxonDateTime
+      )
     );
 
     expect(testMenuStatusForOrder.statusCode).to.equal(
-      ORDERING_FOR_FIRST_AVAILABLE_VALID_TIME,
+      ORDERING_FOR_FIRST_AVAILABLE_VALID_TIME
     );
     expect(testMenuStatusForOrder.meta).to.deep.equal({
       currentDaypart: get(testLocation, `current_daypart.${testServiceType}`),
       currentDaypartIsOrderable: get(
         testLocation,
-        `current_daypart.${testServiceType}.is_orderable`,
+        `current_daypart.${testServiceType}.is_orderable`
       ),
       currentDaypartIsInTheFuture:
         get(testLocation, `current_daypart.${testServiceType}.is_orderable`) &&
         !get(testLocation, `current_daypart.${testServiceType}.is_current`),
       validOrderTimeForOrder: {
-        date: '2019-02-14',
-        daypart: 'Lunch ', // Note the trailing space
+        date: "2019-02-14",
+        daypart: "Lunch ", // Note the trailing space
         minutes: 765,
-        time: '12:45 PM',
-        utc: '2019-02-14T20:45:00Z',
-        weekday: 'thursday',
-      },
+        time: "12:45 PM",
+        utc: "2019-02-14T20:45:00Z",
+        weekday: "thursday"
+      }
     });
   });
 
@@ -290,47 +291,47 @@ describe('selectors/orders/_menuStatusForOrder', () => {
    * to return a status code of ORDERING_FOR_FUTURE_DAYPART
    * and a payload with the validOrderTimeForOrder, and the unorderableCurrentDaypart
    */
-  it('returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder is after the validOrderTimeForNow', () => {
-    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:35:00Z');
-    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-16T20:45:00Z');
+  it("returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder is after the validOrderTimeForNow", () => {
+    const todayAsLuxonDateTime = DateTime.fromISO("2019-02-14T20:35:00Z");
+    const requestedAtAsLuxonDateTime = DateTime.fromISO("2019-02-16T20:45:00Z");
 
     const testLocationId = get(
       stateForOloOrderStub,
-      'session.order.orderData.location_id',
+      "session.order.orderData.location_id"
     );
     const testServiceType = get(
       stateForOloOrderStub,
-      'session.order.orderData.service_type',
+      "session.order.orderData.service_type"
     );
     const testLocation = get(
       stateForOloOrderStub,
-      `data.locations.locationsById.${testLocationId}`,
+      `data.locations.locationsById.${testLocationId}`
     );
 
     const testMenuStatusForOrder = _menuStatusForOrder(stateForOloOrderStub)(
       validOrderTimeForOrder(stateForOloOrderStub)(
         requestedAtAsLuxonDateTime,
-        todayAsLuxonDateTime,
-      ),
+        todayAsLuxonDateTime
+      )
     );
 
     expect(testMenuStatusForOrder.statusCode).to.equal(
-      ORDERING_FOR_FUTURE_DAYPART,
+      ORDERING_FOR_FUTURE_DAYPART
     );
 
     expect(testMenuStatusForOrder.meta).to.deep.equal({
       unorderableCurrentDaypart: get(
         testLocation,
-        `current_daypart.${testServiceType}`,
+        `current_daypart.${testServiceType}`
       ),
       validOrderTimeForOrder: {
-        date: '2019-02-16',
-        daypart: 'Lunch ', // Note the trailing space
+        date: "2019-02-16",
+        daypart: "Lunch ", // Note the trailing space
         minutes: 765,
-        time: '12:45 PM',
-        utc: '2019-02-16T20:45:00Z',
-        weekday: 'saturday',
-      },
+        time: "12:45 PM",
+        utc: "2019-02-16T20:45:00Z",
+        weekday: "saturday"
+      }
     });
   });
 });

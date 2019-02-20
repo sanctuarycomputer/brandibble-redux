@@ -101,10 +101,7 @@ export const menuStatusForOrder = createSelector(
           /**
            * validOrderTimeForOrder is current daypart
            */
-          if (
-            DateTime.fromISO(validOrderTimeForOrder.utc) ===
-            DateTime.fromISO(validOrderTimeForNow.utc)
-          ) {
+          if (validOrderTimeForOrder.utc === validOrderTimeForNow.utc) {
             return {
               statusCode: ORDERING_FOR_CURRENT_DAYPART,
               meta: {

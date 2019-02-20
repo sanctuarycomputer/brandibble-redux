@@ -139,6 +139,46 @@ describe('selectors/menuStatusForOrder', () => {
     // TODO: ensure meta matches expected response
   });
 
+  it('returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder matches the validOrderTimeForNow', () => {
+    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:35:00Z');
+    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
+
+    const testMenuStatusForOrder = menuStatusForOrder(stateForOloOrderStub)(
+      validOrderTimeForOrder(stateForOloOrderStub)(
+        requestedAtAsLuxonDateTime,
+        todayAsLuxonDateTime,
+      ),
+    );
+
+    expect(testMenuStatusForOrder.statusCode).to.equal(
+      ORDERING_FOR_CURRENT_DAYPART,
+    );
+
+    // TODO: ensure meta matches expected response
+  });
+
+  /** TODO:
+   * Add case that is asap && requested_at is between orderable times (location closed)
+   */
+
+  it('returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder is after the validOrderTimeForNow', () => {
+    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:35:00Z');
+    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-16T20:45:00Z');
+
+    const testMenuStatusForOrder = menuStatusForOrder(stateForOloOrderStub)(
+      validOrderTimeForOrder(stateForOloOrderStub)(
+        requestedAtAsLuxonDateTime,
+        todayAsLuxonDateTime,
+      ),
+    );
+
+    expect(testMenuStatusForOrder.statusCode).to.equal(
+      ORDERING_FOR_FUTURE_DAYPART,
+    );
+
+    // TODO: ensure meta matches expected response
+  });
+
   /** 1. Test wants future order */
   /** 2. Test 'asap' requested at */
   /** 3. Test 'asap' restaurant CURRENTLY closed */

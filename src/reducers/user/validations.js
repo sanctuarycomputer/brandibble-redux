@@ -4,7 +4,7 @@ import {
 } from '../../actions/session/user';
 
 const initialState = {
-  attemptedEmail: ''
+  attempted_email: ''
 };
 
 export default (state = initialState, action) => {
@@ -12,11 +12,11 @@ export default (state = initialState, action) => {
 
   switch (type) {
     case `${VALIDATE_USER}_PENDING`:
-      const { attemptedEmail } = action.meta;
+      const { attempted_email } = action.meta;
 
       return {
         ...state,
-        attemptedEmail
+        attempted_email
       };
     case `${VALIDATE_USER}_FULFILLED`:
       return {

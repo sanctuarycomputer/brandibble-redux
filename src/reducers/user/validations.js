@@ -3,14 +3,26 @@ import {
   UNAUTHENTICATE_USER,
 } from '../../actions/session/user';
 
-const initialState = {};
+const initialState = {
+  attemptedEmail: ''
+};
 
 export default (state = initialState, action) => {
-  const { type, payload } = action;
+  const { type } = action;
 
   switch (type) {
+    case `${VALIDATE_USER}_PENDING`:
+      const { attemptedEmail } = action.meta;
+
+      return {
+        ...state,
+        attemptedEmail
+      };
     case `${VALIDATE_USER}_FULFILLED`:
-      return payload;
+      return {
+        ...state,
+        ...action.payload
+      };
     case `${UNAUTHENTICATE_USER}_FULFILLED`:
       return initialState;
     default:

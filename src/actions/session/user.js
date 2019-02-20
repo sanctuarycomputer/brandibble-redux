@@ -37,7 +37,9 @@ export const validateUser = (brandibble, email) => (dispatch) => {
     .then(({ data }) => data)
     .catch(handleErrors);
 
-  return dispatch(fireAction(VALIDATE_USER, payload));
+  const meta = { attemptedEmail: email };
+
+  return dispatch(fireAction(VALIDATE_USER, payload, meta));
 };
 
 export const authenticateUser = (brandibble, loginData) => (dispatch) => {

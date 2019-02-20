@@ -21,9 +21,14 @@ export function makeUnpersistedOrder() {
     SAMPLE_MENU_LOCATION_ID,
     'pickup',
   );
-}
+};
+
+export const validatedEmailStub = {
+  attempted_email: 'api@brandibble.co'
+};
 
 export const customersValidateStub = {
+  attempted_email: 'api@brandibble.co',
   is_brandibble_active: true,
   is_brandibble_customer: true,
   is_levelup_connected: true,

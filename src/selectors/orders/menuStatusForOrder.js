@@ -2,20 +2,19 @@ import { createSelector } from 'reselect';
 import memoize from 'lodash.memoize';
 import { DateTime } from 'luxon';
 import get from '../../utils/get';
-import { Asap } from '../../utils/constants';
+import { Asap, MenuStatusCodes } from '../../utils/constants';
 
 import { validOrderTimeForNow } from './validOrderTimeForNow';
 
 // STATUSES
-
-const FUTURE_ORDER_REQUEST = 'FUTURE_ORDER_REQUEST';
-const ASAP_ORDER_REQUEST = 'ASAP_ORDER_REQUEST';
-
-const INVALID_REQUESTED_AT = 'INVALID_REQUESTED_AT';
-const REQUESTED_AT_HAS_PASSED = 'REQUESTED_AT_HAS_PASSED';
-
-const ORDERING_FOR_CURRENT_DAYPART = 'ORDERING_FOR_CURRENT_DAYPART';
-const ORDERING_FOR_FUTURE_DAYPART = 'ORDERING_FOR_FUTURE_DAYPART';
+const {
+  FUTURE_ORDER_REQUEST,
+  ASAP_ORDER_REQUEST,
+  INVALID_REQUESTED_AT,
+  REQUESTED_AT_HAS_PASSED,
+  ORDERING_FOR_CURRENT_DAYPART,
+  ORDERING_FOR_FUTURE_DAYPART,
+} = MenuStatusCodes;
 
 /**
  * The validOrderTimeForNow

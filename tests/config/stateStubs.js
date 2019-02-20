@@ -53,6 +53,22 @@ export const stateForOloOrderStubWithWantsFutureOrder = {
   },
 };
 
+export const stateForOloOrderStubWithAsapRequestedAt = {
+  data: {
+    locations: {
+      locationsById: oloLocationStub,
+    },
+  },
+  session: {
+    order: {
+      orderData: {
+        ...oloOrderDataStub,
+        requested_at: 'asap',
+      },
+    },
+  },
+};
+
 /**
  * Unconfigured
  */

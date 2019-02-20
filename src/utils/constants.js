@@ -34,6 +34,15 @@ export const SystemTimezoneMap = {
   'US/Eastern': Timezones.EASTERN,
 };
 
+export const MenuStatusCodes = {
+  FUTURE_ORDER_REQUEST: 'Future order requested',
+  ASAP_ORDER_REQUEST: "Order requested for 'asap'",
+  INVALID_REQUESTED_AT: 'Requested at time is invalid',
+  REQUESTED_AT_HAS_PASSED: 'Requested at time has passed',
+  ORDERING_FOR_CURRENT_DAYPART: 'Ordering for current daypart',
+  ORDERING_FOR_FUTURE_DAYPART: 'Ordering for future daypart',
+};
+
 /**
  * These date time formats
  * work for Luxon and not

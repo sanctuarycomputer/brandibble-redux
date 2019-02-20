@@ -4,8 +4,8 @@ import { DateTime } from 'luxon';
 import get from '../../utils/get';
 import { Asap, MenuStatusCodes } from '../../utils/constants';
 import luxonDateTimeFromRequestedAt from '../../utils/luxonDateTimeFromRequestedAt';
-
 import { validOrderTimeForNow } from './validOrderTimeForNow';
+import { validOrderTimeForOrder } from './validOrderTimeForOrder';
 
 const {
   FUTURE_ORDER_REQUEST,

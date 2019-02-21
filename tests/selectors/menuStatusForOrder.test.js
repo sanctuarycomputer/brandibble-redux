@@ -4,19 +4,18 @@ import { Settings, DateTime } from 'luxon';
 import get from 'utils/get';
 
 import {
-  stateForCateringOrderStub,
   stateForOloOrderStub,
   stateForOloOrderStubWithWantsFutureOrder,
   stateForOloOrderStubWithAsapRequestedAt,
-  stateForUnconfiguredOrderStub,
 } from '../config/stateStubs';
 import { Timezones, MenuStatusCodes } from '../../src/utils/constants';
 
 import {
   validOrderTimeForOrder,
   menuStatusForOrder,
-  validOrderTimeForNow,
 } from '../../src/selectors';
+/** This implementation is useful for testing purposes */
+import { _menuStatusForOrder } from '../../src/selectors/orders/menuStatusForOrder';
 
 const { PACIFIC } = Timezones;
 const {
@@ -28,7 +27,29 @@ const {
   ORDERING_FOR_FUTURE_DAYPART,
 } = MenuStatusCodes;
 
-describe('selectors/menuStatusForOrder', () => {
+/** Tests public implementation */
+
+describe('selectors/orders/menuStatusForOrder', () => {
+  it('returns a valid payload', () => {
+    const testPublicMenuStatusForOrder = menuStatusForOrder(
+      stateForOloOrderStub,
+    );
+
+    expect(testPublicMenuStatusForOrder.statusCode).to.exist;
+    expect(testPublicMenuStatusForOrder.statusCode).to.be.oneOf([
+      FUTURE_ORDER_REQUEST,
+      ASAP_ORDER_REQUEST,
+      INVALID_REQUESTED_AT,
+      REQUESTED_AT_HAS_PASSED,
+      ORDERING_FOR_CURRENT_DAYPART,
+      ORDERING_FOR_FUTURE_DAYPART,
+    ]);
+  });
+});
+
+/** Tests private/internal implementation */
+
+describe('selectors/orders/_menuStatusForOrder', () => {
   before(() => {
     /**
      * Globally set Timezone to that
@@ -49,7 +70,7 @@ describe('selectors/menuStatusForOrder', () => {
     const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-16T20:45:00Z');
 
-    const testMenuStatusForOrder = menuStatusForOrder(
+    const testMenuStatusForOrder = _menuStatusForOrder(
       stateForOloOrderStubWithWantsFutureOrder,
     )(
       validOrderTimeForOrder(stateForOloOrderStubWithWantsFutureOrder)(
@@ -88,7 +109,7 @@ describe('selectors/menuStatusForOrder', () => {
       `data.locations.locationsById.${testLocationId}`,
     );
 
-    const testMenuStatusForOrder = menuStatusForOrder(
+    const testMenuStatusForOrder = _menuStatusForOrder(
       stateForOloOrderStubWithAsapRequestedAt,
     )(
       validOrderTimeForOrder(stateForOloOrderStubWithAsapRequestedAt)(
@@ -110,19 +131,11 @@ describe('selectors/menuStatusForOrder', () => {
     });
   });
 
-  /** TODO:
-   * Add case that is asap && requested_at is between orderable times (location closed)
-   *
-   * This feels handled, by adding the additional currentDaypartIsOrdearble and currentDaypartisInTheFuture
-   * Which the client can look to in order to determine whether to show a daypart's error message or something else
-   * if it's just closed for the night or something.
-   */
-
   it('returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder cannot be found', () => {
     const todayAsLuxonDateTime = DateTime.local();
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T21:00:00Z');
 
-    const testMenuStatusForOrder = menuStatusForOrder(stateForOloOrderStub)(
+    const testMenuStatusForOrder = _menuStatusForOrder(stateForOloOrderStub)(
       validOrderTimeForOrder(stateForOloOrderStub)(
         requestedAtAsLuxonDateTime,
         todayAsLuxonDateTime,
@@ -137,7 +150,7 @@ describe('selectors/menuStatusForOrder', () => {
     const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T18:45:00Z');
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T18:45:00Z');
 
-    const testMenuStatusForOrder = menuStatusForOrder(stateForOloOrderStub)(
+    const testMenuStatusForOrder = _menuStatusForOrder(stateForOloOrderStub)(
       validOrderTimeForOrder(stateForOloOrderStub)(
         requestedAtAsLuxonDateTime,
         todayAsLuxonDateTime,
@@ -164,7 +177,7 @@ describe('selectors/menuStatusForOrder', () => {
       `data.locations.locationsById.${testLocationId}`,
     );
 
-    const testMenuStatusForOrder = menuStatusForOrder(stateForOloOrderStub)(
+    const testMenuStatusForOrder = _menuStatusForOrder(stateForOloOrderStub)(
       validOrderTimeForOrder(stateForOloOrderStub)(
         requestedAtAsLuxonDateTime,
         todayAsLuxonDateTime,
@@ -186,19 +199,11 @@ describe('selectors/menuStatusForOrder', () => {
     });
   });
 
-  /** TODO:
-   * Add case that is asap && requested_at is between orderable times (location closed)
-   *
-   * This feels handled, by adding the additional currentDaypartIsOrdearble and currentDaypartisInTheFuture
-   * Which the client can look to in order to determine whether to show a daypart's error message or something else
-   * if it's just closed for the night or something.
-   */
-
   it('returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder is after the validOrderTimeForNow', () => {
     const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:35:00Z');
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-16T20:45:00Z');
 
-    const testMenuStatusForOrder = menuStatusForOrder(stateForOloOrderStub)(
+    const testMenuStatusForOrder = _menuStatusForOrder(stateForOloOrderStub)(
       validOrderTimeForOrder(stateForOloOrderStub)(
         requestedAtAsLuxonDateTime,
         todayAsLuxonDateTime,
@@ -220,14 +225,4 @@ describe('selectors/menuStatusForOrder', () => {
       },
     });
   });
-
-  /** 1. Test wants future order */
-  /** 2. Test 'asap' requested at */
-  /** 3. Test 'asap' restaurant CURRENTLY closed */
-  /** 4. Test invalid validOrderTimeForOrder */
-  /** 5. passed validOrderTimeForOrder */
-  /** 6. validOrderTimeForOrder is current */
-  /** 7. validOrderTimeForOrder is current */
-  /** 8. validOrderTimeForOrder is current restaurant CURRENTLY closed */
-  /** 9. validOrderTimeForOrder is future */
 });

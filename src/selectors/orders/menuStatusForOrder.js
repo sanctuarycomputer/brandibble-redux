@@ -3,10 +3,11 @@ import memoize from 'lodash.memoize';
 import { DateTime } from 'luxon';
 import get from '../../utils/get';
 import { Asap, MenuStatusCodes } from '../../utils/constants';
+import luxonDateTimeFromRequestedAt from '../../utils/luxonDateTimeFromRequestedAt';
 
 import { validOrderTimeForNow } from './validOrderTimeForNow';
+import { validOrderTimeForOrder } from './validOrderTimeForOrder';
 
-// STATUSES
 const {
   FUTURE_ORDER_REQUEST,
   ASAP_ORDER_REQUEST,
@@ -22,7 +23,7 @@ const {
  * for a location, regardless of when the order is
  * being requested for
  */
-export const menuStatusForOrder = createSelector(
+export const _menuStatusForOrder = createSelector(
   state => get(state, 'session.order.orderData'),
   state => get(state, 'data.locations.locationsById'),
   state => validOrderTimeForNow(state),
@@ -130,88 +131,12 @@ export const menuStatusForOrder = createSelector(
     }),
 );
 
-// {
-//   wantsFutureOrder: Bool,
-//   nextAvailableDaypart: Object,
-//   status: String/Object,
-// }
-
-// const mapStateToProps = state => ({
-//   menuStatusForOrder: menuStatusForOrder(state.brandibble)(
-//     validOrderTimeForOrder(state)(
-//       luxonDateTimeFromRequestedAt(state.session.order.orderData.requested_at),
-//     ),
-//   ),
-// });
-
-/**
- * 1. Wants Future
- */
-
-//  {
-//    status: FUTURE_ORDER_REQUEST,
-//    meta: {
-//      orderRequestedAt: String
-//    }
-//  }
-
-/**
- * 1. Not wants future
- */
-
-// 'ASAP'
-
-//  {
-//    status: ORDER_FOR_ASAP,
-//    meta: {
-//      currentDaypart: currentDaypart/validOrderTimeForNow/nextAvailableDaypart,
-//      locationIsClosed: false
-//    }
-//  }
-
-// Location is currently closed
-// {
-//   status: ORDER_FOR_ASAP,
-//   meta: {
-//     currentDaypart: currentDaypart/validOrderTimeForNow/nextAvailableDaypart,
-//     locationIsClosed: true
-//   }
-// }
-
-// NOT 'ASAP
-
-// No location data/ no validOrderTimeForOrder
-
-//  {
-//    status: NO_LOCATION_DATA,
-//    meta: null
-//  }
-
-// Requested at has past
-
-//  {
-//    status: REQUESTED_AT_HAS_PAST,
-//    meta: {
-//      nextAvailableDaypart: {}
-//    }
-//  }
-
-// Requested at for current daypart
-
-//  {
-//    status: REQUESTED_FOR_CURRENT_DAYPART,
-//    meta: {
-//      currentDaypart: {},
-//      locationIsClosed: Bool
-//    }
-//  }
-
-// Future Order
-
-//  {
-//    status: REQUESTED_FOR_CURRENT_DAYPART,
-//    meta: {
-//      currentDaypart: {},
-//      locationIsClosed: Bool
-//    }
-//  }
+export const menuStatusForOrder = createSelector(state =>
+  _menuStatusForOrder(state)(
+    validOrderTimeForOrder(state)(
+      luxonDateTimeFromRequestedAt(
+        get(state, 'session.order.orderData.requested_at'),
+      ),
+    ),
+  ),
+);

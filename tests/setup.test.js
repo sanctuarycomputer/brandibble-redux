@@ -7,7 +7,10 @@ before(() => {
   const setAuthToken = () => {
     return brandibble.orders.create(SAMPLE_MENU_LOCATION_ID).then(() => {
       return brandibble.customers
-        .authenticate({ email: 'sanctuary-testing-email@example.com', password: 'password' })
+        .authenticate({
+          email: 'sanctuary-testing-email@example.com',
+          password: 'password',
+        })
         .then(() => {
           window.TEST_TOKEN = brandibble.adapter.customerToken;
           return brandibble.payments.all().then((res) => {

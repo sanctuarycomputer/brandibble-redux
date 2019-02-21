@@ -100,6 +100,11 @@ export {
   FETCH_ALLERGENS,
 } from './data/allergens';
 
+// Brands
+export {
+  FETCH_BRAND,
+} from './data/brands';
+
 // Customer Orders
 export {
   FETCH_ALL_CUSTOMER_ORDERS,

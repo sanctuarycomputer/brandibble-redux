@@ -3,3 +3,4 @@ export * from './allergens';
 export * from './favorites';
 export * from './locations';
 export * from './payments';
+export * from './orders';

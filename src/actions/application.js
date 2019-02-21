@@ -1,7 +1,8 @@
 import fireAction from '../utils/fireAction';
 import handleErrors from '../utils/handleErrors';
-import { resolveOrder, resolveOrderLocation } from './session/order';
+import { resolveOrder } from './session/order';
 import { resolveUser } from './session/user';
+import { fetchBrand } from './data/brands';
 
 export const SETUP_BRANDIBBLE = 'SETUP_BRANDIBBLE';
 export const SETUP_BRANDIBBLE_REDUX = 'SETUP_BRANDIBBLE_REDUX';
@@ -33,7 +34,7 @@ export const setupBrandibbleRedux = (
       return Promise.all([
         dispatch(resolveUser(value)),
         dispatch(resolveOrder(value, locationId, serviceType)),
-        dispatch(resolveOrderLocation(value)),
+        dispatch(fetchBrand(value))
       ]);
     })
     .catch(handleErrors);

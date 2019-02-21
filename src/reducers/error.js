@@ -17,6 +17,9 @@ import {
 // allergens
 import { FETCH_ALLERGENS } from '../actions/data/allergens';
 
+// allergens
+import { FETCH_BRAND } from '../actions/data/brands';
+
 // menu
 import { FETCH_MENU } from '../actions/session/menus';
 
@@ -117,6 +120,8 @@ export const initialState = {
   fetchAllergens: null,
   addAllergens: null,
   removeAllergens: null,
+  // brands
+  fetchBrand: null,
   // customer orders
   fetchAllCustomerOrders: null,
   fetchPastCustomerOrders: null,
@@ -219,6 +224,10 @@ export default (state = initialState, action) => {
     // allergens
     case `${FETCH_ALLERGENS}_PENDING`: return { ...state, fetchAllergens: null };
     case `${FETCH_ALLERGENS}_REJECTED`: return { ...state, fetchAllergens: payload };
+
+    // brands
+    case `${FETCH_BRAND}_PENDING`: return { ...state, fetchBrand: null };
+    case `${FETCH_BRAND}_REJECTED`: return { ...state, fetchBrand: payload };
 
     // addresses
     case `${FETCH_ADDRESSES}_PENDING`: return { ...state, fetchAddresses: null };

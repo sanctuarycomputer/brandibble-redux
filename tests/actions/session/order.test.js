@@ -44,9 +44,11 @@ import {
   buildLineItem,
   validCredentialsStub,
 } from '../../config/stubs';
-import { Asap } from "utils/constants";
+import { Asap } from 'utils/constants';
 
-const getNonConfigurableMenuItem = menu => menu.reduce((acc, section) => acc.concat(section.children), [])
+const getNonConfigurableMenuItem = menu =>
+  menu
+    .reduce((acc, section) => acc.concat(section.children), [])
     .reduce((acc, child) => acc.concat(child.items), [])
     .find(item => !item.option_groups.length);
 
@@ -55,7 +57,9 @@ const mockStore = configureStore(reduxMiddleware);
 delete addressStub.customer_address_id;
 
 describe('actions/session/order', () => {
-  let store, action, actionsCalled;
+  let store, 
+action, 
+actionsCalled;
   describe('resolveOrder', () => {
     before(() => {
       store = mockStore();
@@ -76,14 +80,17 @@ describe('actions/session/order', () => {
     it('should have RESOLVE_ORDER_FULFILLED action', () => {
       action = find(actionsCalled, { type: 'RESOLVE_ORDER_FULFILLED' });
       expect(action).to.have.property('payload');
-      expect(action.payload).to.have.property('order').is.not.undefined.and.is.not.null;
+      expect(action.payload).to.have.property('order').is.not.undefined.and.is
+        .not.null;
     });
   });
 
   describe('resolveOrder with locationId', () => {
     before(() => {
       store = mockStore();
-      return setOrderLocationId(makeUnpersistedOrder(), 19)(store.dispatch).then(() => {
+      return setOrderLocationId(makeUnpersistedOrder(), 19)(
+        store.dispatch,
+      ).then(() => {
         return resolveOrder(brandibble)(store.dispatch).then(() => {
           actionsCalled = store.getActions();
         });
@@ -91,7 +98,7 @@ describe('actions/session/order', () => {
     });
 
     it('should call 6 actions', () => {
-      expect(actionsCalled).to.have.length.of(6);
+      expect(actionsCalled).to.have.length.of(8);
     });
 
     it('should have FETCH_MENU_PENDING action', () => {
@@ -103,23 +110,37 @@ describe('actions/session/order', () => {
       action = find(actionsCalled, { type: 'FETCH_MENU_FULFILLED' });
       expect(action).to.exist;
     });
+
+    it('should have FETCH_LOCATION_PENDING action', () => {
+      action = find(actionsCalled, { type: 'FETCH_LOCATION_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have FETCH_LOCATION_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'FETCH_LOCATION_FULFILLED' });
+      expect(action).to.exist;
+    });
   });
 
   describe('resolveOrder with requestedAt in the past and locationId', () => {
     before(() => {
       store = mockStore();
 
-      return setRequestedAt(makeUnpersistedOrder(), '2017-03-22T17:50:29Z')(store.dispatch).then(res => {
-        return setOrderLocationId(res.value.order, 19)(store.dispatch).then(() => {
-          return resolveOrder(brandibble)(store.dispatch).then(() => {
-            actionsCalled = store.getActions();
-          });
-        });
+      return setRequestedAt(makeUnpersistedOrder(), '2017-03-22T17:50:29Z')(
+        store.dispatch,
+      ).then((res) => {
+        return setOrderLocationId(res.value.order, 19)(store.dispatch).then(
+          () => {
+            return resolveOrder(brandibble)(store.dispatch).then(() => {
+              actionsCalled = store.getActions();
+            });
+          },
+        );
       });
     });
 
-    it('should call 10 actions', () => {
-      expect(actionsCalled).to.have.length.of(10);
+    it('should call 12 actions', () => {
+      expect(actionsCalled).to.have.length.of(12);
     });
 
     it('should have SET_REQUESTED_AT_PENDING action', () => {
@@ -139,6 +160,16 @@ describe('actions/session/order', () => {
 
     it('should have FETCH_MENU_FULFILLED action', () => {
       action = find(actionsCalled, { type: 'FETCH_MENU_FULFILLED' });
+      expect(action).to.exist;
+    });
+
+    it('should have FETCH_LOCATION_PENDING action', () => {
+      action = find(actionsCalled, { type: 'FETCH_LOCATION_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have FETCH_LOCATION_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'FETCH_LOCATION_FULFILLED' });
       expect(action).to.exist;
     });
 
@@ -166,7 +197,9 @@ describe('actions/session/order', () => {
     });
 
     it('should have RESOLVE_ORDER_LOCATION_FULFILLED action', () => {
-      action = find(actionsCalled, { type: 'RESOLVE_ORDER_LOCATION_FULFILLED' });
+      action = find(actionsCalled, {
+        type: 'RESOLVE_ORDER_LOCATION_FULFILLED',
+      });
       expect(action).to.exist;
     });
   });
@@ -174,12 +207,15 @@ describe('actions/session/order', () => {
   describe('setOrderLocationId', () => {
     before(() => {
       store = mockStore();
-      return setOrderLocationId(makeUnpersistedOrder(), 19)(store.dispatch).then(() => {
+      return setOrderLocationId(makeUnpersistedOrder(), 19)(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have SET_ORDER_LOCATION_ID_PENDING action', () => {
       action = find(actionsCalled, { type: 'SET_ORDER_LOCATION_ID_PENDING' });
@@ -195,7 +231,9 @@ describe('actions/session/order', () => {
   describe('setPromoCode', () => {
     before(() => {
       store = mockStore();
-      return setPromoCode(makeUnpersistedOrder(), 'freedig')(store.dispatch).then(() => {
+      return setPromoCode(makeUnpersistedOrder(), 'freedig')(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
@@ -214,7 +252,9 @@ describe('actions/session/order', () => {
   describe('setServiceType', () => {
     before(() => {
       store = mockStore();
-      return setServiceType(makeUnpersistedOrder(), 'pickup')(store.dispatch).then(() => {
+      return setServiceType(makeUnpersistedOrder(), 'pickup')(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
@@ -233,7 +273,9 @@ describe('actions/session/order', () => {
   describe('addAppliedDiscount', () => {
     before(() => {
       store = mockStore();
-      return addAppliedDiscount(makeUnpersistedOrder(), {discount_id: 123})(store.dispatch).then(() => {
+      return addAppliedDiscount(makeUnpersistedOrder(), { discount_id: 123 })(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
@@ -252,7 +294,9 @@ describe('actions/session/order', () => {
   describe('removeAppliedDiscount', () => {
     before(() => {
       store = mockStore();
-      return removeAppliedDiscount(makeUnpersistedOrder(), {discount_id: 123})(store.dispatch).then(() => {
+      return removeAppliedDiscount(makeUnpersistedOrder(), {
+        discount_id: 123,
+      })(store.dispatch).then(() => {
         actionsCalled = store.getActions();
       });
     });
@@ -266,7 +310,9 @@ describe('actions/session/order', () => {
   describe('setMiscOptions', () => {
     before(() => {
       store = mockStore();
-      return setMiscOptions(makeUnpersistedOrder(), { notes_for_store: 'sup store' })(store.dispatch).then(() => {
+      return setMiscOptions(makeUnpersistedOrder(), {
+        notes_for_store: 'sup store',
+      })(store.dispatch).then(() => {
         actionsCalled = store.getActions();
       });
     });
@@ -282,11 +328,12 @@ describe('actions/session/order', () => {
     });
   });
 
-
   describe('setRequestedAt', () => {
     before(() => {
       store = mockStore();
-      return setRequestedAt(makeUnpersistedOrder(), '2017-03-22T17:50:29Z')(store.dispatch).then(() => {
+      return setRequestedAt(makeUnpersistedOrder(), '2017-03-22T17:50:29Z')(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
@@ -307,21 +354,33 @@ describe('actions/session/order', () => {
       store = mockStore();
       const order = makeUnpersistedOrder('pickup');
 
-      return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(store.dispatch).then(({ value: { menu }}) => {
+      return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(
+        store.dispatch,
+      ).then(({ value: { menu } }) => {
         const product = getNonConfigurableMenuItem(menu);
         order.cart.addLineItem(product, 1, product.id);
 
-        return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(() => {
-          return setOrderAddress(order, addressStub)(store.dispatch).then(() => {
-            return bindCustomerToOrder(order, authResponseStub)(store.dispatch).then(() => {
-              return setPaymentMethod(order, 'credit', cardStub)(store.dispatch).then(() => {
-                store.clearActions();
-                return validateCurrentCart(brandibble)(store.dispatch).then(() => {
-                  actionsCalled = store.getActions();
+        return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(
+          store.dispatch,
+        ).then(() => {
+          return setOrderAddress(order, addressStub)(store.dispatch).then(
+            () => {
+              return bindCustomerToOrder(order, authResponseStub)(
+                store.dispatch,
+              ).then(() => {
+                return setPaymentMethod(order, 'credit', cardStub)(
+                  store.dispatch,
+                ).then(() => {
+                  store.clearActions();
+                  return validateCurrentCart(brandibble)(store.dispatch).then(
+                    () => {
+                      actionsCalled = store.getActions();
+                    },
+                  );
                 });
               });
-            });
-          });
+            },
+          );
         });
       });
     });
@@ -342,24 +401,36 @@ describe('actions/session/order', () => {
       store = mockStore();
       const order = makeUnpersistedOrder('pickup');
 
-      return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(store.dispatch).then(({ value: { menu }}) => {
+      return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(
+        store.dispatch,
+      ).then(({ value: { menu } }) => {
         const product = getNonConfigurableMenuItem(menu);
         order.cart.addLineItem(product, 1, product.id);
 
-        return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(() => {
-          return setOrderAddress(order, addressStub)(store.dispatch).then(() => {
-            return bindCustomerToOrder(order, authResponseStub)(store.dispatch).then(() => {
-              return setPaymentMethod(order, 'credit', cardStub)(store.dispatch).then(() => {
-                // hack to reset any previously set promo codes
-                return setPromoCode(order, '')(store.dispatch).then(() => {
-                  store.clearActions();
-                  return validateCurrentOrder(brandibble)(store.dispatch).then(() => {
-                    actionsCalled = store.getActions();
+        return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(
+          store.dispatch,
+        ).then(() => {
+          return setOrderAddress(order, addressStub)(store.dispatch).then(
+            () => {
+              return bindCustomerToOrder(order, authResponseStub)(
+                store.dispatch,
+              ).then(() => {
+                return setPaymentMethod(order, 'credit', cardStub)(
+                  store.dispatch,
+                ).then(() => {
+                  // hack to reset any previously set promo codes
+                  return setPromoCode(order, '')(store.dispatch).then(() => {
+                    store.clearActions();
+                    return validateCurrentOrder(brandibble)(
+                      store.dispatch,
+                    ).then(() => {
+                      actionsCalled = store.getActions();
+                    });
                   });
                 });
               });
-            });
-          });
+            },
+          );
         });
       });
     });
@@ -370,7 +441,9 @@ describe('actions/session/order', () => {
     });
 
     it('should have a payload', () => {
-      action = find(actionsCalled, { type: 'VALIDATE_CURRENT_ORDER_FULFILLED' });
+      action = find(actionsCalled, {
+        type: 'VALIDATE_CURRENT_ORDER_FULFILLED',
+      });
       expect(action).to.have.a.property('payload');
     });
   });
@@ -378,12 +451,15 @@ describe('actions/session/order', () => {
   describe('setOrderAddress', () => {
     before(() => {
       store = mockStore();
-      return setOrderAddress(makeUnpersistedOrder(), addressStub)(store.dispatch).then(() => {
+      return setOrderAddress(makeUnpersistedOrder(), addressStub)(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have SET_ORDER_ADDRESS_PENDING action', () => {
       action = find(actionsCalled, { type: 'SET_ORDER_ADDRESS_PENDING' });
@@ -399,32 +475,42 @@ describe('actions/session/order', () => {
   describe('setPaymentMethod', () => {
     before(() => {
       store = mockStore();
-      return setPaymentMethod(makeUnpersistedOrder(), 'credit', cardStub)(store.dispatch).then(() => {
+      return setPaymentMethod(makeUnpersistedOrder(), 'credit', cardStub)(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have SET_PAYMENT_METHOD_FULFILLED action', () => {
       action = find(actionsCalled, { type: 'SET_PAYMENT_METHOD_FULFILLED' });
-      expect(action).to.exist.and.have.property('payload').to.have.property('order');
+      expect(action)
+        .to.exist.and.have.property('payload')
+        .to.have.property('order');
     });
   });
 
   describe('setTip', () => {
     before(() => {
       store = mockStore();
-      return setTip(makeUnpersistedOrder(), 'credit', 2.50)(store.dispatch).then(() => {
-        actionsCalled = store.getActions();
-      });
+      return setTip(makeUnpersistedOrder(), 'credit', 2.5)(store.dispatch).then(
+        () => {
+          actionsCalled = store.getActions();
+        },
+      );
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have SET_TIP_FULFILLED action', () => {
       action = find(actionsCalled, { type: 'SET_TIP_FULFILLED' });
-      expect(action.payload.order).to.exist.and.have.property('miscOptions').to.have.property('tip');
+      expect(action.payload.order)
+        .to.exist.and.have.property('miscOptions')
+        .to.have.property('tip');
     });
   });
 
@@ -448,12 +534,15 @@ describe('actions/session/order', () => {
   describe('addLineItem', () => {
     before(() => {
       store = mockStore();
-      return addLineItem(makeUnpersistedOrder(), productStub, 1)(store.dispatch).then(() => {
+      return addLineItem(makeUnpersistedOrder(), productStub, 1)(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have ADD_LINE_ITEM_PENDING action', () => {
       action = find(actionsCalled, { type: 'ADD_LINE_ITEM_PENDING' });
@@ -477,12 +566,15 @@ describe('actions/session/order', () => {
   describe('pushLineItem', () => {
     before(() => {
       store = mockStore();
-      return pushLineItem(makeUnpersistedOrder(), buildLineItem())(store.dispatch).then(() => {
+      return pushLineItem(makeUnpersistedOrder(), buildLineItem())(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have PUSH_LINE_ITEM_PENDING action', () => {
       action = find(actionsCalled, { type: 'PUSH_LINE_ITEM_PENDING' });
@@ -508,7 +600,8 @@ describe('actions/session/order', () => {
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have REMOVE_LINE_ITEM_PENDING action', () => {
       action = find(actionsCalled, { type: 'REMOVE_LINE_ITEM_PENDING' });
@@ -528,12 +621,15 @@ describe('actions/session/order', () => {
       const lineItem = order.cart.addLineItem(productStub, 1);
       const optionGroup = productStub.option_groups[0];
       const optionItem = optionGroup.option_items[0];
-      return addOptionToLineItem(order, lineItem, optionGroup, optionItem)(store.dispatch).then(() => {
+      return addOptionToLineItem(order, lineItem, optionGroup, optionItem)(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have ADD_OPTION_TO_LINE_ITEM_PENDING action', () => {
       action = find(actionsCalled, { type: 'ADD_OPTION_TO_LINE_ITEM_PENDING' });
@@ -541,7 +637,9 @@ describe('actions/session/order', () => {
     });
 
     it('should have ADD_OPTION_TO_LINE_ITEM_FULFILLED action', () => {
-      action = find(actionsCalled, { type: 'ADD_OPTION_TO_LINE_ITEM_FULFILLED' });
+      action = find(actionsCalled, {
+        type: 'ADD_OPTION_TO_LINE_ITEM_FULFILLED',
+      });
       expect(action).to.exist;
     });
   });
@@ -554,20 +652,27 @@ describe('actions/session/order', () => {
       const optionGroup = productStub.option_groups[0];
       const optionItem = optionGroup.option_items[0];
       order.cart.addOptionToLineItem(lineItem, optionGroup, optionItem);
-      return removeOptionFromLineItem(order, lineItem, optionItem)(store.dispatch).then(() => {
+      return removeOptionFromLineItem(order, lineItem, optionItem)(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have REMOVE_OPTION_FROM_LINE_ITEM_PENDING action', () => {
-      action = find(actionsCalled, { type: 'REMOVE_OPTION_FROM_LINE_ITEM_PENDING' });
+      action = find(actionsCalled, {
+        type: 'REMOVE_OPTION_FROM_LINE_ITEM_PENDING',
+      });
       expect(action).to.exist;
     });
 
     it('should have REMOVE_OPTION_FROM_LINE_ITEM_FULFILLED action', () => {
-      action = find(actionsCalled, { type: 'REMOVE_OPTION_FROM_LINE_ITEM_FULFILLED' });
+      action = find(actionsCalled, {
+        type: 'REMOVE_OPTION_FROM_LINE_ITEM_FULFILLED',
+      });
       expect(action).to.exist;
     });
   });
@@ -577,9 +682,11 @@ describe('actions/session/order', () => {
       store = mockStore();
       const order = makeUnpersistedOrder();
       const lineItem = order.cart.addLineItem(productStub, 1);
-      return setLineItemQuantity(order, lineItem, 10)(store.dispatch).then(() => {
-        actionsCalled = store.getActions();
-      });
+      return setLineItemQuantity(order, lineItem, 10)(store.dispatch).then(
+        () => {
+          actionsCalled = store.getActions();
+        },
+      );
     });
 
     it('throws with a < 1 quantity', () => {
@@ -590,7 +697,8 @@ describe('actions/session/order', () => {
       }).to.throw;
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have SET_LINE_ITEM_QUANTITY_PENDING action', () => {
       action = find(actionsCalled, { type: 'SET_LINE_ITEM_QUANTITY_PENDING' });
@@ -598,7 +706,9 @@ describe('actions/session/order', () => {
     });
 
     it('should have SET_LINE_ITEM_QUANTITY_FULFILLED action', () => {
-      action = find(actionsCalled, { type: 'SET_LINE_ITEM_QUANTITY_FULFILLED' });
+      action = find(actionsCalled, {
+        type: 'SET_LINE_ITEM_QUANTITY_FULFILLED',
+      });
       expect(action).to.exist;
     });
   });
@@ -608,12 +718,15 @@ describe('actions/session/order', () => {
       store = mockStore();
       const order = makeUnpersistedOrder();
       const lineItem = order.cart.addLineItem(productStub, 1);
-      return setLineItemMadeFor(order, lineItem, 'user')(store.dispatch).then(() => {
-        actionsCalled = store.getActions();
-      });
+      return setLineItemMadeFor(order, lineItem, 'user')(store.dispatch).then(
+        () => {
+          actionsCalled = store.getActions();
+        },
+      );
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have SET_LINE_ITEM_MADE_FOR_PENDING action', () => {
       action = find(actionsCalled, { type: 'SET_LINE_ITEM_MADE_FOR_PENDING' });
@@ -621,7 +734,9 @@ describe('actions/session/order', () => {
     });
 
     it('should have SET_LINE_ITEM_MADE_FOR_FULFILLED action', () => {
-      action = find(actionsCalled, { type: 'SET_LINE_ITEM_MADE_FOR_FULFILLED' });
+      action = find(actionsCalled, {
+        type: 'SET_LINE_ITEM_MADE_FOR_FULFILLED',
+      });
       expect(action).to.exist;
     });
   });
@@ -631,37 +746,48 @@ describe('actions/session/order', () => {
       store = mockStore();
       const order = makeUnpersistedOrder();
       const lineItem = order.cart.addLineItem(productStub, 1);
-      return setLineItemInstructions(order, lineItem, 'Sauce on side')(store.dispatch).then(() => {
+      return setLineItemInstructions(order, lineItem, 'Sauce on side')(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have SET_LINE_ITEM_INSTRUCTIONS_PENDING action', () => {
-      action = find(actionsCalled, { type: 'SET_LINE_ITEM_INSTRUCTIONS_PENDING' });
+      action = find(actionsCalled, {
+        type: 'SET_LINE_ITEM_INSTRUCTIONS_PENDING',
+      });
       expect(action).to.exist;
     });
 
     it('should have SET_LINE_ITEM_INSTRUCTIONS_FULFILLED action', () => {
-      action = find(actionsCalled, { type: 'SET_LINE_ITEM_INSTRUCTIONS_FULFILLED' });
+      action = find(actionsCalled, {
+        type: 'SET_LINE_ITEM_INSTRUCTIONS_FULFILLED',
+      });
       expect(action).to.exist;
     });
   });
 
-
   describe('bindCustomerToOrder', () => {
     before(() => {
       store = mockStore();
-      return bindCustomerToOrder(makeUnpersistedOrder(), authResponseStub)(store.dispatch).then(() => {
+      return bindCustomerToOrder(makeUnpersistedOrder(), authResponseStub)(
+        store.dispatch,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have BIND_CUSTOMER_TO_ORDER_FULFILLED action', () => {
-      action = find(actionsCalled, { type: 'BIND_CUSTOMER_TO_ORDER_FULFILLED' });
+      action = find(actionsCalled, {
+        type: 'BIND_CUSTOMER_TO_ORDER_FULFILLED',
+      });
       expect(action).to.exist;
     });
   });
@@ -671,32 +797,49 @@ describe('actions/session/order', () => {
       store = mockStore();
       const order = makeUnpersistedOrder('pickup');
 
-      return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(store.dispatch).then(({ value: { menu }}) => {
+      return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(
+        store.dispatch,
+      ).then(({ value: { menu } }) => {
         const product = getNonConfigurableMenuItem(menu);
         order.cart.addLineItem(product, 1, product.id);
 
-        return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(store.dispatch).then(() => {
-          return setOrderAddress(order, addressStub)(store.dispatch).then(() => {
-            return authenticateUser(brandibble, validCredentialsStub)(store.dispatch).then((res) => {
-              return bindCustomerToOrder(order, res.action.payload)(store.dispatch).then(() => {
-                return setPaymentMethod(order, 'credit', cardStub)(store.dispatch).then(() => {
-                  // hack to reset any previously set promo codes
-                  return setPromoCode(makeUnpersistedOrder(), '')(store.dispatch).then(() => {
-                    store.clearActions();
+        return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(
+          store.dispatch,
+        ).then(() => {
+          return setOrderAddress(order, addressStub)(store.dispatch).then(
+            () => {
+              return authenticateUser(brandibble, validCredentialsStub)(
+                store.dispatch,
+              ).then((res) => {
+                return bindCustomerToOrder(order, res.action.payload)(
+                  store.dispatch,
+                ).then(() => {
+                  return setPaymentMethod(order, 'credit', cardStub)(
+                    store.dispatch,
+                  ).then(() => {
+                    // hack to reset any previously set promo codes
+                    return setPromoCode(makeUnpersistedOrder(), '')(
+                      store.dispatch,
+                    ).then(() => {
+                      store.clearActions();
 
-                    return submitOrder(brandibble, order)(store.dispatch).then(() => {
-                      actionsCalled = store.getActions();
+                      return submitOrder(brandibble, order)(
+                        store.dispatch,
+                      ).then(() => {
+                        actionsCalled = store.getActions();
+                      });
                     });
                   });
                 });
               });
-            });
-          });
+            },
+          );
         });
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have a payload', () => {
       action = find(actionsCalled, { type: 'SUBMIT_ORDER_FULFILLED' });

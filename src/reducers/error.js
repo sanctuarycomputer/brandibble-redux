@@ -38,6 +38,7 @@ import {
   SET_LINE_ITEM_MADE_FOR,
   SET_PAYMENT_METHOD,
   SET_TIP,
+  RESET_TIP,
   SET_LINE_ITEM_INSTRUCTIONS,
   SET_SERVICE_TYPE,
   ADD_APPLIED_DISCOUNT,
@@ -145,6 +146,7 @@ export const initialState = {
   deletePayment: null,
   setPaymentMethod: null,
   setTip: null,
+  resetTip: null,
   setDefaultPayment: null,
   // favorites
   fetchFavorites: null,
@@ -197,6 +199,9 @@ export default (state = initialState, action) => {
 
     case `${SET_TIP}_PENDING`: return { ...state, setTip: null };
     case `${SET_TIP}_REJECTED`: return { ...state, setTip: payload };
+
+    case `${RESET_TIP}_PENDING`: return { ...state, resetTip: null };
+    case `${RESET_TIP}_REJECTED`: return { ...state, resetTip: payload };
 
     case `${SEND_SUPPORT_TICKET}_PENDING`: return { ...state, sendSupportTicket: null };
     case `${SEND_SUPPORT_TICKET}_REJECTED`: return { ...state, sendSupportTicket: payload };

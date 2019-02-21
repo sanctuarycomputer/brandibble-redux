@@ -11,6 +11,7 @@ import {
   setOrderLocationId,
   setPaymentMethod,
   setTip,
+  resetTip,
   resolveOrder,
   resolveOrderLocation,
   addLineItem,
@@ -424,6 +425,23 @@ describe('actions/session/order', () => {
     it('should have SET_TIP_FULFILLED action', () => {
       action = find(actionsCalled, { type: 'SET_TIP_FULFILLED' });
       expect(action.payload.order).to.exist.and.have.property('miscOptions').to.have.property('tip');
+    });
+  });
+
+  describe('resetTip', () => {
+    before(() => {
+      store = mockStore();
+      return resetTip(makeUnpersistedOrder())(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
+
+    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+
+    it('should have RESET_TIP_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'RESET_TIP_FULFILLED' });
+      expect(action.payload.order).to.exist.and.have.property('miscOptions').to.have.property('tip');
+      expect(action.payload.order.miscOptions.tip).to.equal(null);
     });
   });
 

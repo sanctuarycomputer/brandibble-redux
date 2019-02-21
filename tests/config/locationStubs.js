@@ -4119,7 +4119,7 @@ export const oloLocationStub = {
     timezone: 'US/Pacific',
     current_daypart: {
       delivery: {
-        daypart: 'Lunch',
+        daypart: 'Lunch ',
         end_min: 900,
         is_current: true,
         is_orderable: true,
@@ -4229,7 +4229,7 @@ export const oloLocationStub = {
         weekday: 'thursday',
       },
       pickup: {
-        daypart: 'Lunch',
+        daypart: 'Lunch ',
         end_min: 900,
         is_current: true,
         is_orderable: true,
@@ -4351,7 +4351,7 @@ export const oloLocationStub = {
     first_times: {
       delivery: {
         date: '2019-02-14',
-        daypart: 'Lunch',
+        daypart: 'Lunch ',
         minutes: 780,
         time: '1:00 PM',
         utc: '2019-02-14T21:00:00Z',
@@ -4359,7 +4359,7 @@ export const oloLocationStub = {
       },
       pickup: {
         date: '2019-02-14',
-        daypart: 'Lunch',
+        daypart: 'Lunch ',
         minutes: 765,
         time: '12:45 PM',
         utc: '2019-02-14T20:45:00Z',
@@ -4371,7 +4371,7 @@ export const oloLocationStub = {
       delivery: {
         friday: [
           {
-            daypart: 'Breakfast',
+            daypart: 'Breakfast ',
             end_min: 600,
             is_current: false,
             is_orderable: true,
@@ -4421,7 +4421,7 @@ export const oloLocationStub = {
             weekday: 'friday',
           },
           {
-            daypart: 'Lunch',
+            daypart: 'Lunch ',
             end_min: 900,
             is_current: false,
             is_orderable: true,
@@ -4531,7 +4531,7 @@ export const oloLocationStub = {
             weekday: 'friday',
           },
           {
-            daypart: 'Dinner',
+            daypart: 'Dinner ',
             end_min: 1320,
             is_current: false,
             is_orderable: true,
@@ -4688,7 +4688,7 @@ export const oloLocationStub = {
         ],
         monday: [
           {
-            daypart: 'Breakfast',
+            daypart: 'Breakfast ',
             end_min: 600,
             is_current: false,
             is_orderable: true,
@@ -4738,7 +4738,7 @@ export const oloLocationStub = {
             weekday: 'monday',
           },
           {
-            daypart: 'Lunch',
+            daypart: 'Lunch ',
             end_min: 900,
             is_current: false,
             is_orderable: true,
@@ -4848,7 +4848,7 @@ export const oloLocationStub = {
             weekday: 'monday',
           },
           {
-            daypart: 'Dinner',
+            daypart: 'Dinner ',
             end_min: 1320,
             is_current: false,
             is_orderable: true,
@@ -5005,7 +5005,7 @@ export const oloLocationStub = {
         ],
         saturday: [
           {
-            daypart: 'Breakfast',
+            daypart: 'Breakfast ',
             end_min: 600,
             is_current: false,
             is_orderable: true,
@@ -5055,7 +5055,7 @@ export const oloLocationStub = {
             weekday: 'saturday',
           },
           {
-            daypart: 'Lunch',
+            daypart: 'Lunch ',
             end_min: 900,
             is_current: false,
             is_orderable: true,
@@ -5165,7 +5165,7 @@ export const oloLocationStub = {
             weekday: 'saturday',
           },
           {
-            daypart: 'Dinner',
+            daypart: 'Dinner ',
             end_min: 1320,
             is_current: false,
             is_orderable: true,
@@ -5322,7 +5322,7 @@ export const oloLocationStub = {
         ],
         sunday: [
           {
-            daypart: 'Breakfast',
+            daypart: 'Breakfast ',
             end_min: 600,
             is_current: false,
             is_orderable: true,
@@ -5372,7 +5372,7 @@ export const oloLocationStub = {
             weekday: 'sunday',
           },
           {
-            daypart: 'Lunch',
+            daypart: 'Lunch ',
             end_min: 900,
             is_current: false,
             is_orderable: true,
@@ -5482,7 +5482,7 @@ export const oloLocationStub = {
             weekday: 'sunday',
           },
           {
-            daypart: 'Dinner',
+            daypart: 'Dinner ',
             end_min: 1320,
             is_current: false,
             is_orderable: true,
@@ -5639,7 +5639,7 @@ export const oloLocationStub = {
         ],
         thursday: [
           {
-            daypart: 'Breakfast',
+            daypart: 'Breakfast ',
             end_min: 600,
             is_current: false,
             is_orderable: true,
@@ -5689,7 +5689,7 @@ export const oloLocationStub = {
             weekday: 'thursday',
           },
           {
-            daypart: 'Lunch',
+            daypart: 'Lunch ',
             end_min: 900,
             is_current: true,
             is_orderable: true,
@@ -5799,7 +5799,7 @@ export const oloLocationStub = {
             weekday: 'thursday',
           },
           {
-            daypart: 'Dinner',
+            daypart: 'Dinner ',
             end_min: 1320,
             is_current: false,
             is_orderable: true,
@@ -5956,7 +5956,7 @@ export const oloLocationStub = {
         ],
         tuesday: [
           {
-            daypart: 'Breakfast',
+            daypart: 'Breakfast ',
             end_min: 600,
             is_current: false,
             is_orderable: true,
@@ -6006,7 +6006,7 @@ export const oloLocationStub = {
             weekday: 'tuesday',
           },
           {
-            daypart: 'Lunch',
+            daypart: 'Lunch ',
             end_min: 900,
             is_current: false,
             is_orderable: true,
@@ -6116,7 +6116,7 @@ export const oloLocationStub = {
             weekday: 'tuesday',
           },
           {
-            daypart: 'Dinner',
+            daypart: 'Dinner ',
             end_min: 1320,
             is_current: false,
             is_orderable: true,
@@ -6273,7 +6273,7 @@ export const oloLocationStub = {
         ],
         wednesday: [
           {
-            daypart: 'Breakfast',
+            daypart: 'Breakfast ',
             end_min: 600,
             is_current: false,
             is_orderable: true,
@@ -6323,7 +6323,7 @@ export const oloLocationStub = {
             weekday: 'wednesday',
           },
           {
-            daypart: 'Lunch',
+            daypart: 'Lunch ',
             end_min: 900,
             is_current: false,
             is_orderable: true,
@@ -6433,7 +6433,7 @@ export const oloLocationStub = {
             weekday: 'wednesday',
           },
           {
-            daypart: 'Dinner',
+            daypart: 'Dinner ',
             end_min: 1320,
             is_current: false,
             is_orderable: true,
@@ -6592,7 +6592,7 @@ export const oloLocationStub = {
       pickup: {
         friday: [
           {
-            daypart: 'Breakfast',
+            daypart: 'Breakfast ',
             end_min: 600,
             is_current: false,
             is_orderable: true,
@@ -6642,7 +6642,7 @@ export const oloLocationStub = {
             weekday: 'friday',
           },
           {
-            daypart: 'Lunch',
+            daypart: 'Lunch ',
             end_min: 900,
             is_current: false,
             is_orderable: true,
@@ -6757,7 +6757,7 @@ export const oloLocationStub = {
             weekday: 'friday',
           },
           {
-            daypart: 'Dinner',
+            daypart: 'Dinner ',
             end_min: 1439,
             is_current: false,
             is_orderable: false,
@@ -6769,7 +6769,7 @@ export const oloLocationStub = {
         ],
         monday: [
           {
-            daypart: 'Breakfast',
+            daypart: 'Breakfast ',
             end_min: 600,
             is_current: false,
             is_orderable: true,
@@ -6819,7 +6819,7 @@ export const oloLocationStub = {
             weekday: 'monday',
           },
           {
-            daypart: 'Lunch',
+            daypart: 'Lunch ',
             end_min: 900,
             is_current: false,
             is_orderable: true,
@@ -6934,7 +6934,7 @@ export const oloLocationStub = {
             weekday: 'monday',
           },
           {
-            daypart: 'Dinner',
+            daypart: 'Dinner ',
             end_min: 1439,
             is_current: false,
             is_orderable: false,
@@ -6946,7 +6946,7 @@ export const oloLocationStub = {
         ],
         saturday: [
           {
-            daypart: 'Breakfast',
+            daypart: 'Breakfast ',
             end_min: 600,
             is_current: false,
             is_orderable: true,
@@ -6996,7 +6996,7 @@ export const oloLocationStub = {
             weekday: 'saturday',
           },
           {
-            daypart: 'Lunch',
+            daypart: 'Lunch ',
             end_min: 900,
             is_current: false,
             is_orderable: true,
@@ -7111,7 +7111,7 @@ export const oloLocationStub = {
             weekday: 'saturday',
           },
           {
-            daypart: 'Dinner',
+            daypart: 'Dinner ',
             end_min: 1439,
             is_current: false,
             is_orderable: false,
@@ -7123,7 +7123,7 @@ export const oloLocationStub = {
         ],
         sunday: [
           {
-            daypart: 'Breakfast',
+            daypart: 'Breakfast ',
             end_min: 600,
             is_current: false,
             is_orderable: true,
@@ -7173,7 +7173,7 @@ export const oloLocationStub = {
             weekday: 'sunday',
           },
           {
-            daypart: 'Lunch',
+            daypart: 'Lunch ',
             end_min: 900,
             is_current: false,
             is_orderable: true,
@@ -7288,7 +7288,7 @@ export const oloLocationStub = {
             weekday: 'sunday',
           },
           {
-            daypart: 'Dinner',
+            daypart: 'Dinner ',
             end_min: 1439,
             is_current: false,
             is_orderable: false,
@@ -7300,7 +7300,7 @@ export const oloLocationStub = {
         ],
         thursday: [
           {
-            daypart: 'Breakfast',
+            daypart: 'Breakfast ',
             end_min: 600,
             is_current: false,
             is_orderable: true,
@@ -7350,7 +7350,7 @@ export const oloLocationStub = {
             weekday: 'thursday',
           },
           {
-            daypart: 'Lunch',
+            daypart: 'Lunch ',
             end_min: 900,
             is_current: true,
             is_orderable: true,
@@ -7465,7 +7465,7 @@ export const oloLocationStub = {
             weekday: 'thursday',
           },
           {
-            daypart: 'Dinner',
+            daypart: 'Dinner ',
             end_min: 1439,
             is_current: false,
             is_orderable: false,
@@ -7477,7 +7477,7 @@ export const oloLocationStub = {
         ],
         tuesday: [
           {
-            daypart: 'Breakfast',
+            daypart: 'Breakfast ',
             end_min: 600,
             is_current: false,
             is_orderable: true,
@@ -7527,7 +7527,7 @@ export const oloLocationStub = {
             weekday: 'tuesday',
           },
           {
-            daypart: 'Lunch',
+            daypart: 'Lunch ',
             end_min: 900,
             is_current: false,
             is_orderable: true,
@@ -7642,7 +7642,7 @@ export const oloLocationStub = {
             weekday: 'tuesday',
           },
           {
-            daypart: 'Dinner',
+            daypart: 'Dinner ',
             end_min: 1439,
             is_current: false,
             is_orderable: false,
@@ -7654,7 +7654,7 @@ export const oloLocationStub = {
         ],
         wednesday: [
           {
-            daypart: 'Breakfast',
+            daypart: 'Breakfast ',
             end_min: 600,
             is_current: false,
             is_orderable: true,
@@ -7704,7 +7704,7 @@ export const oloLocationStub = {
             weekday: 'wednesday',
           },
           {
-            daypart: 'Lunch',
+            daypart: 'Lunch ',
             end_min: 900,
             is_current: false,
             is_orderable: true,
@@ -7819,7 +7819,7 @@ export const oloLocationStub = {
             weekday: 'wednesday',
           },
           {
-            daypart: 'Dinner',
+            daypart: 'Dinner ',
             end_min: 1439,
             is_current: false,
             is_orderable: false,

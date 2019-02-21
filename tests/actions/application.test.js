@@ -65,32 +65,32 @@ describe('actions/application', () => {
     });
   });
 
-  // describe('sendSupportTicket', () => {
-  //   before(() => {
-  //     store = mockStore();
-  //     return sendSupportTicket(brandibble, {
-  //       subject: 'help!',
-  //       body: 'i need avocado!',
-  //       email: 'dev@sanctuary.computer',
-  //     })(store.dispatch).then(() => {
-  //       actionsCalled = store.getActions();
-  //     });
-  //   });
+  describe('sendSupportTicket', () => {
+    before(() => {
+      store = mockStore();
+      return sendSupportTicket(brandibble, {
+        subject: 'help!',
+        body: 'i need avocado!',
+        email: 'dev@sanctuary.computer',
+      })(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
 
-  //   it('should call at least 2 actions', () => {
-  //     expect(actionsCalled).to.have.length.of.at.least(2);
-  //   });
+    it('should call at least 2 actions', () => {
+      expect(actionsCalled).to.have.length.of.at.least(2);
+    });
 
-  //   it('should have SEND_SUPPORT_TICKET_PENDING action', () => {
-  //     action = find(actionsCalled, { type: 'SEND_SUPPORT_TICKET_PENDING' });
-  //     expect(action).to.exist;
-  //   });
+    it('should have SEND_SUPPORT_TICKET_PENDING action', () => {
+      action = find(actionsCalled, { type: 'SEND_SUPPORT_TICKET_PENDING' });
+      expect(action).to.exist;
+    });
 
-  //   it('should have SEND_SUPPORT_TICKET_FULFILLED action', () => {
-  //     action = find(actionsCalled, { type: 'SEND_SUPPORT_TICKET_FULFILLED' });
-  //     expect(action).to.exist;
-  //   });
-  // });
+    it('should have SEND_SUPPORT_TICKET_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'SEND_SUPPORT_TICKET_FULFILLED' });
+      expect(action).to.exist;
+    });
+  });
 
   describe('resetApplication', () => {
     before(() => {

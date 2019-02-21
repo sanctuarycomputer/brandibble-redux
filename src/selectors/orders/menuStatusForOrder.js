@@ -41,6 +41,8 @@ export const menuStatusForOrder = createSelector(
         `current_daypart.${serviceTypeForCurrentOrder}`,
       );
 
+      /** wantsFutureOrder = true */
+
       /**
        * Customer requests future order
        */
@@ -51,10 +53,11 @@ export const menuStatusForOrder = createSelector(
             validOrderTimeForOrder,
           },
         };
-        /**
-         * Customer DID NOT request future order
-         */
       }
+
+      /** wantsFutureOrder = false */
+
+      /** requestedAt === 'asap' */
 
       /**
        * Order for 'asap' (only applies to olo orders for now)
@@ -63,15 +66,16 @@ export const menuStatusForOrder = createSelector(
         return {
           statusCode: ASAP_ORDER_REQUEST,
           meta: {
-            validOrderTimeForOrder,
+            currentDaypart,
+            currentDaypartIsOrderable: get(currentDaypart, 'is_orderable'),
+            currentDaypartIsInTheFuture:
+              get(currentDaypart, 'is_orderable') &&
+              !get(currentDaypart, 'is_current'),
           },
-
-          // TODO: CHECK IF RESTAURANT IS CURRENTLY CLOSED (E.G. FOR THE NIGHT)
         };
-        /**
-         * NOT for 'asap'
-         */
       }
+
+      /** requestedAt !== 'asap' */
 
       /**
        * No validOrderTimeForOrder was found
@@ -79,9 +83,6 @@ export const menuStatusForOrder = createSelector(
       if (!validOrderTimeForOrder) {
         return {
           statusCode: INVALID_REQUESTED_AT,
-          meta: {
-            firstAvailableOrderTime: validOrderTimeForNow,
-          },
         };
       }
       /**
@@ -93,9 +94,6 @@ export const menuStatusForOrder = createSelector(
       ) {
         return {
           statusCode: REQUESTED_AT_HAS_PASSED,
-          meta: {
-            firstAvailableOrderTime: validOrderTimeForNow,
-          },
         };
       }
 
@@ -107,10 +105,12 @@ export const menuStatusForOrder = createSelector(
           statusCode: ORDERING_FOR_CURRENT_DAYPART,
           meta: {
             currentDaypart,
+            currentDaypartIsOrderable: get(currentDaypart, 'is_orderable'),
+            currentDaypartIsInTheFuture:
+              get(currentDaypart, 'is_orderable') &&
+              !get(currentDaypart, 'is_current'),
           },
         };
-
-        // TODO: CHECK IF RESTAURANT IS CURRENTLY CLOSED (E.G. FOR THE NIGHT)
       }
 
       /**
@@ -124,7 +124,6 @@ export const menuStatusForOrder = createSelector(
           statusCode: ORDERING_FOR_FUTURE_DAYPART,
           meta: {
             validOrderTimeForOrder,
-            currentDaypart,
           },
         };
       }

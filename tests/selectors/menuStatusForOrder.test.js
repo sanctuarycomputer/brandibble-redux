@@ -1,6 +1,7 @@
 /* global describe before it */
 import { expect } from 'chai';
 import { Settings, DateTime } from 'luxon';
+import get from 'utils/get';
 
 import {
   stateForCateringOrderStub,
@@ -51,7 +52,7 @@ describe('selectors/menuStatusForOrder', () => {
     const testMenuStatusForOrder = menuStatusForOrder(
       stateForOloOrderStubWithWantsFutureOrder,
     )(
-      validOrderTimeForOrder(stateForOloOrderStub)(
+      validOrderTimeForOrder(stateForOloOrderStubWithWantsFutureOrder)(
         requestedAtAsLuxonDateTime,
         todayAsLuxonDateTime,
       ),
@@ -74,23 +75,47 @@ describe('selectors/menuStatusForOrder', () => {
   it("returns correct response when wantsFutureOrder is false, and requested at is 'asap'", () => {
     const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
+    const testLocationId = get(
+      stateForOloOrderStubWithAsapRequestedAt,
+      'session.order.orderData.location_id',
+    );
+    const testServiceType = get(
+      stateForOloOrderStubWithAsapRequestedAt,
+      'session.order.orderData.service_type',
+    );
+    const testLocation = get(
+      stateForOloOrderStubWithAsapRequestedAt,
+      `data.locations.locationsById.${testLocationId}`,
+    );
 
     const testMenuStatusForOrder = menuStatusForOrder(
       stateForOloOrderStubWithAsapRequestedAt,
     )(
-      validOrderTimeForOrder(stateForOloOrderStub)(
+      validOrderTimeForOrder(stateForOloOrderStubWithAsapRequestedAt)(
         requestedAtAsLuxonDateTime,
         todayAsLuxonDateTime,
       ),
     );
 
     expect(testMenuStatusForOrder.statusCode).to.equal(ASAP_ORDER_REQUEST);
-
-    // TODO: ensure meta matches expected response
+    expect(testMenuStatusForOrder.meta).to.deep.equal({
+      currentDaypart: get(testLocation, `current_daypart.${testServiceType}`),
+      currentDaypartIsOrderable: get(
+        testLocation,
+        `current_daypart.${testServiceType}.is_orderable`,
+      ),
+      currentDaypartIsInTheFuture:
+        get(testLocation, `current_daypart.${testServiceType}.is_orderable`) &&
+        !get(testLocation, `current_daypart.${testServiceType}.is_current`),
+    });
   });
 
   /** TODO:
    * Add case that is asap && requested_at is between orderable times (location closed)
+   *
+   * This feels handled, by adding the additional currentDaypartIsOrdearble and currentDaypartisInTheFuture
+   * Which the client can look to in order to determine whether to show a daypart's error message or something else
+   * if it's just closed for the night or something.
    */
 
   it('returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder cannot be found', () => {
@@ -105,8 +130,7 @@ describe('selectors/menuStatusForOrder', () => {
     );
 
     expect(testMenuStatusForOrder.statusCode).to.equal(INVALID_REQUESTED_AT);
-
-    // TODO: ensure meta matches expected response
+    /** No Meta expected */
   });
 
   it('returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder is before validOrderTimeForNow', () => {
@@ -121,17 +145,24 @@ describe('selectors/menuStatusForOrder', () => {
     );
 
     expect(testMenuStatusForOrder.statusCode).to.equal(REQUESTED_AT_HAS_PASSED);
-
-    // TODO: ensure meta matches expected response
+    /** No Meta expected */
   });
 
   it('returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder matches the validOrderTimeForNow', () => {
     const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:35:00Z');
     const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
-
-    /**
-     * TODO: This seems to be failing because two DateTime object are neverrrrr the same.,.,..
-     */
+    const testLocationId = get(
+      stateForOloOrderStub,
+      'session.order.orderData.location_id',
+    );
+    const testServiceType = get(
+      stateForOloOrderStub,
+      'session.order.orderData.service_type',
+    );
+    const testLocation = get(
+      stateForOloOrderStub,
+      `data.locations.locationsById.${testLocationId}`,
+    );
 
     const testMenuStatusForOrder = menuStatusForOrder(stateForOloOrderStub)(
       validOrderTimeForOrder(stateForOloOrderStub)(
@@ -143,30 +174,24 @@ describe('selectors/menuStatusForOrder', () => {
     expect(testMenuStatusForOrder.statusCode).to.equal(
       ORDERING_FOR_CURRENT_DAYPART,
     );
-
-    // TODO: ensure meta matches expected response
-  });
-
-  it('returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder matches the validOrderTimeForNow', () => {
-    const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:35:00Z');
-    const requestedAtAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:45:00Z');
-
-    const testMenuStatusForOrder = menuStatusForOrder(stateForOloOrderStub)(
-      validOrderTimeForOrder(stateForOloOrderStub)(
-        requestedAtAsLuxonDateTime,
-        todayAsLuxonDateTime,
+    expect(testMenuStatusForOrder.meta).to.deep.equal({
+      currentDaypart: get(testLocation, `current_daypart.${testServiceType}`),
+      currentDaypartIsOrderable: get(
+        testLocation,
+        `current_daypart.${testServiceType}.is_orderable`,
       ),
-    );
-
-    expect(testMenuStatusForOrder.statusCode).to.equal(
-      ORDERING_FOR_CURRENT_DAYPART,
-    );
-
-    // TODO: ensure meta matches expected response
+      currentDaypartIsInTheFuture:
+        get(testLocation, `current_daypart.${testServiceType}.is_orderable`) &&
+        !get(testLocation, `current_daypart.${testServiceType}.is_current`),
+    });
   });
 
   /** TODO:
    * Add case that is asap && requested_at is between orderable times (location closed)
+   *
+   * This feels handled, by adding the additional currentDaypartIsOrdearble and currentDaypartisInTheFuture
+   * Which the client can look to in order to determine whether to show a daypart's error message or something else
+   * if it's just closed for the night or something.
    */
 
   it('returns correct response when wantsFutureOrder is false, and validOrderTimeForOrder is after the validOrderTimeForNow', () => {
@@ -184,7 +209,16 @@ describe('selectors/menuStatusForOrder', () => {
       ORDERING_FOR_FUTURE_DAYPART,
     );
 
-    // TODO: ensure meta matches expected response
+    expect(testMenuStatusForOrder.meta).to.deep.equal({
+      validOrderTimeForOrder: {
+        date: '2019-02-16',
+        daypart: 'Lunch ', // Note the trailing space
+        minutes: 765,
+        time: '12:45 PM',
+        utc: '2019-02-16T20:45:00Z',
+        weekday: 'saturday',
+      },
+    });
   });
 
   /** 1. Test wants future order */

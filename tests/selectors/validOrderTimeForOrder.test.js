@@ -76,7 +76,7 @@ describe('selectors/validOrderTimeForOrder', () => {
 
     expect(testValidOrderTimeForOrder).to.deep.equal({
       date: '2019-02-14',
-      daypart: 'Lunch',
+      daypart: 'Lunch ', // Note the trailing space
       minutes: 765,
       time: '12:45 PM',
       utc: '2019-02-14T20:45:00Z',
@@ -94,7 +94,7 @@ describe('selectors/validOrderTimeForOrder', () => {
 
     expect(testValidOrderTimeForOrder).to.deep.equal({
       date: '2019-02-14',
-      daypart: 'Lunch',
+      daypart: 'Lunch ', // Note the trailing space
       minutes: 765,
       time: '12:45 PM',
       utc: '2019-02-14T20:45:00Z',

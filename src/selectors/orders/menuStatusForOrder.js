@@ -48,86 +48,85 @@ export const menuStatusForOrder = createSelector(
         return {
           statusCode: FUTURE_ORDER_REQUEST,
           meta: {
-            orderRequestedAt: requestedAtForCurrentOrder,
             validOrderTimeForOrder,
           },
         };
         /**
          * Customer DID NOT request future order
          */
-      } else {
+      }
+
+      /**
+       * Order for 'asap' (only applies to olo orders for now)
+       */
+      if (requestedAtForCurrentOrder === Asap) {
+        return {
+          statusCode: ASAP_ORDER_REQUEST,
+          meta: {
+            validOrderTimeForOrder,
+          },
+
+          // TODO: CHECK IF RESTAURANT IS CURRENTLY CLOSED (E.G. FOR THE NIGHT)
+        };
         /**
-         * Order for 'asap' (only applies to olo orders for now)
+         * NOT for 'asap'
          */
-        if (requestedAtForCurrentOrder === Asap) {
-          return {
-            statusCode: ASAP_ORDER_REQUEST,
-            meta: {
-              validOrderTimeForOrder,
-            },
+      }
 
-            // TODO: CHECK IF RESTAURANT IS CURRENTLY CLOSED (E.G. FOR THE NIGHT)
-          };
-          /**
-           * NOT for 'asap'
-           */
-        } else {
-          /**
-           * No validOrderTimeForOrder was found
-           */
-          if (!validOrderTimeForOrder) {
-            return {
-              statusCode: INVALID_REQUESTED_AT,
-              meta: {
-                firstAvailableOrderTime: validOrderTimeForNow,
-              },
-            };
-          }
-          /**
-           * validOrderTimeForOrder has passed
-           */
-          if (
-            DateTime.fromISO(validOrderTimeForOrder.utc) <
-            DateTime.fromISO(validOrderTimeForNow.utc)
-          ) {
-            return {
-              statusCode: REQUESTED_AT_HAS_PASSED,
-              meta: {
-                firstAvailableOrderTime: validOrderTimeForNow,
-              },
-            };
-          }
+      /**
+       * No validOrderTimeForOrder was found
+       */
+      if (!validOrderTimeForOrder) {
+        return {
+          statusCode: INVALID_REQUESTED_AT,
+          meta: {
+            firstAvailableOrderTime: validOrderTimeForNow,
+          },
+        };
+      }
+      /**
+       * validOrderTimeForOrder has passed
+       */
+      if (
+        DateTime.fromISO(validOrderTimeForOrder.utc) <
+        DateTime.fromISO(validOrderTimeForNow.utc)
+      ) {
+        return {
+          statusCode: REQUESTED_AT_HAS_PASSED,
+          meta: {
+            firstAvailableOrderTime: validOrderTimeForNow,
+          },
+        };
+      }
 
-          /**
-           * validOrderTimeForOrder is current daypart
-           */
-          if (validOrderTimeForOrder.utc === validOrderTimeForNow.utc) {
-            return {
-              statusCode: ORDERING_FOR_CURRENT_DAYPART,
-              meta: {
-                currentDaypart,
-              },
-            };
+      /**
+       * validOrderTimeForOrder is current daypart
+       */
+      if (validOrderTimeForOrder.utc === validOrderTimeForNow.utc) {
+        return {
+          statusCode: ORDERING_FOR_CURRENT_DAYPART,
+          meta: {
+            currentDaypart,
+          },
+        };
 
-            // TODO: CHECK IF RESTAURANT IS CURRENTLY CLOSED (E.G. FOR THE NIGHT)
-          }
+        // TODO: CHECK IF RESTAURANT IS CURRENTLY CLOSED (E.G. FOR THE NIGHT)
+      }
 
-          /**
-           * validOrderTimeForOrder is in the future
-           */
-          if (
-            DateTime.fromISO(validOrderTimeForOrder.utc) >
-            DateTime.fromISO(validOrderTimeForNow.utc)
-          ) {
-            return {
-              statusCode: ORDERING_FOR_FUTURE_DAYPART,
-              meta: {
-                validOrderTimeForOrder,
-                currentDaypart,
-              },
-            };
-          }
-        }
+      /**
+       * validOrderTimeForOrder is in the future
+       */
+      if (
+        DateTime.fromISO(validOrderTimeForOrder.utc) >
+        DateTime.fromISO(validOrderTimeForNow.utc)
+      ) {
+        return {
+          statusCode: ORDERING_FOR_FUTURE_DAYPART,
+          meta: {
+            validOrderTimeForOrder,
+            currentDaypart,
+          },
+        };
       }
     }),
 );

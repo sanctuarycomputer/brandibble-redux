@@ -58,8 +58,16 @@ describe('selectors/menuStatusForOrder', () => {
     );
 
     expect(testMenuStatusForOrder.statusCode).to.equal(FUTURE_ORDER_REQUEST);
-
-    // TODO: ensure meta matches expected response
+    expect(testMenuStatusForOrder.meta).to.deep.equal({
+      validOrderTimeForOrder: {
+        date: '2019-02-16',
+        daypart: 'Lunch ', // Note the trailing space
+        minutes: 765,
+        time: '12:45 PM',
+        utc: '2019-02-16T20:45:00Z',
+        weekday: 'saturday',
+      },
+    });
   });
 
   /** does NOT want future order */

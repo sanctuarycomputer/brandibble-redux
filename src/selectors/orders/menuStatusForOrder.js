@@ -41,6 +41,8 @@ export const _menuStatusForOrder = createSelector(
         `current_daypart.${serviceTypeForCurrentOrder}`,
       );
 
+      /** wantsFutureOrder = true */
+
       /**
        * No validOrderTimeForOrder was found
        */
@@ -49,6 +51,10 @@ export const _menuStatusForOrder = createSelector(
           statusCode: INVALID_REQUESTED_AT,
         };
       }
+
+      /** wantsFutureOrder = false */
+
+      /** requestedAt === 'asap' */
 
       /**
        * validOrderTimeForOrder has passed

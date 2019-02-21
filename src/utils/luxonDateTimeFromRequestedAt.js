@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { ASAP } from './constants';
+import { Asap } from './constants';
 
 /**
  * An order can have a requested_at
@@ -8,4 +8,4 @@ import { ASAP } from './constants';
  */
 
 export default requestedAt =>
-  requestedAt === ASAP ? DateTime.local() : DateTime.fromISO(requestedAt);
+  requestedAt === Asap ? DateTime.local() : DateTime.fromISO(requestedAt);

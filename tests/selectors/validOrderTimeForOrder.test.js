@@ -13,7 +13,7 @@ import { validOrderTimeForOrder } from '../../src/selectors';
 
 const { PACIFIC, EASTERN } = Timezones;
 
-describe('selectors/validOrderTimeForOrder', () => {
+describe('selectors/orders/validOrderTimeForOrder', () => {
   before(() => {
     /**
      * Globally set Timezone to that

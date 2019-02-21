@@ -20,7 +20,7 @@
   "author": "Sanctuary Computer <hello@sanctuary.computer> (http://sanctuary.computer/)",
   "license": "MIT",
   "dependencies": {
-    "brandibble": "git+https://git@github.com/sanctuarycomputer/brandibble.js#0d3327685611b55e2a396ff6356f85eff46779dc",
+    "brandibble": "git+https://git@github.com/sanctuarycomputer/brandibble.js#6c4284f585fa38c9e7036de6a66036384d74ea90",
     "localforage": "^1.5.0",
     "lodash.filter": "^4.6.0",
     "lodash.find": "^4.6.0",

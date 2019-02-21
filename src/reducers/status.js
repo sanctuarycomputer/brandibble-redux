@@ -45,6 +45,7 @@ import {
   SET_LINE_ITEM_INSTRUCTIONS,
   SET_PAYMENT_METHOD,
   SET_TIP,
+  RESET_TIP,
   BIND_CUSTOMER_TO_ORDER,
   ADD_APPLIED_DISCOUNT,
   REMOVE_APPLIED_DISCOUNT,
@@ -141,6 +142,7 @@ const initialState = {
   setDefaultPayment: IDLE,
   setPaymentMethod: IDLE,
   setTip: IDLE,
+  resetTip: IDLE,
   bindCustomerToOrder: IDLE,
   deletePayment: IDLE,
   fetchFavorites: IDLE,
@@ -228,6 +230,10 @@ export default (state = initialState, action) => {
     case `${SET_TIP}_PENDING`: return { ...state, setTip: PENDING };
     case `${SET_TIP}_FULFILLED`: return { ...state, setTip: FULFILLED };
     case `${SET_TIP}_REJECTED`: return { ...state, setTip: REJECTED };
+
+    case `${RESET_TIP}_PENDING`: return { ...state, resetTip: PENDING };
+    case `${RESET_TIP}_FULFILLED`: return { ...state, resetTip: FULFILLED };
+    case `${RESET_TIP}_REJECTED`: return { ...state, resetTip: REJECTED };
 
     case `${BIND_CUSTOMER_TO_ORDER}_PENDING`: return { ...state, bindCustomerToOrder: PENDING };
     case `${BIND_CUSTOMER_TO_ORDER}_FULFILLED`: return { ...state, bindCustomerToOrder: FULFILLED };

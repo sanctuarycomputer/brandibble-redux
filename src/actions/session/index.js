@@ -2,7 +2,7 @@ export {
   fetchAddresses,
   createAddress,
   deleteAddress,
-  setDefaultAddress, 
+  setDefaultAddress,
 } from './addresses';
 export { fetchMenu } from './menus';
 export {
@@ -21,6 +21,7 @@ export {
   setOrderLocationId,
   setPaymentMethod,
   setTip,
+  resetTip,
   submitOrder,
   setPromoCode,
   setServiceType,

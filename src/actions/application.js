@@ -1,4 +1,4 @@
-import later from 'later';
+import isEmpty from 'lodash.isempty';
 import fireAction from '../utils/fireAction';
 import handleErrors from '../utils/handleErrors';
 import get from '../utils/get';
@@ -26,36 +26,35 @@ export const setupBrandibble = brandibble => (dispatch) => {
 };
 
 // updateRequestedAtListener
+
 export const updateInvalidOrderRequestedAt = () => (dispatch, getState) => {
-  console.log('i runneth');
-  // const state = getState();
-  // const orderRef = get(state, 'session.order.ref');
-  // const currentOrderLocationId = get(
-  //   state,
-  //   'session.order.orderData.location_id',
-  // );
-  // const orderTypesForCurrentOrderLocation = get(
-  //   state,
-  //   `data.locations.locationsById.${currentOrderLocationId}.order_types`,
-  // );
-  // const isCateringLocation = supportsCatering(
-  //   orderTypesForCurrentOrderLocation,
-  // );
-  // const menuStatus = menuStatusForOrder(state);
+  const state = getState();
 
-  // const { INVALID_REQUESTED_AT, REQUESTED_AT_HAS_PASSED } = MenuStatusCodes;
+  if (isEmpty(state)) return;
 
-  // switch (get(menuStatus, 'statusCode')) {
-  //   case INVALID_REQUESTED_AT:
-  //   case REQUESTED_AT_HAS_PASSED: {
-  //     const now = isCateringLocation ? new Date() : Asap;
-  //     console.log('hello');
-  //   }
+  const orderRef = get(state, 'session.order.ref');
+  const currentOrderLocationId = get(
+    state,
+    'session.order.orderData.location_id',
+  );
+  const orderTypesForCurrentOrderLocation = get(
+    state,
+    `data.locations.locationsById.${currentOrderLocationId}.order_types`,
+  );
+  const isCateringLocation = supportsCatering(
+    orderTypesForCurrentOrderLocation,
+  );
+  const menuStatus = menuStatusForOrder(state);
 
-  //   default:
-  //     return Promise.resolve();
-  // }
-  Promise.resolve();
+  const { INVALID_REQUESTED_AT, REQUESTED_AT_HAS_PASSED } = MenuStatusCodes;
+
+  if (
+    get(menuStatus, 'statusCode') === INVALID_REQUESTED_AT &&
+    get(menuStatus, 'statusCode') === REQUESTED_AT_HAS_PASSED
+  ) {
+    const now = isCateringLocation ? new Date() : Asap;
+    return dispatch(setRequestedAt(orderRef, now));
+  }
 };
 
 // setupBrandibbleRedux
@@ -84,9 +83,7 @@ export const setupBrandibbleRedux = (
     })
     .then(() => {
       dispatch(updateInvalidOrderRequestedAt());
-
-      const schedule = later.parse.text('every 5 min');
-      later.setInterval(dispatch(updateInvalidOrderRequestedAt()), schedule);
+      setInterval(() => dispatch(updateInvalidOrderRequestedAt()), 60000);
     })
     .catch(handleErrors);
 

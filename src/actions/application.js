@@ -1,12 +1,18 @@
+import later from 'later';
 import fireAction from '../utils/fireAction';
 import handleErrors from '../utils/handleErrors';
+import get from '../utils/get';
 import {
   discoverReduxNamespace,
   getStateWithNamespace,
 } from '../utils/getStateWithNamespace';
-import { resolveOrder } from './session/order';
+import { supportsCatering } from '../utils/orderTypes';
+import { Asap, MenuStatusCodes } from '../utils/constants';
+import { resolveOrder, setRequestedAt } from './session/order';
 import { resolveUser } from './session/user';
 import { fetchBrand } from './data/brands';
+
+import { menuStatusForOrder } from '../selectors';
 
 export const SETUP_BRANDIBBLE = 'SETUP_BRANDIBBLE';
 export const SETUP_BRANDIBBLE_REDUX = 'SETUP_BRANDIBBLE_REDUX';
@@ -17,6 +23,39 @@ export const RESET_APPLICATION = 'RESET_APPLICATION';
 export const setupBrandibble = brandibble => (dispatch) => {
   const payload = brandibble.setup().catch(handleErrors);
   return dispatch(fireAction(SETUP_BRANDIBBLE, payload));
+};
+
+// updateRequestedAtListener
+export const updateInvalidOrderRequestedAt = () => (dispatch, getState) => {
+  console.log('i runneth');
+  // const state = getState();
+  // const orderRef = get(state, 'session.order.ref');
+  // const currentOrderLocationId = get(
+  //   state,
+  //   'session.order.orderData.location_id',
+  // );
+  // const orderTypesForCurrentOrderLocation = get(
+  //   state,
+  //   `data.locations.locationsById.${currentOrderLocationId}.order_types`,
+  // );
+  // const isCateringLocation = supportsCatering(
+  //   orderTypesForCurrentOrderLocation,
+  // );
+  // const menuStatus = menuStatusForOrder(state);
+
+  // const { INVALID_REQUESTED_AT, REQUESTED_AT_HAS_PASSED } = MenuStatusCodes;
+
+  // switch (get(menuStatus, 'statusCode')) {
+  //   case INVALID_REQUESTED_AT:
+  //   case REQUESTED_AT_HAS_PASSED: {
+  //     const now = isCateringLocation ? new Date() : Asap;
+  //     console.log('hello');
+  //   }
+
+  //   default:
+  //     return Promise.resolve();
+  // }
+  Promise.resolve();
 };
 
 // setupBrandibbleRedux
@@ -42,6 +81,12 @@ export const setupBrandibbleRedux = (
         dispatch(resolveOrder(value, locationId, serviceType)),
         dispatch(fetchBrand(value)),
       ]);
+    })
+    .then(() => {
+      dispatch(updateInvalidOrderRequestedAt());
+
+      const schedule = later.parse.text('every 5 min');
+      later.setInterval(dispatch(updateInvalidOrderRequestedAt()), schedule);
     })
     .catch(handleErrors);
 

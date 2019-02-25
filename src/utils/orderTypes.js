@@ -1,9 +1,9 @@
 import { Constants } from 'brandibble';
 
-const { CATERING, ONLINE_ORDERING } = Constants;
+const { OrderTypes } = Constants;
 
 export const supportsCatering = (locationOrderTypesArray = []) =>
-  locationOrderTypesArray.includes(CATERING);
+  locationOrderTypesArray.includes(OrderTypes.CATERING);
 
 export const supportOnlineOrdering = (locationOrderTypesArray = []) =>
-  locationOrderTypesArray.includes(ONLINE_ORDERING);
+  locationOrderTypesArray.includes(OrderTypes.ONLINE_ORDERING);

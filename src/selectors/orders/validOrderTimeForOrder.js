@@ -105,7 +105,7 @@ export const validOrderTimeForOrder = createSelector(
         );
 
         /**
-         * If we found a match, but the daypart is not orderable/does not
+         * If we found a match, but the daypart is not orderable/does not;
          * have an array of timeslots to match against we return null
          */
         if (

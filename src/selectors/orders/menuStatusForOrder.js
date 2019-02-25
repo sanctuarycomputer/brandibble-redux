@@ -162,12 +162,14 @@ export const _menuStatusForOrder = createSelector(
     }),
 );
 
-export const menuStatusForOrder = createSelector(state =>
-  _menuStatusForOrder(state)(
-    validOrderTimeForOrder(state)(
-      luxonDateTimeFromRequestedAt(
-        get(state, 'session.order.orderData.requested_at'),
+export const menuStatusForOrder = createSelector(
+  state =>
+    _menuStatusForOrder(state)(
+      validOrderTimeForOrder(state)(
+        luxonDateTimeFromRequestedAt(
+          get(state, 'session.order.orderData.requested_at'),
+        ),
       ),
     ),
-  ),
+  status => status,
 );

@@ -5,6 +5,7 @@
 export const cateringLocationStub = {
   886: {
     timezone: 'US/Pacific',
+    order_types: ['catering'],
     current_daypart: {
       delivery: {
         daypart: 'Lunch ',
@@ -4117,6 +4118,7 @@ export const cateringLocationStub = {
 export const oloLocationStub = {
   885: {
     timezone: 'US/Pacific',
+    order_types: ['olo'],
     current_daypart: {
       delivery: {
         daypart: 'Lunch ',

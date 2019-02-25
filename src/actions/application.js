@@ -6,13 +6,15 @@ import {
   discoverReduxNamespace,
   getStateWithNamespace,
 } from '../utils/getStateWithNamespace';
+import jsDateToValidISO8601 from '../utils/jsDateToValidISO8601';
 import { supportsCatering } from '../utils/orderTypes';
 import { Asap, MenuStatusCodes } from '../utils/constants';
 import { resolveOrder, setRequestedAt } from './session/order';
 import { resolveUser } from './session/user';
 import { fetchBrand } from './data/brands';
 
-import { menuStatusForOrder } from '../selectors';
+import { menuStatusForOrder, validOrderTimeForOrder } from '../selectors';
+import { _menuStatusForOrder } from '../selectors/orders/menuStatusForOrder';
 
 export const SETUP_BRANDIBBLE = 'SETUP_BRANDIBBLE';
 export const SETUP_BRANDIBBLE_REDUX = 'SETUP_BRANDIBBLE_REDUX';
@@ -26,13 +28,21 @@ export const setupBrandibble = brandibble => (dispatch) => {
 };
 
 // updateRequestedAtListener
-
-export const updateInvalidOrderRequestedAt = () => (dispatch, getState) => {
+/**
+ * the testArgument object is an optional param,
+ * which should only be passed in a testing scenario
+ * @param {string} [testArguments={}] - testArguments
+ */
+export const updateInvalidOrderRequestedAt = (testArguments = {}) => (
+  dispatch,
+  getState,
+) => {
+  let orderRef;
+  let menuStatus;
   const state = getState();
 
   if (isEmpty(state)) return;
 
-  const orderRef = get(state, 'session.order.ref');
   const currentOrderLocationId = get(
     state,
     'session.order.orderData.location_id',
@@ -44,15 +54,38 @@ export const updateInvalidOrderRequestedAt = () => (dispatch, getState) => {
   const isCateringLocation = supportsCatering(
     orderTypesForCurrentOrderLocation,
   );
-  const menuStatus = menuStatusForOrder(state);
+
+  /**
+   * No test arguments were passed
+   * so we derive the necessary data from state
+   */
+  if (isEmpty(testArguments)) {
+    orderRef = get(state, 'session.order.ref');
+    menuStatus = menuStatusForOrder(state);
+  } else {
+    /**
+     * Test arguments were passed
+     * so we assume this is a test scenario
+     * and derive the data from our test arguments
+     */
+    orderRef = get(testArguments, 'orderRef');
+    menuStatus = _menuStatusForOrder(state)(
+      validOrderTimeForOrder(state)(
+        get(testArguments, 'requestedAtAsLuxonDateTime'),
+        get(testArguments, 'todayAsLuxonDateTime'),
+      ),
+    );
+  }
 
   const { INVALID_REQUESTED_AT, REQUESTED_AT_HAS_PASSED } = MenuStatusCodes;
 
+  if (!orderRef) return;
+
   if (
-    get(menuStatus, 'statusCode') === INVALID_REQUESTED_AT &&
+    get(menuStatus, 'statusCode') === INVALID_REQUESTED_AT ||
     get(menuStatus, 'statusCode') === REQUESTED_AT_HAS_PASSED
   ) {
-    const now = isCateringLocation ? new Date() : Asap;
+    const now = isCateringLocation ? jsDateToValidISO8601() : Asap;
     return dispatch(setRequestedAt(orderRef, now));
   }
 };

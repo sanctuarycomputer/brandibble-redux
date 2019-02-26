@@ -65,6 +65,7 @@ describe('selectors/orders/_menuStatusForOrder', () => {
    */
 
   /** DOES want future order */
+
   /**
    * In this scenario, the customer is actively requesting an order
    * for a time in the future.

@@ -15,16 +15,20 @@ export const brandibble = new Brandibble({
   storage: localforage,
 });
 
+export const stateWithBrandibbleRef = {
+  ref: brandibble,
+};
+
 export function makeUnpersistedOrder() {
   return new brandibble.Order(
     brandibble.adapter,
     SAMPLE_MENU_LOCATION_ID,
     'pickup',
   );
-};
+}
 
 export const validatedEmailStub = {
-  attempted_email: 'api@brandibble.co'
+  attempted_email: 'api@brandibble.co',
 };
 
 export const customersValidateStub = {

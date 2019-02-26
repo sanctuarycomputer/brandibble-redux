@@ -1,23 +1,46 @@
 let reduxNamespace;
 
 export const discoverReduxNamespace = (getState, brandibbleRef) => {
-  const state = getState(); 
+  const state = getState();
 
   reduxNamespace = Object.keys(state).reduce((found, key) => {
     if (found) return found;
+
+    /**
+     * For testing purposes we first check whether
+     * the state is brandibble-redux, if so we return
+     * false to indicate no namespace
+     */
+    if (Object.keys(state).includes('ref')) {
+      if (state.ref === brandibbleRef) {
+        return false;
+      }
+    }
+
+    /**
+     * Host apps should have brandibble-redux mounted
+     * at the top level of their redux tree. If we can't find
+     * a brandibble match at the top level we throw an error
+     */
     if (Object.keys(state[key]).includes('ref')) {
-      return (state[key].ref === brandibbleRef); 
+      if (state[key].ref === brandibbleRef) return key;
     }
     return found;
   }, null);
 
-  if (!reduxNamespace) throw "you haven't mounted brandibble-redux on the top level of your reducer tree";
+  if (!reduxNamespace && reduxNamespace !== false) {
+    throw "you haven't mounted brandibble-redux on the top level of your reducer tree";
+  }
 
   return reduxNamespace;
-}
+};
 
 export const getStateWithNamespace = (getState) => {
-  if (!reduxNamespace) throw "you haven't mounted brandibble-redux on the top level of your reducer tree";
+  if (reduxNamespace === false) return getState();
+
+  if (!reduxNamespace) {
+    throw "you haven't mounted brandibble-redux on the top level of your reducer tree";
+  }
 
   return getState()[reduxNamespace];
-}
+};

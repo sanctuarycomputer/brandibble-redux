@@ -100,7 +100,7 @@ export const _menuStatusForOrder = createSelector(
       }
 
       /**
-       * validOrderTimeForOrder is current daypart
+       * validOrderTimeForOrder is the same as the validOrderTimeForNow
        */
       if (validOrderTimeForOrder.utc === validOrderTimeForNow.utc) {
         return {

@@ -32,7 +32,7 @@ const {
 describe('selectors/orders/menuStatusForOrder', () => {
   it('returns a valid payload', () => {
     const testPublicMenuStatusForOrder = menuStatusForOrder(
-      stateForOloOrderStub,
+      stateForOloOrderStubWithValidRequestedAt,
     );
 
     expect(testPublicMenuStatusForOrder.statusCode).to.exist;

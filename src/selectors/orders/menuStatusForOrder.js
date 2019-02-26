@@ -42,6 +42,27 @@ export const _menuStatusForOrder = createSelector(
         `current_daypart.${serviceTypeForCurrentOrder}`,
       );
 
+      /**
+       * No validOrderTimeForOrder was found
+       */
+      if (!validOrderTimeForOrder) {
+        return {
+          statusCode: INVALID_REQUESTED_AT,
+        };
+      }
+
+      /**
+       * validOrderTimeForOrder has passed
+       */
+      if (
+        DateTime.fromISO(validOrderTimeForOrder.utc) <
+        DateTime.fromISO(validOrderTimeForNow.utc)
+      ) {
+        return {
+          statusCode: REQUESTED_AT_HAS_PASSED,
+        };
+      }
+
       /** wantsFutureOrder = true */
 
       /**

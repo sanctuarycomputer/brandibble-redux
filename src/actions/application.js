@@ -1,5 +1,9 @@
 import fireAction from '../utils/fireAction';
 import handleErrors from '../utils/handleErrors';
+import {
+  discoverReduxNamespace,
+  getStateWithNamespace,
+} from '../utils/getStateWithNamespace';
 import { resolveOrder } from './session/order';
 import { resolveUser } from './session/user';
 import { fetchBrand } from './data/brands';
@@ -23,18 +27,20 @@ const setupBrandibbleReduxDefaults = {
 export const setupBrandibbleRedux = (
   brandibble,
   data = setupBrandibbleReduxDefaults,
-) => (dispatch) => {
+) => (dispatch, getState) => {
   const { locationId, serviceType } = Object.assign(
     {},
     setupBrandibbleReduxDefaults,
     data,
   );
+
   const payload = dispatch(setupBrandibble(brandibble))
     .then(({ value }) => {
+      discoverReduxNamespace(getState, value);
       return Promise.all([
         dispatch(resolveUser(value)),
         dispatch(resolveOrder(value, locationId, serviceType)),
-        dispatch(fetchBrand(value))
+        dispatch(fetchBrand(value)),
       ]);
     })
     .catch(handleErrors);

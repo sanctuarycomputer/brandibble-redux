@@ -10,7 +10,7 @@ import {
   setupBrandibbleRedux,
   resetApplication,
 } from 'actions/application';
-import { brandibble } from '../config/stubs';
+import { brandibble, stateWithBrandibbleRef } from '../config/stubs';
 
 const mockStore = configureStore(reduxMiddleware);
 
@@ -39,8 +39,11 @@ describe('actions/application', () => {
 
   describe('setupBrandibbleRedux', () => {
     before(() => {
-      store = mockStore();
-      return setupBrandibbleRedux(brandibble)(store.dispatch).then(() => {
+      store = mockStore(stateWithBrandibbleRef);
+      return setupBrandibbleRedux(brandibble)(
+        store.dispatch,
+        store.getState,
+      ).then(() => {
         actionsCalled = store.getActions();
       });
     });
@@ -91,9 +94,12 @@ describe('actions/application', () => {
 
   describe('resetApplication', () => {
     before(() => {
-      return resetApplication(brandibble)(store.dispatch).then(() => {
-        actionsCalled = store.getActions();
-      });
+      store = mockStore(stateWithBrandibbleRef);
+      return resetApplication(brandibble)(store.dispatch, store.getState).then(
+        () => {
+          actionsCalled = store.getActions();
+        },
+      );
     });
 
     it('should call at least 4 actions', () => {

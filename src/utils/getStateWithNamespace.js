@@ -1,5 +1,6 @@
-let reduxNamespace;
+import BrandibbleReduxException from './exception';
 
+let reduxNamespace;
 export const discoverReduxNamespace = (getState, brandibbleRef) => {
   const state = getState();
 
@@ -29,7 +30,8 @@ export const discoverReduxNamespace = (getState, brandibbleRef) => {
   }, null);
 
   if (!reduxNamespace && reduxNamespace !== false) {
-    throw new Error(
+    throw new BrandibbleReduxException(
+      'discoverReduxNamespace',
       "You haven't mounted Brandibble-Redux at the top-level of your reducer tree",
     );
   }
@@ -41,7 +43,8 @@ export const getStateWithNamespace = (getState) => {
   if (reduxNamespace === false) return getState();
 
   if (!reduxNamespace) {
-    throw new Error(
+    throw new BrandibbleReduxException(
+      'getStateWithNameSpace',
       "You haven't mounted Brandibble-Redux at the top-level of your reducer tree",
     );
   }

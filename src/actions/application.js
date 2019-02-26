@@ -15,6 +15,8 @@ export const setupBrandibble = brandibble => (dispatch) => {
   return dispatch(fireAction(SETUP_BRANDIBBLE, payload));
 };
 
+let reduxNamespace;
+
 // setupBrandibbleRedux
 const setupBrandibbleReduxDefaults = {
   locationId: null,
@@ -23,7 +25,7 @@ const setupBrandibbleReduxDefaults = {
 export const setupBrandibbleRedux = (
   brandibble,
   data = setupBrandibbleReduxDefaults,
-) => (dispatch) => {
+) => (dispatch, getState) => {
   const { locationId, serviceType } = Object.assign(
     {},
     setupBrandibbleReduxDefaults,
@@ -31,6 +33,10 @@ export const setupBrandibbleRedux = (
   );
   const payload = dispatch(setupBrandibble(brandibble))
     .then(({ value }) => {
+      discoverReduxNamespace(getState, value);
+
+      getStateWithNamespace(getState);
+
       return Promise.all([
         dispatch(resolveUser(value)),
         dispatch(resolveOrder(value, locationId, serviceType)),

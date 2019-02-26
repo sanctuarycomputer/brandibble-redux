@@ -13,7 +13,7 @@ const {
   ASAP_ORDER_REQUEST,
   INVALID_REQUESTED_AT,
   REQUESTED_AT_HAS_PASSED,
-  ORDERING_FOR_FIRST_AVAILABLE_DAYPART,
+  ORDERING_FOR_FIRST_AVAILABLE_VALID_TIME,
   ORDERING_FOR_FUTURE_DAYPART,
 } = MenuStatusCodes;
 
@@ -41,6 +41,27 @@ export const _menuStatusForOrder = createSelector(
         locationForCurrentOrder,
         `current_daypart.${serviceTypeForCurrentOrder}`,
       );
+
+      /**
+       * No validOrderTimeForOrder was found
+       */
+      if (!validOrderTimeForOrder) {
+        return {
+          statusCode: INVALID_REQUESTED_AT,
+        };
+      }
+
+      /**
+       * validOrderTimeForOrder has passed
+       */
+      if (
+        DateTime.fromISO(validOrderTimeForOrder.utc) <
+        DateTime.fromISO(validOrderTimeForNow.utc)
+      ) {
+        return {
+          statusCode: REQUESTED_AT_HAS_PASSED,
+        };
+      }
 
       /** wantsFutureOrder = true */
 
@@ -80,31 +101,11 @@ export const _menuStatusForOrder = createSelector(
       /** requestedAt !== 'asap' */
 
       /**
-       * No validOrderTimeForOrder was found
-       */
-      if (!validOrderTimeForOrder) {
-        return {
-          statusCode: INVALID_REQUESTED_AT,
-        };
-      }
-      /**
-       * validOrderTimeForOrder has passed
-       */
-      if (
-        DateTime.fromISO(validOrderTimeForOrder.utc) <
-        DateTime.fromISO(validOrderTimeForNow.utc)
-      ) {
-        return {
-          statusCode: REQUESTED_AT_HAS_PASSED,
-        };
-      }
-
-      /**
        * validOrderTimeForOrder is the same as the validOrderTimeForNow
        */
       if (validOrderTimeForOrder.utc === validOrderTimeForNow.utc) {
         return {
-          statusCode: ORDERING_FOR_FIRST_AVAILABLE_DAYPART,
+          statusCode: ORDERING_FOR_FIRST_AVAILABLE_VALID_TIME,
           meta: {
             currentDaypart,
             currentDaypartIsOrderable: get(currentDaypart, 'is_orderable'),

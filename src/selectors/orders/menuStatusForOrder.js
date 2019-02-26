@@ -13,7 +13,7 @@ const {
   ASAP_ORDER_REQUEST,
   INVALID_REQUESTED_AT,
   REQUESTED_AT_HAS_PASSED,
-  ORDERING_FOR_CURRENT_DAYPART,
+  ORDERING_FOR_FIRST_AVAILABLE_DAYPART,
   ORDERING_FOR_FUTURE_DAYPART,
 } = MenuStatusCodes;
 
@@ -72,6 +72,7 @@ export const _menuStatusForOrder = createSelector(
             currentDaypartIsInTheFuture:
               get(currentDaypart, 'is_orderable') &&
               !get(currentDaypart, 'is_current'),
+            validOrderTimeForOrder,
           },
         };
       }
@@ -103,13 +104,14 @@ export const _menuStatusForOrder = createSelector(
        */
       if (validOrderTimeForOrder.utc === validOrderTimeForNow.utc) {
         return {
-          statusCode: ORDERING_FOR_CURRENT_DAYPART,
+          statusCode: ORDERING_FOR_FIRST_AVAILABLE_DAYPART,
           meta: {
             currentDaypart,
             currentDaypartIsOrderable: get(currentDaypart, 'is_orderable'),
             currentDaypartIsInTheFuture:
               get(currentDaypart, 'is_orderable') &&
               !get(currentDaypart, 'is_current'),
+            validOrderTimeForOrder,
           },
         };
       }
@@ -124,6 +126,7 @@ export const _menuStatusForOrder = createSelector(
         return {
           statusCode: ORDERING_FOR_FUTURE_DAYPART,
           meta: {
+            unorderableCurrentDaypart: currentDaypart,
             validOrderTimeForOrder,
           },
         };

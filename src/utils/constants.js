@@ -39,7 +39,7 @@ export const MenuStatusCodes = {
   ASAP_ORDER_REQUEST: "Order requested for 'asap'",
   INVALID_REQUESTED_AT: 'Requested at time is invalid',
   REQUESTED_AT_HAS_PASSED: 'Requested at time has passed',
-  ORDERING_FOR_CURRENT_DAYPART: 'Ordering for current daypart',
+  ORDERING_FOR_FIRST_AVAILABLE_DAYPART: 'Ordering for first available daypart',
   ORDERING_FOR_FUTURE_DAYPART: 'Ordering for future daypart',
 };
 

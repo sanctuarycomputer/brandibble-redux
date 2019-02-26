@@ -30,7 +30,7 @@ export const discoverReduxNamespace = (getState, brandibbleRef) => {
 
   if (!reduxNamespace && reduxNamespace !== false) {
     throw new Error(
-      "you haven't mounted brandibble-redux on the top level of your reducer tree",
+      "You haven't mounted Brandibble-Redux at the top-level of your reducer tree",
     );
   }
 
@@ -42,7 +42,7 @@ export const getStateWithNamespace = (getState) => {
 
   if (!reduxNamespace) {
     throw new Error(
-      "you haven't mounted brandibble-redux on the top level of your reducer tree",
+      "You haven't mounted Brandibble-Redux at the top-level of your reducer tree",
     );
   }
 

@@ -10,7 +10,7 @@ import {
 
 const mockStore = configureStore(reduxMiddleware);
 
-describe('utils/getStateWithNamespace', () => {
+describe('utils/getStateWithNamespace/discoverReduxNamespace', () => {
   let store;
   it('it should throw if the store is empty', () => {
     store = mockStore();
@@ -42,5 +42,30 @@ describe('utils/getStateWithNamespace', () => {
     );
 
     expect(testdiscoverReduxNamespace).to.equal('brandibble');
+  });
+});
+
+describe('utils/getStateWithNamespace/getStateWithNamespace', () => {
+  let store;
+  it("it should throw if discoverReduxNamespace hasn't run before getStateWithNamespace", () => {
+    store = mockStore();
+
+    expect(() => getStateWithNamespace(store.getState)).to.throw;
+  });
+
+  it('it should return the valid state if brandibble-redux is not namespaced', () => {
+    store = mockStore(stateWithBrandibbleRef);
+    discoverReduxNamespace(store.getState, brandibble);
+    const testGetStateWithNamespace = getStateWithNamespace(store.getState);
+
+    expect(testGetStateWithNamespace).to.deep.equal(stateWithBrandibbleRef);
+  });
+
+  it('it should return the correct state if brandibble-redux is mounted in a top-level node', () => {
+    store = mockStore({ brandibble: stateWithBrandibbleRef });
+    discoverReduxNamespace(store.getState, brandibble);
+    const testGetStateWithNamespace = getStateWithNamespace(store.getState);
+
+    expect(testGetStateWithNamespace).to.deep.equal(stateWithBrandibbleRef);
   });
 });

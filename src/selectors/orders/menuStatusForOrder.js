@@ -44,9 +44,10 @@ export const _menuStatusForOrder = createSelector(
       );
 
       /**
-       * No validOrderTimeForOrder was found
+       * No validOrderTimeForOrder
+       * was found and the order is not request for 'asap'
        */
-      if (!validOrderTimeForOrder) {
+      if (!validOrderTimeForOrder && requestedAtForCurrentOrder !== Asap) {
         return {
           statusCode: INVALID_REQUESTED_AT,
         };
@@ -58,6 +59,23 @@ export const _menuStatusForOrder = createSelector(
        * Customer requests future order
        */
       if (wantsFutureOrder) {
+        /**
+         * First we check if the valid order time for order is actually
+         * valid. In some cases (catering specifically) it's possible that wants future
+         * is true, and validOrderTimeForOrder find s valid match (because those times are generic)
+         * but the validOrderTimeForOrder is actually before the validOrderTimeForNow (or first time an order can be places)
+         * In this particular case we want our observer to update the requested at to the
+         * first valid time for that location
+         */
+        if (
+          DateTime.fromISO(validOrderTimeForOrder.utc) <
+          DateTime.fromISO(validOrderTimeForNow.utc)
+        ) {
+          return {
+            statusCode: REQUESTED_AT_HAS_PASSED,
+          };
+        }
+
         return {
           statusCode: FUTURE_ORDER_REQUEST,
           meta: {
@@ -100,8 +118,6 @@ export const _menuStatusForOrder = createSelector(
           statusCode: REQUESTED_AT_HAS_PASSED,
         };
       }
-
-      debugger;
 
       /**
        * validOrderTimeForOrder is the same as the validOrderTimeForNow

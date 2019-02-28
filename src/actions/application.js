@@ -6,7 +6,6 @@ import {
   discoverReduxNamespace,
   getStateWithNamespace,
 } from '../utils/getStateWithNamespace';
-import jsDateToValidISO8601 from '../utils/jsDateToValidISO8601';
 import { supportsCatering } from '../utils/orderTypes';
 import { Asap, MenuStatusCodes } from '../utils/constants';
 import { resolveOrder, setRequestedAt } from './session/order';
@@ -45,9 +44,7 @@ export const updateInvalidOrderRequestedAt = (testArguments = {}) => (
   let menuStatus;
   const state = getStateWithNamespace(getState);
 
-  debugger;
-
-  if (isEmpty(state)) return;
+  if (isEmpty(state)) return Promise.resolve();
 
   const currentOrderLocationId = get(
     state,
@@ -85,9 +82,7 @@ export const updateInvalidOrderRequestedAt = (testArguments = {}) => (
 
   const { INVALID_REQUESTED_AT, REQUESTED_AT_HAS_PASSED } = MenuStatusCodes;
 
-  if (!orderRef) return;
-
-  debugger;
+  if (!orderRef) return Promise.resolve();
 
   if (
     get(menuStatus, 'statusCode') === INVALID_REQUESTED_AT ||
@@ -100,8 +95,6 @@ export const updateInvalidOrderRequestedAt = (testArguments = {}) => (
     } else {
       now = Asap;
     }
-
-    debugger;
 
     return dispatch(setRequestedAt(orderRef, now, false));
   }

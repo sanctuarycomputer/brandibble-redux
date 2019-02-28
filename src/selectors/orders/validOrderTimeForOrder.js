@@ -108,7 +108,7 @@ export const validOrderTimeForOrder = createSelector(
         ).find(
           daypartForWeekday =>
             orderRequestedAtInMinutes >= get(daypartForWeekday, 'start_min') &&
-            orderRequestedAtInMinutes < get(daypartForWeekday, 'end_min'),
+            orderRequestedAtInMinutes <= get(daypartForWeekday, 'end_min'),
         );
 
         /**

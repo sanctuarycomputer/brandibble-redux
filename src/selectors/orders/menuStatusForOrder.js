@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import memoize from 'lodash.memoize';
-import { DateTime } from 'luxon';
+import { DateTime, Settings } from 'luxon';
 import get from '../../utils/get';
 import { Asap, MenuStatusCodes } from '../../utils/constants';
 import luxonDateTimeFromRequestedAt from '../../utils/luxonDateTimeFromRequestedAt';
@@ -37,6 +37,7 @@ export const _menuStatusForOrder = createSelector(
         locationsById,
         `${locationIdForCurrentOrder}`,
       );
+      const locationTimezone = get(locationForCurrentOrder);
       const currentDaypart = get(
         locationForCurrentOrder,
         `current_daypart.${serviceTypeForCurrentOrder}`,
@@ -48,45 +49,6 @@ export const _menuStatusForOrder = createSelector(
       if (!validOrderTimeForOrder) {
         return {
           statusCode: INVALID_REQUESTED_AT,
-        };
-      }
-
-      /**
-       * validOrderTimeForOrder has passed
-       */
-      if (
-        DateTime.fromISO(validOrderTimeForOrder.utc) <
-        DateTime.fromISO(validOrderTimeForNow.utc)
-      ) {
-        return {
-          statusCode: REQUESTED_AT_HAS_PASSED,
-        };
-      }
-
-      /** wantsFutureOrder = true */
-
-      /**
-       * No validOrderTimeForOrder was found
-       */
-      if (!validOrderTimeForOrder) {
-        return {
-          statusCode: INVALID_REQUESTED_AT,
-        };
-      }
-
-      /** wantsFutureOrder = false */
-
-      /** requestedAt === 'asap' */
-
-      /**
-       * validOrderTimeForOrder has passed
-       */
-      if (
-        DateTime.fromISO(validOrderTimeForOrder.utc) <
-        DateTime.fromISO(validOrderTimeForNow.utc)
-      ) {
-        return {
-          statusCode: REQUESTED_AT_HAS_PASSED,
         };
       }
 
@@ -126,6 +88,20 @@ export const _menuStatusForOrder = createSelector(
       }
 
       /** requestedAt !== 'asap' */
+
+      /**
+       * validOrderTimeForOrder has passed
+       */
+      if (
+        DateTime.fromISO(validOrderTimeForOrder.utc) <
+        DateTime.fromISO(validOrderTimeForNow.utc)
+      ) {
+        return {
+          statusCode: REQUESTED_AT_HAS_PASSED,
+        };
+      }
+
+      debugger;
 
       /**
        * validOrderTimeForOrder is the same as the validOrderTimeForNow
@@ -168,6 +144,7 @@ export const menuStatusForOrder = createSelector(
       validOrderTimeForOrder(state)(
         luxonDateTimeFromRequestedAt(
           get(state, 'session.order.orderData.requested_at'),
+          'America/Los_Angeles',
         ),
       ),
     ),

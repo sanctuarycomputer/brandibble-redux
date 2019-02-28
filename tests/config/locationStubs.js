@@ -33,23 +33,21 @@ export const cateringLocationStub = {
       pickup: null,
     },
     first_times: {
-      first_times: {
-        delivery: {
-          date: '2019-02-16',
-          daypart: 'Breakfast ',
-          minutes: 480,
-          time: '8:00 AM',
-          utc: '2019-02-16T16:00:00Z',
-          weekday: 'saturday',
-        },
-        pickup: {
-          date: '2019-02-16',
-          daypart: 'Breakfast ',
-          minutes: 480,
-          time: '8:00 AM',
-          utc: '2019-02-16T16:00:00Z',
-          weekday: 'saturday',
-        },
+      delivery: {
+        date: '2019-02-16',
+        daypart: 'Breakfast ',
+        minutes: 480,
+        time: '8:00 AM',
+        utc: '2019-02-16T16:00:00Z',
+        weekday: 'saturday',
+      },
+      pickup: {
+        date: '2019-02-16',
+        daypart: 'Breakfast ',
+        minutes: 480,
+        time: '8:00 AM',
+        utc: '2019-02-16T16:00:00Z',
+        weekday: 'saturday',
       },
     },
     skipped_dayparts: {

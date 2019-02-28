@@ -41,7 +41,7 @@ export const validOrderTimeForOrder = createSelector(
          */
         const locationForCurrentOrderTimezone =
           SystemTimezoneMap[get(locationForCurrentOrder, 'timezone')];
-        const localTimezone = get(todayAsLuxonDateTime, 'zone.zoneName');
+        const localTimezone = get(todayAsLuxonDateTime, 'zoneName');
 
         if (locationForCurrentOrderTimezone !== localTimezone) {
           todayAsLuxonDateTime = todayAsLuxonDateTime.setZone(
@@ -51,8 +51,15 @@ export const validOrderTimeForOrder = createSelector(
 
         /**
          * If the requested at is in the past we return null
+         *
+         *
          */
-        if (luxonDateTimeFromOrderRequestedAt < todayAsLuxonDateTime) {
+        if (
+          luxonDateTimeFromOrderRequestedAt.set({
+            seconds: 0,
+            milliseconds: 0,
+          }) < todayAsLuxonDateTime.set({ seconds: 0, milliseconds: 0 })
+        ) {
           return null;
         }
 
@@ -100,8 +107,8 @@ export const validOrderTimeForOrder = createSelector(
           `${orderRequestedAtWeekday}`,
         ).find(
           daypartForWeekday =>
-            orderRequestedAtInMinutes > get(daypartForWeekday, 'start_min') &&
-            orderRequestedAtInMinutes <= get(daypartForWeekday, 'end_min'),
+            orderRequestedAtInMinutes >= get(daypartForWeekday, 'start_min') &&
+            orderRequestedAtInMinutes < get(daypartForWeekday, 'end_min'),
         );
 
         /**

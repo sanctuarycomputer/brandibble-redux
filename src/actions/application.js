@@ -13,7 +13,11 @@ import { resolveOrder, setRequestedAt } from './session/order';
 import { resolveUser } from './session/user';
 import { fetchBrand } from './data/brands';
 
-import { menuStatusForOrder, validOrderTimeForOrder } from '../selectors';
+import {
+  menuStatusForOrder,
+  validOrderTimeForOrder,
+  validOrderTimeForNow,
+} from '../selectors';
 import { _menuStatusForOrder } from '../selectors/orders/menuStatusForOrder';
 
 export const SETUP_BRANDIBBLE = 'SETUP_BRANDIBBLE';
@@ -39,7 +43,9 @@ export const updateInvalidOrderRequestedAt = (testArguments = {}) => (
 ) => {
   let orderRef;
   let menuStatus;
-  const state = getState();
+  const state = getStateWithNamespace(getState);
+
+  debugger;
 
   if (isEmpty(state)) return;
 
@@ -81,12 +87,23 @@ export const updateInvalidOrderRequestedAt = (testArguments = {}) => (
 
   if (!orderRef) return;
 
+  debugger;
+
   if (
     get(menuStatus, 'statusCode') === INVALID_REQUESTED_AT ||
     get(menuStatus, 'statusCode') === REQUESTED_AT_HAS_PASSED
   ) {
-    const now = isCateringLocation ? jsDateToValidISO8601() : Asap;
-    return dispatch(setRequestedAt(orderRef, now));
+    let now;
+    if (isCateringLocation) {
+      const validOrderTime = validOrderTimeForNow(state);
+      now = get(validOrderTime, 'utc');
+    } else {
+      now = Asap;
+    }
+
+    debugger;
+
+    return dispatch(setRequestedAt(orderRef, now, false));
   }
 };
 

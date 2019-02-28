@@ -7,5 +7,13 @@ import { Asap } from './constants';
  * ISO8601 datetime string
  */
 
-export default requestedAt =>
-  requestedAt === Asap ? DateTime.local() : DateTime.fromISO(requestedAt);
+export default (requestedAt, timezone) => {
+  const requestedAtAsLuxonDateTime =
+    requestedAt === Asap ? DateTime.local() : DateTime.fromISO(requestedAt);
+
+  if (timezone) {
+    return requestedAtAsLuxonDateTime.setZone(timezone);
+  }
+
+  return requestedAtAsLuxonDateTime;
+};

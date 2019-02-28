@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import memoize from 'lodash.memoize';
-import { DateTime } from 'luxon';
+import { DateTime, Settings } from 'luxon';
 import get from '../../utils/get';
 import { Asap, MenuStatusCodes } from '../../utils/constants';
 import luxonDateTimeFromRequestedAt from '../../utils/luxonDateTimeFromRequestedAt';
@@ -37,29 +37,19 @@ export const _menuStatusForOrder = createSelector(
         locationsById,
         `${locationIdForCurrentOrder}`,
       );
+      const locationTimezone = get(locationForCurrentOrder);
       const currentDaypart = get(
         locationForCurrentOrder,
         `current_daypart.${serviceTypeForCurrentOrder}`,
       );
 
       /**
-       * No validOrderTimeForOrder was found
+       * No validOrderTimeForOrder
+       * was found and the order is not request for 'asap'
        */
-      if (!validOrderTimeForOrder) {
+      if (!validOrderTimeForOrder && requestedAtForCurrentOrder !== Asap) {
         return {
           statusCode: INVALID_REQUESTED_AT,
-        };
-      }
-
-      /**
-       * validOrderTimeForOrder has passed
-       */
-      if (
-        DateTime.fromISO(validOrderTimeForOrder.utc) <
-        DateTime.fromISO(validOrderTimeForNow.utc)
-      ) {
-        return {
-          statusCode: REQUESTED_AT_HAS_PASSED,
         };
       }
 
@@ -69,6 +59,23 @@ export const _menuStatusForOrder = createSelector(
        * Customer requests future order
        */
       if (wantsFutureOrder) {
+        /**
+         * First we check if the valid order time for order is actually
+         * valid. In some cases (catering specifically) it's possible that wants future
+         * is true, and validOrderTimeForOrder find s valid match (because those times are generic)
+         * but the validOrderTimeForOrder is actually before the validOrderTimeForNow (or first time an order can be places)
+         * In this particular case we want our observer to update the requested at to the
+         * first valid time for that location
+         */
+        if (
+          DateTime.fromISO(validOrderTimeForOrder.utc) <
+          DateTime.fromISO(validOrderTimeForNow.utc)
+        ) {
+          return {
+            statusCode: REQUESTED_AT_HAS_PASSED,
+          };
+        }
+
         return {
           statusCode: FUTURE_ORDER_REQUEST,
           meta: {
@@ -99,6 +106,18 @@ export const _menuStatusForOrder = createSelector(
       }
 
       /** requestedAt !== 'asap' */
+
+      /**
+       * validOrderTimeForOrder has passed
+       */
+      if (
+        DateTime.fromISO(validOrderTimeForOrder.utc) <
+        DateTime.fromISO(validOrderTimeForNow.utc)
+      ) {
+        return {
+          statusCode: REQUESTED_AT_HAS_PASSED,
+        };
+      }
 
       /**
        * validOrderTimeForOrder is the same as the validOrderTimeForNow
@@ -135,12 +154,15 @@ export const _menuStatusForOrder = createSelector(
     }),
 );
 
-export const menuStatusForOrder = createSelector(state =>
-  _menuStatusForOrder(state)(
-    validOrderTimeForOrder(state)(
-      luxonDateTimeFromRequestedAt(
-        get(state, 'session.order.orderData.requested_at'),
+export const menuStatusForOrder = createSelector(
+  state =>
+    _menuStatusForOrder(state)(
+      validOrderTimeForOrder(state)(
+        luxonDateTimeFromRequestedAt(
+          get(state, 'session.order.orderData.requested_at'),
+          'America/Los_Angeles',
+        ),
       ),
     ),
-  ),
+  status => status,
 );

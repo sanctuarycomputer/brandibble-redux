@@ -155,7 +155,7 @@ function _setTip(order, paymentType, tip) {
 function _resetTip(order) {
   return {
     type: RESET_TIP,
-    payload: order.resetTip().then(order => ({ order }))
+    payload: order.resetTip().then(order => ({ order })),
   };
 }
 

@@ -21,6 +21,22 @@ export const stateForCateringOrderStub = {
   },
 };
 
+export const stateForCateringOrderWithInvalidRequestedAt = {
+  data: {
+    locations: {
+      locationsById: cateringLocationStub,
+    },
+  },
+  session: {
+    order: {
+      orderData: {
+        ...cateringOrderDataStub,
+        requested_at: '2019-02-14T19:00:00Z',
+      },
+    },
+  },
+};
+
 /**
  * OLO
  */
@@ -64,6 +80,22 @@ export const stateForOloOrderStubWithAsapRequestedAt = {
       orderData: {
         ...oloOrderDataStub,
         requested_at: 'asap',
+      },
+    },
+  },
+};
+
+export const stateForOloOrderStubWithValidRequestedAt = {
+  data: {
+    locations: {
+      locationsById: oloLocationStub,
+    },
+  },
+  session: {
+    order: {
+      orderData: {
+        ...oloOrderDataStub,
+        requested_at: '2019-02-14T20:45:00Z',
       },
     },
   },

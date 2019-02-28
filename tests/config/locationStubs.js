@@ -5,6 +5,7 @@
 export const cateringLocationStub = {
   886: {
     timezone: 'US/Pacific',
+    order_types: ['catering'],
     current_daypart: {
       delivery: {
         daypart: 'Lunch ',
@@ -32,23 +33,21 @@ export const cateringLocationStub = {
       pickup: null,
     },
     first_times: {
-      first_times: {
-        delivery: {
-          date: '2019-02-16',
-          daypart: 'Breakfast ',
-          minutes: 480,
-          time: '8:00 AM',
-          utc: '2019-02-16T16:00:00Z',
-          weekday: 'saturday',
-        },
-        pickup: {
-          date: '2019-02-16',
-          daypart: 'Breakfast ',
-          minutes: 480,
-          time: '8:00 AM',
-          utc: '2019-02-16T16:00:00Z',
-          weekday: 'saturday',
-        },
+      delivery: {
+        date: '2019-02-16',
+        daypart: 'Breakfast ',
+        minutes: 480,
+        time: '8:00 AM',
+        utc: '2019-02-16T16:00:00Z',
+        weekday: 'saturday',
+      },
+      pickup: {
+        date: '2019-02-16',
+        daypart: 'Breakfast ',
+        minutes: 480,
+        time: '8:00 AM',
+        utc: '2019-02-16T16:00:00Z',
+        weekday: 'saturday',
       },
     },
     skipped_dayparts: {
@@ -4117,6 +4116,7 @@ export const cateringLocationStub = {
 export const oloLocationStub = {
   885: {
     timezone: 'US/Pacific',
+    order_types: ['olo'],
     current_daypart: {
       delivery: {
         daypart: 'Lunch ',

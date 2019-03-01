@@ -4,6 +4,7 @@ import { Defaults, Asap } from '../../utils/constants';
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
 import get from '../../utils/get';
+import { getStateWithNamespace } from '../../utils/getStateWithNamespace';
 import { authenticateUser } from './user';
 import { fetchMenu } from './menus';
 import { fetchLocation } from '../data/locations';
@@ -367,7 +368,41 @@ export function validateCurrentOrder(brandibble, data = {}) {
 }
 
 export function setOrderLocationId(currentOrder, locationId) {
-  return dispatch => dispatch(_setOrderLocationId(...arguments));
+  return (dispatch, getState) => {
+    return dispatch(_setOrderLocationId(...arguments)).then(() => {
+      /**
+       * Prior to resolving, we want to ensure
+       * a valid requested at for the current location
+       */
+      const state = getStateWithNamespace(getState);
+      const hasLocationInMemory = !!get(
+        state,
+        `data.locations.locationsById.${locationId}`,
+        false,
+      );
+
+      if (!hasLocationInMemory) {
+        const ref = get(state, 'ref');
+        const requestedAt = get(state, 'session.order.orderData.requested_at');
+
+        // return dispatch(fetchLocation(ref, locationId, {
+        //   requested_at: get(orderData, 'requestedAt',
+        //   include_times: true,
+        // })
+      }
+
+      /**
+       * This should allllll happen, after _setOrderLocationId has resolved, becuase
+       * the menuStatusSelector runs against state
+       *
+       * 1. get stateWithNameSpace
+       * 2. check if new locationId is same as locationId on order. If it is return early
+       * 3. check if location data for new locationId exists in memory.
+       *  a. If it does not exist, load it into memory before continuing
+       * 4. run the updateInvalidRequestedAt logic against t6he current state
+       */
+    });
+  };
 }
 
 export function setOrderAddress(...args) {

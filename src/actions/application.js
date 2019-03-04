@@ -6,8 +6,9 @@ import {
   discoverReduxNamespace,
   getStateWithNamespace,
 } from '../utils/getStateWithNamespace';
+import luxonDateTimeFromRequestedAt from '../utils/luxonDateTimeFromRequestedAt';
 import { supportsCatering } from '../utils/orderTypes';
-import { Asap, MenuStatusCodes } from '../utils/constants';
+import { Asap, MenuStatusCodes, SystemTimezoneMap } from '../utils/constants';
 import { resolveOrder, setRequestedAt } from './session/order';
 import { resolveUser } from './session/user';
 import { fetchBrand } from './data/brands';
@@ -40,8 +41,7 @@ export const updateInvalidOrderRequestedAt = (testArguments = {}) => (
   dispatch,
   getState,
 ) => {
-  let orderRef;
-  let menuStatus;
+  const isTestMode = !isEmpty(testArguments);
   const state = getStateWithNamespace(getState);
 
   if (isEmpty(state)) return Promise.resolve();
@@ -50,6 +50,10 @@ export const updateInvalidOrderRequestedAt = (testArguments = {}) => (
     state,
     'session.order.orderData.location_id',
   );
+  const currentOrderRequestedAt = get(
+    state,
+    'session.order.orderData.requested_at',
+  );
   const orderTypesForCurrentOrderLocation = get(
     state,
     `data.locations.locationsById.${currentOrderLocationId}.order_types`,
@@ -57,47 +61,64 @@ export const updateInvalidOrderRequestedAt = (testArguments = {}) => (
   const isCateringLocation = supportsCatering(
     orderTypesForCurrentOrderLocation,
   );
-
-  /**
-   * No test arguments were passed
-   * so we derive the necessary data from state
-   */
-  if (isEmpty(testArguments)) {
-    orderRef = get(state, 'session.order.ref');
-    menuStatus = menuStatusForOrder(state);
-  } else {
-    /**
-     * Test arguments were passed
-     * so we assume this is a test scenario
-     * and derive the data from our test arguments
-     */
-    orderRef = get(testArguments, 'orderRef');
-    menuStatus = _menuStatusForOrder(state)(
-      validOrderTimeForOrder(state)(
-        get(testArguments, 'requestedAtAsLuxonDateTime'),
-        get(testArguments, 'todayAsLuxonDateTime'),
-      ),
-    );
-  }
-
-  const { INVALID_REQUESTED_AT, REQUESTED_AT_HAS_PASSED } = MenuStatusCodes;
+  const orderRef = isTestMode
+    ? get(testArguments, 'orderRef')
+    : get(state, 'session.order.ref');
 
   if (!orderRef) return Promise.resolve();
 
-  if (
-    get(menuStatus, 'statusCode') === INVALID_REQUESTED_AT ||
-    get(menuStatus, 'statusCode') === REQUESTED_AT_HAS_PASSED
-  ) {
-    let now;
-    if (isCateringLocation) {
-      const validOrderTime = validOrderTimeForNow(state);
-      now = get(validOrderTime, 'utc');
-    } else {
-      now = Asap;
+  return new Promise((resolve) => {
+    /**
+     * A catering order cannot be requested with a string of 'asap'
+     * So if for some reason it has been, we update it here.
+     * Otherwise we resolve.
+     */
+    if (isCateringLocation && currentOrderRequestedAt === Asap) {
+      const timezoneForCurrentLocation = get(
+        state,
+        `data.locations.locationsById.${currentOrderLocationId}.timezone`,
+      );
+      const newRequestedAtAsLuxonDateTime = luxonDateTimeFromRequestedAt(
+        currentOrderRequestedAt,
+        SystemTimezoneMap[timezoneForCurrentLocation],
+      );
+      const newRequestedAtAsISO8601 = `${
+        newRequestedAtAsLuxonDateTime
+          .setZone('utc')
+          .toISO()
+          .split('.')[0]
+      }Z`;
+      return dispatch(setRequestedAt(orderRef, newRequestedAtAsISO8601, false));
     }
+    return resolve();
+  }).then(() => {
+    const menuStatus = isTestMode
+      ? _menuStatusForOrder(state)(
+          validOrderTimeForOrder(state)(
+            get(testArguments, 'requestedAtAsLuxonDateTime'),
+            get(testArguments, 'todayAsLuxonDateTime'),
+          ),
+        )
+      : menuStatusForOrder(state);
 
-    return dispatch(setRequestedAt(orderRef, now, false));
-  }
+    const { INVALID_REQUESTED_AT, REQUESTED_AT_HAS_PASSED } = MenuStatusCodes;
+
+    if (
+      get(menuStatus, 'statusCode') === INVALID_REQUESTED_AT ||
+      get(menuStatus, 'statusCode') === REQUESTED_AT_HAS_PASSED
+    ) {
+      let now;
+      if (isCateringLocation) {
+        const validOrderTime = validOrderTimeForNow(state);
+        now = get(validOrderTime, 'utc');
+      } else {
+        now = Asap;
+      }
+
+      return dispatch(setRequestedAt(orderRef, now, false));
+    }
+    return Promise.resolve();
+  });
 };
 
 // setupBrandibbleRedux

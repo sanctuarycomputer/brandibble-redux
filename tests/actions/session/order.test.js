@@ -104,7 +104,7 @@ describe('actions/session/order', () => {
       });
     });
 
-    it('should call 6 actions', () => {
+    it('should call 10 actions', () => {
       expect(actionsCalled).to.have.length.of(10);
     });
 
@@ -148,7 +148,7 @@ describe('actions/session/order', () => {
       });
     });
 
-    it('should call 12 actions', () => {
+    it('should call 14 actions', () => {
       expect(actionsCalled).to.have.length.of(14);
     });
 
@@ -196,7 +196,7 @@ describe('actions/session/order', () => {
       });
     });
 
-    it('should call 2 actions', () => {
+    it('should call 3 actions', () => {
       expect(actionsCalled).to.have.length.of(2);
     });
 
@@ -210,6 +210,31 @@ describe('actions/session/order', () => {
         type: 'RESOLVE_ORDER_LOCATION_FULFILLED',
       });
       expect(action).to.exist;
+    });
+  });
+
+  describe('setOrderLocationId with new locations data not in store', () => {
+    before(() => {
+      store = mockStore(stateWithBrandibbleRef);
+      return setOrderLocationId(makeUnpersistedOrder(), 19)(
+        store.dispatch,
+        store.getState,
+      ).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
+
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(3));
+
+    it('should have SET_ORDER_LOCATION_ID_PENDING action', () => {
+      action = find(actionsCalled, { type: 'SET_ORDER_LOCATION_ID_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have a payload', () => {
+      action = find(actionsCalled, { type: 'SET_ORDER_LOCATION_ID_FULFILLED' });
+      expect(action).to.have.a.property('payload');
     });
   });
 

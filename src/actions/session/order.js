@@ -1,12 +1,10 @@
 /* eslint no-shadow:1, no-unused-vars:1, prefer-rest-params:1 */
 import BrandibbleReduxException from '../../utils/exception';
-import { Defaults, Asap, SystemTimezoneMap } from '../../utils/constants';
+import { Defaults, Asap } from '../../utils/constants';
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
-import luxonDateTimeFromRequestedAt from '../../utils/luxonDateTimeFromRequestedAt';
 import get from '../../utils/get';
 import { getStateWithNamespace } from '../../utils/getStateWithNamespace';
-import { supportsCatering } from '../../utils/orderTypes';
 import { updateInvalidOrderRequestedAt } from '../application';
 import { authenticateUser } from './user';
 import { fetchMenu } from './menus';
@@ -399,55 +397,14 @@ export function setOrderLocationId(currentOrder, locationId) {
             }),
           )
         : Promise.resolve()
-      )
-        .then(() => {
-          /**
-           * Second, we determine if the new location is a catering location.
-           * If it is, and the requestedAt is set to 'asap' we need to convert it
-           * to the current time in a valid ISO8601 format.
-           * Other we return a resolved Promise and continue.
-           */
-          const nextState = getStateWithNamespace(getState);
-          const orderTypesForCurrentOrderLocation = get(
-            nextState,
-            `data.locations.locationsById.${locationId}.order_types`,
-            [],
-          );
-          const isCateringOrder = supportsCatering(
-            orderTypesForCurrentOrderLocation,
-          );
-
-          if (isCateringOrder && requestedAt === Asap) {
-            const orderRef = get(nextState, 'session.order.ref');
-            const timezoneForCurrentLocation = get(
-              nextState,
-              `data.locations.locationsById.${locationId}.timezone`,
-            );
-            const newRequestedAtAsLuxonDateTime = luxonDateTimeFromRequestedAt(
-              requestedAt,
-              SystemTimezoneMap[timezoneForCurrentLocation],
-            );
-            const newRequestedAtAsISO8601 = `${
-              newRequestedAtAsLuxonDateTime
-                .setZone('utc')
-                .toISO()
-                .split('.')[0]
-            }Z`;
-            return dispatch(
-              setRequestedAt(orderRef, newRequestedAtAsISO8601, false),
-            );
-          }
-
-          return Promise.resolve();
-        })
-        .then(() => {
-          /**
-           * Finally, we run the updateInvalidRequestedAt logic against the
-           * new state, which will update the requested at if it is considered
-           * invalid or outdated.
-           */
-          return dispatch(updateInvalidOrderRequestedAt());
-        });
+      ).then(() => {
+        /**
+         * Finally, we run the updateInvalidRequestedAt logic against the
+         * new state, which will update the requested at if it is considered
+         * invalid or outdated.
+         */
+        return dispatch(updateInvalidOrderRequestedAt());
+      });
     });
   };
 }

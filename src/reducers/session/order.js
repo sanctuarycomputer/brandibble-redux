@@ -36,7 +36,14 @@ const initialState = {
 
 function _buildFormattedLineItemsHash(ref) {
   return map(ref.cart.lineItems, (li) => {
-    const { uuid, quantity, madeFor, instructions, product, operationMaps } = li;
+    const {
+      uuid,
+      quantity,
+      madeFor,
+      instructions,
+      product,
+      operationMaps,
+    } = li;
     return {
       uuid,
       quantity,

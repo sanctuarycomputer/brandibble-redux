@@ -370,12 +370,6 @@ export function validateCurrentOrder(brandibble, data = {}) {
   };
 }
 
-// export function setOrderLocationId(currentOrder, locationId) {
-//   return (dispatch) => {
-//     return dispatch(_setOrderLocationId(...arguments));
-//   };
-// }
-
 export function setOrderLocationId(currentOrder, locationId) {
   return (dispatch, getState) => {
     return dispatch(_setOrderLocationId(...arguments)).then((res) => {
@@ -407,7 +401,6 @@ export function setOrderLocationId(currentOrder, locationId) {
         : Promise.resolve()
       )
         .then(() => {
-          debugger;
           /**
            * Second, we determine if the new location is a catering location.
            * If it is, and the requestedAt is set to 'asap' we need to convert it
@@ -453,9 +446,7 @@ export function setOrderLocationId(currentOrder, locationId) {
            * new state, which will update the requested at if it is considered
            * invalid or outdated.
            */
-          return dispatch(updateInvalidOrderRequestedAt()).then(() => {
-            debugger;
-          });
+          return dispatch(updateInvalidOrderRequestedAt());
         });
     });
   };

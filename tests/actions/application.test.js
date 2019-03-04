@@ -79,128 +79,131 @@ describe('actions/application', () => {
     });
   });
 
-  // describe("updateInvalidOrderRequestedAt for olo order with a valid requested at", () => {
-  //   before(() => {
-  //     store = mockStore(stateForOloOrderStubWithValidRequestedAt);
+  describe('updateInvalidOrderRequestedAt for olo order with a valid requested at', () => {
+    before(() => {
+      store = mockStore(stateForOloOrderStubWithValidRequestedAt);
+      const order = makeUnpersistedOrder();
 
-  //     return setOrderLocationId(makeUnpersistedOrder(), 885)(
-  //       store.dispatch,
-  //       store.getState
-  //     ).then(res => {
-  //       const todayAsLuxonDateTime = DateTime.fromISO("2019-02-14T20:35:00Z", {
-  //         zone: PACIFIC
-  //       });
-  //       const requestedAtAsLuxonDateTime = DateTime.fromISO(
-  //         "2019-02-14T20:45:00Z",
-  //         { zone: PACIFIC }
-  //       );
-  //       debugger;
-  //       return updateInvalidOrderRequestedAt({
-  //         orderRef: res.value.order,
-  //         todayAsLuxonDateTime,
-  //         requestedAtAsLuxonDateTime
-  //       })(store.dispatch, store.getState);
-  //     });
-  //   });
+      return setOrderLocationId(order, 885)(
+        store.dispatch,
+        store.getState,
+      ).then(() => {
+        const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:35:00Z', {
+          zone: PACIFIC,
+        });
+        const requestedAtAsLuxonDateTime = DateTime.fromISO(
+          '2019-02-14T20:45:00Z',
+          { zone: PACIFIC },
+        );
+        return updateInvalidOrderRequestedAt({
+          orderRef: order,
+          todayAsLuxonDateTime,
+          requestedAtAsLuxonDateTime,
+        })(store.dispatch, store.getState);
+      });
+    });
 
-  //   it("should not call SET_REQUESTED_AT action", () => {
-  //     action = find(store.getActions(), { type: "SETUP_REQUESTED_AT" });
-  //     expect(action).to.not.exist;
-  //   });
-  // });
+    it('should not call SET_REQUESTED_AT action', () => {
+      action = find(store.getActions(), { type: 'SETUP_REQUESTED_AT' });
+      expect(action).to.not.exist;
+    });
+  });
 
-  // describe("updateInvalidOrderRequestedAt for olo order with an invalid requested at", () => {
-  //   before(() => {
-  //     store = mockStore(stateForOloOrderStubWithValidRequestedAt);
+  describe('updateInvalidOrderRequestedAt for olo order with an invalid requested at', () => {
+    before(() => {
+      store = mockStore(stateForOloOrderStubWithValidRequestedAt);
+      const order = makeUnpersistedOrder();
 
-  //     return setOrderLocationId(makeUnpersistedOrder(), 885)(
-  //       store.dispatch,
-  //       store.getState
-  //     ).then(res => {
-  //       const todayAsLuxonDateTime = DateTime.fromISO("2019-02-14T20:35:00Z", {
-  //         zone: PACIFIC
-  //       });
-  //       const requestedAtAsLuxonDateTime = DateTime.fromISO(
-  //         "2019-02-14T19:00:00Z",
-  //         { zone: PACIFIC }
-  //       );
-  //       return updateInvalidOrderRequestedAt({
-  //         orderRef: res.value.order,
-  //         todayAsLuxonDateTime,
-  //         requestedAtAsLuxonDateTime
-  //       })(store.dispatch, store.getState).then(() => {
-  //         actionsCalled = store.getActions();
-  //       });
-  //     });
-  //   });
+      return setOrderLocationId(makeUnpersistedOrder(), 885)(
+        store.dispatch,
+        store.getState,
+      ).then(() => {
+        const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:35:00Z', {
+          zone: PACIFIC,
+        });
+        const requestedAtAsLuxonDateTime = DateTime.fromISO(
+          '2019-02-14T19:00:00Z',
+          { zone: PACIFIC },
+        );
+        return updateInvalidOrderRequestedAt({
+          orderRef: order,
+          todayAsLuxonDateTime,
+          requestedAtAsLuxonDateTime,
+        })(store.dispatch, store.getState).then(() => {
+          actionsCalled = store.getActions();
+        });
+      });
+    });
 
-  //   it("should call at least 4 actions", () => {
-  //     expect(actionsCalled).to.have.length.of.at.least(4);
-  //   });
+    it('should call at least 4 actions', () => {
+      expect(actionsCalled).to.have.length.of.at.least(4);
+    });
 
-  //   it("should have SET_REQUESTED_AT_PENDING action", () => {
-  //     action = find(actionsCalled, { type: "SET_REQUESTED_AT_PENDING" });
-  //     expect(action).to.exist;
-  //   });
+    it('should have SET_REQUESTED_AT_PENDING action', () => {
+      action = find(actionsCalled, { type: 'SET_REQUESTED_AT_PENDING' });
+      expect(action).to.exist;
+    });
 
-  //   it("should have SET_REQUESTED_AT_FULFILLED action", () => {
-  //     action = find(actionsCalled, { type: "SET_REQUESTED_AT_FULFILLED" });
-  //     expect(action).to.exist;
-  //   });
+    it('should have SET_REQUESTED_AT_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'SET_REQUESTED_AT_FULFILLED' });
+      expect(action).to.exist;
+    });
 
-  //   it("should set the updated requested at to 'asap'", () => {
-  //     action = find(actionsCalled, { type: "SET_REQUESTED_AT_FULFILLED" });
-  //     expect(action.payload.order.requestedAt).to.equal("asap");
-  //   });
-  // });
+    it("should set the updated requested at to 'asap'", () => {
+      action = find(actionsCalled, { type: 'SET_REQUESTED_AT_FULFILLED' });
+      expect(action.payload.order.requestedAt).to.equal('asap');
+    });
+  });
 
-  // describe('updateInvalidOrderRequestedAt for catering order with an invalid requested at', () => {
-  //   before(() => {
-  //     store = mockStore(stateForCateringOrderWithInvalidRequestedAt);
+  describe('updateInvalidOrderRequestedAt for catering order with an invalid requested at', () => {
+    before(() => {
+      store = mockStore(stateForCateringOrderWithInvalidRequestedAt);
+      const order = makeUnpersistedOrder();
 
-  //     return setOrderLocationId(makeUnpersistedOrder(), 886)(
-  //       store.dispatch,
-  //     ).then((res) => {
-  //       const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:35:00Z', {
-  //         zone: PACIFIC,
-  //       });
-  //       const requestedAtAsLuxonDateTime = DateTime.fromISO(
-  //         '2019-02-14T19:00:00Z',
-  //         { zone: PACIFIC },
-  //       );
+      return setOrderLocationId(order, 886)(
+        store.dispatch,
+        store.getState,
+      ).then(() => {
+        const todayAsLuxonDateTime = DateTime.fromISO('2019-02-14T20:35:00Z', {
+          zone: PACIFIC,
+        });
+        const requestedAtAsLuxonDateTime = DateTime.fromISO(
+          '2019-02-14T19:00:00Z',
+          { zone: PACIFIC },
+        );
 
-  //       return updateInvalidOrderRequestedAt({
-  //         orderRef: res.value.order,
-  //         todayAsLuxonDateTime,
-  //         requestedAtAsLuxonDateTime,
-  //       })(store.dispatch, store.getState).then(() => {
-  //         actionsCalled = store.getActions();
-  //       });
-  //     });
-  //   });
+        return updateInvalidOrderRequestedAt({
+          orderRef: order,
+          todayAsLuxonDateTime,
+          requestedAtAsLuxonDateTime,
+        })(store.dispatch, store.getState).then(() => {
+          actionsCalled = store.getActions();
+        });
+      });
+    });
 
-  //   it('should call at least 4 actions', () => {
-  //     expect(actionsCalled).to.have.length.of.at.least(4);
-  //   });
+    it('should call at least 4 actions', () => {
+      expect(actionsCalled).to.have.length.of.at.least(4);
+    });
 
-  //   it('should have SET_REQUESTED_AT_PENDING action', () => {
-  //     action = find(actionsCalled, { type: 'SET_REQUESTED_AT_PENDING' });
-  //     expect(action).to.exist;
-  //   });
+    it('should have SET_REQUESTED_AT_PENDING action', () => {
+      action = find(actionsCalled, { type: 'SET_REQUESTED_AT_PENDING' });
+      expect(action).to.exist;
+    });
 
-  //   it('should have SET_REQUESTED_AT_FULFILLED action', () => {
-  //     action = find(actionsCalled, { type: 'SET_REQUESTED_AT_FULFILLED' });
-  //     expect(action).to.exist;
-  //   });
+    it('should have SET_REQUESTED_AT_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'SET_REQUESTED_AT_FULFILLED' });
+      expect(action).to.exist;
+    });
 
-  //   it("should set the updated requested at to 'asap'", () => {
-  //     action = find(actionsCalled, { type: 'SET_REQUESTED_AT_FULFILLED' });
-  //     const requestedAtFromISO = DateTime.fromISO(
-  //       action.payload.order.requestedAt,
-  //     );
-  //     expect(requestedAtFromISO.isValid).to.be.true;
-  //   });
-  // });
+    it("should set the updated requested at to 'asap'", () => {
+      action = find(actionsCalled, { type: 'SET_REQUESTED_AT_FULFILLED' });
+      const requestedAtFromISO = DateTime.fromISO(
+        action.payload.order.requestedAt,
+      );
+      expect(requestedAtFromISO.isValid).to.be.true;
+    });
+  });
 
   // describe('sendSupportTicket', () => {
   //   before(() => {

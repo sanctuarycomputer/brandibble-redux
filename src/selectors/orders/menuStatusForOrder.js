@@ -2,7 +2,11 @@ import { createSelector } from 'reselect';
 import memoize from 'lodash.memoize';
 import { DateTime, Settings } from 'luxon';
 import get from '../../utils/get';
-import { Asap, MenuStatusCodes } from '../../utils/constants';
+import {
+  Asap,
+  MenuStatusCodes,
+  SystemTimezoneMap,
+} from '../../utils/constants';
 import luxonDateTimeFromRequestedAt from '../../utils/luxonDateTimeFromRequestedAt';
 
 import { validOrderTimeForNow } from './validOrderTimeForNow';
@@ -160,7 +164,15 @@ export const menuStatusForOrder = createSelector(
       validOrderTimeForOrder(state)(
         luxonDateTimeFromRequestedAt(
           get(state, 'session.order.orderData.requested_at'),
-          'America/Los_Angeles',
+          SystemTimezoneMap[
+            get(
+              state,
+              `data.locations.locationsById.${get(
+                state,
+                'session.order.orderData.location_id',
+              )}.timezone`,
+            )
+          ],
         ),
       ),
     ),

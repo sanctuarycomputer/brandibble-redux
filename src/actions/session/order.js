@@ -1,10 +1,13 @@
 /* eslint no-shadow:1, no-unused-vars:1, prefer-rest-params:1 */
 import BrandibbleReduxException from '../../utils/exception';
-import { Defaults, Asap } from '../../utils/constants';
+import { Defaults, Asap, SystemTimezoneMap } from '../../utils/constants';
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
+import luxonDateTimeFromRequestedAt from '../../utils/luxonDateTimeFromRequestedAt';
 import get from '../../utils/get';
 import { getStateWithNamespace } from '../../utils/getStateWithNamespace';
+import { supportsCatering } from '../../utils/orderTypes';
+import { updateInvalidOrderRequestedAt } from '../application';
 import { authenticateUser } from './user';
 import { fetchMenu } from './menus';
 import { fetchLocation } from '../data/locations';
@@ -367,40 +370,93 @@ export function validateCurrentOrder(brandibble, data = {}) {
   };
 }
 
+// export function setOrderLocationId(currentOrder, locationId) {
+//   return (dispatch) => {
+//     return dispatch(_setOrderLocationId(...arguments));
+//   };
+// }
+
 export function setOrderLocationId(currentOrder, locationId) {
   return (dispatch, getState) => {
-    return dispatch(_setOrderLocationId(...arguments)).then(() => {
+    return dispatch(_setOrderLocationId(...arguments)).then((res) => {
       /**
        * Prior to resolving, we want to ensure
        * a valid requested at for the current location
        */
       const state = getStateWithNamespace(getState);
+      const brandibbleRef = get(state, 'ref');
+      const requestedAt = get(state, 'session.order.orderData.requested_at');
       const hasLocationInMemory = !!get(
         state,
         `data.locations.locationsById.${locationId}`,
         false,
       );
 
-      if (!hasLocationInMemory) {
-        const ref = get(state, 'ref');
-        const requestedAt = get(state, 'session.order.orderData.requested_at');
-
-        // return dispatch(fetchLocation(ref, locationId, {
-        //   requested_at: get(orderData, 'requestedAt',
-        //   include_times: true,
-        // })
-      }
-
       /**
-       * This should allllll happen, after _setOrderLocationId has resolved, becuase
-       * the menuStatusSelector runs against state
-       *
-       * 1. get stateWithNameSpace
-       * 2. check if new locationId is same as locationId on order. If it is return early
-       * 3. check if location data for new locationId exists in memory.
-       *  a. If it does not exist, load it into memory before continuing
-       * 4. run the updateInvalidRequestedAt logic against t6he current state
+       * First we determine whether the location exists in memory
+       * If it does, we fetch the location with the new locationId
+       * otherwise we return a resolved Promise
        */
+      (!hasLocationInMemory
+        ? dispatch(
+            fetchLocation(brandibbleRef, locationId, {
+              requested_at: requestedAt,
+              include_times: true,
+            }),
+          )
+        : Promise.resolve()
+      )
+        .then(() => {
+          debugger;
+          /**
+           * Second, we determine if the new location is a catering location.
+           * If it is, and the requestedAt is set to 'asap' we need to convert it
+           * to the current time in a valid ISO8601 format.
+           * Other we return a resolved Promise and continue.
+           */
+          const nextState = getStateWithNamespace(getState);
+          const orderTypesForCurrentOrderLocation = get(
+            nextState,
+            `data.locations.locationsById.${locationId}.order_types`,
+            [],
+          );
+          const isCateringOrder = supportsCatering(
+            orderTypesForCurrentOrderLocation,
+          );
+
+          if (isCateringOrder && requestedAt === Asap) {
+            const orderRef = get(nextState, 'session.order.ref');
+            const timezoneForCurrentLocation = get(
+              nextState,
+              `data.locations.locationsById.${locationId}.timezone`,
+            );
+            const newRequestedAtAsLuxonDateTime = luxonDateTimeFromRequestedAt(
+              requestedAt,
+              SystemTimezoneMap[timezoneForCurrentLocation],
+            );
+            const newRequestedAtAsISO8601 = `${
+              newRequestedAtAsLuxonDateTime
+                .setZone('utc')
+                .toISO()
+                .split('.')[0]
+            }Z`;
+            return dispatch(
+              setRequestedAt(orderRef, newRequestedAtAsISO8601, false),
+            );
+          }
+
+          return Promise.resolve();
+        })
+        .then(() => {
+          /**
+           * Finally, we run the updateInvalidRequestedAt logic against the
+           * new state, which will update the requested at if it is considered
+           * invalid or outdated.
+           */
+          return dispatch(updateInvalidOrderRequestedAt()).then(() => {
+            debugger;
+          });
+        });
     });
   };
 }

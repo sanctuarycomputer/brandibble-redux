@@ -37,6 +37,22 @@ export const stateForCateringOrderWithInvalidRequestedAt = {
   },
 };
 
+export const stateForCateringOrderWithAsapRequestedAt = {
+  data: {
+    locations: {
+      locationsById: cateringLocationStub,
+    },
+  },
+  session: {
+    order: {
+      orderData: {
+        ...cateringOrderDataStub,
+        requested_at: 'asap',
+      },
+    },
+  },
+};
+
 /**
  * OLO
  */

@@ -43,8 +43,10 @@ import {
   SAMPLE_MENU_LOCATION_ID,
   buildLineItem,
   validCredentialsStub,
+  stateWithBrandibbleRef,
 } from '../../config/stubs';
 import { Asap } from 'utils/constants';
+import { discoverReduxNamespace } from '../../../src/utils/getStateWithNamespace';
 
 const getNonConfigurableMenuItem = menu =>
   menu
@@ -57,15 +59,19 @@ const mockStore = configureStore(reduxMiddleware);
 delete addressStub.customer_address_id;
 
 describe('actions/session/order', () => {
-  let store, 
-action, 
-actionsCalled;
+  let store;
+  let action;
+  let actionsCalled;
   describe('resolveOrder', () => {
     before(() => {
-      store = mockStore();
-      return resolveOrder(brandibble)(store.dispatch).then(() => {
-        actionsCalled = store.getActions();
-      });
+      store = mockStore(stateWithBrandibbleRef);
+      discoverReduxNamespace(store.getState, brandibble);
+
+      return resolveOrder(brandibble)(store.dispatch, store.getState).then(
+        () => {
+          actionsCalled = store.getActions();
+        },
+      );
     });
 
     it('should call 2 actions', () => {
@@ -87,18 +93,24 @@ actionsCalled;
 
   describe('resolveOrder with locationId', () => {
     before(() => {
-      store = mockStore();
-      return setOrderLocationId(makeUnpersistedOrder(), 19)(
+      store = mockStore(stateWithBrandibbleRef);
+
+      return setRequestedAt(makeUnpersistedOrder(), 'asap')(
         store.dispatch,
-      ).then(() => {
-        return resolveOrder(brandibble)(store.dispatch).then(() => {
-          actionsCalled = store.getActions();
+      ).then((res) => {
+        return setOrderLocationId(res.value.order, 19)(
+          store.dispatch,
+          store.getState,
+        ).then(() => {
+          return resolveOrder(brandibble)(store.dispatch).then(() => {
+            actionsCalled = store.getActions();
+          });
         });
       });
     });
 
-    it('should call 6 actions', () => {
-      expect(actionsCalled).to.have.length.of(8);
+    it('should call 12 actions', () => {
+      expect(actionsCalled).to.have.length.of(12);
     });
 
     it('should have FETCH_MENU_PENDING action', () => {
@@ -120,27 +132,39 @@ actionsCalled;
       action = find(actionsCalled, { type: 'FETCH_LOCATION_FULFILLED' });
       expect(action).to.exist;
     });
+
+    it('should have RESOLVE_ORDER_PENDING action', () => {
+      action = find(actionsCalled, { type: 'RESOLVE_ORDER_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have RESOLVE_ORDER_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'RESOLVE_ORDER_FULFILLED' });
+      expect(action).to.exist;
+    });
   });
 
   describe('resolveOrder with requestedAt in the past and locationId', () => {
     before(() => {
-      store = mockStore();
+      store = mockStore(stateWithBrandibbleRef);
 
       return setRequestedAt(makeUnpersistedOrder(), '2017-03-22T17:50:29Z')(
         store.dispatch,
+        store.getState,
       ).then((res) => {
-        return setOrderLocationId(res.value.order, 19)(store.dispatch).then(
-          () => {
-            return resolveOrder(brandibble)(store.dispatch).then(() => {
-              actionsCalled = store.getActions();
-            });
-          },
-        );
+        return setOrderLocationId(res.value.order, 19)(
+          store.dispatch,
+          store.getState,
+        ).then(() => {
+          return resolveOrder(brandibble)(store.dispatch).then(() => {
+            actionsCalled = store.getActions();
+          });
+        });
       });
     });
 
-    it('should call 12 actions', () => {
-      expect(actionsCalled).to.have.length.of(12);
+    it('should call 14 actions', () => {
+      expect(actionsCalled).to.have.length.of(14);
     });
 
     it('should have SET_REQUESTED_AT_PENDING action', () => {
@@ -187,7 +211,7 @@ actionsCalled;
       });
     });
 
-    it('should call 2 actions', () => {
+    it('should call 3 actions', () => {
       expect(actionsCalled).to.have.length.of(2);
     });
 
@@ -204,11 +228,63 @@ actionsCalled;
     });
   });
 
-  describe('setOrderLocationId', () => {
+  describe('setOrderLocationId with new locations data not in store', () => {
     before(() => {
-      store = mockStore();
+      store = mockStore(stateWithBrandibbleRef);
       return setOrderLocationId(makeUnpersistedOrder(), 19)(
         store.dispatch,
+        store.getState,
+      ).then(() => {
+        actionsCalled = store.getActions();
+      });
+    });
+
+    it('should call 4 actions', () =>
+      expect(actionsCalled).to.have.length.of(4));
+
+    it('should have SET_ORDER_LOCATION_ID_PENDING action', () => {
+      action = find(actionsCalled, { type: 'SET_ORDER_LOCATION_ID_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have a payload', () => {
+      action = find(actionsCalled, { type: 'SET_ORDER_LOCATION_ID_FULFILLED' });
+      expect(action).to.have.a.property('payload');
+    });
+
+    it('should have FETCH_LOCATION_PENDING action', () => {
+      action = find(actionsCalled, { type: 'FETCH_LOCATION_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have FETCH_LOCATION_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'FETCH_LOCATION_FULFILLED' });
+      expect(action).to.exist;
+    });
+
+    it('should have a payload', () => {
+      action = find(actionsCalled, { type: 'SET_ORDER_LOCATION_ID_FULFILLED' });
+      expect(action).to.have.a.property('payload');
+    });
+  });
+
+  describe('setOrderLocationId with location already in store', () => {
+    before(() => {
+      const stateWithLocation = {
+        ...stateWithBrandibbleRef,
+        data: {
+          locations: {
+            locationsById: {
+              19: {},
+            },
+          },
+        },
+      };
+
+      store = mockStore(stateWithLocation);
+      return setOrderLocationId(makeUnpersistedOrder(), 19)(
+        store.dispatch,
+        store.getState,
       ).then(() => {
         actionsCalled = store.getActions();
       });
@@ -351,17 +427,20 @@ actionsCalled;
 
   describe('validateCurrentCart', () => {
     before(() => {
-      store = mockStore();
+      store = mockStore(stateWithBrandibbleRef);
+
       const order = makeUnpersistedOrder('pickup');
 
       return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(
         store.dispatch,
+        store.getState,
       ).then(({ value: { menu } }) => {
         const product = getNonConfigurableMenuItem(menu);
         order.cart.addLineItem(product, 1, product.id);
 
         return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(
           store.dispatch,
+          store.getState,
         ).then(() => {
           return setOrderAddress(order, addressStub)(store.dispatch).then(
             () => {
@@ -398,17 +477,19 @@ actionsCalled;
 
   describe('validateCurrentOrder', () => {
     before(() => {
-      store = mockStore();
+      store = mockStore(stateWithBrandibbleRef);
       const order = makeUnpersistedOrder('pickup');
 
       return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(
         store.dispatch,
+        store.getState,
       ).then(({ value: { menu } }) => {
         const product = getNonConfigurableMenuItem(menu);
         order.cart.addLineItem(product, 1, product.id);
 
         return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(
           store.dispatch,
+          store.getState,
         ).then(() => {
           return setOrderAddress(order, addressStub)(store.dispatch).then(
             () => {
@@ -522,11 +603,14 @@ actionsCalled;
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have RESET_TIP_FULFILLED action', () => {
       action = find(actionsCalled, { type: 'RESET_TIP_FULFILLED' });
-      expect(action.payload.order).to.exist.and.have.property('miscOptions').to.have.property('tip');
+      expect(action.payload.order)
+        .to.exist.and.have.property('miscOptions')
+        .to.have.property('tip');
       expect(action.payload.order.miscOptions.tip).to.equal(null);
     });
   });
@@ -794,17 +878,19 @@ actionsCalled;
 
   describe('submitOrder', () => {
     before(() => {
-      store = mockStore();
+      store = mockStore(stateWithBrandibbleRef);
       const order = makeUnpersistedOrder('pickup');
 
       return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(
         store.dispatch,
+        store.getState,
       ).then(({ value: { menu } }) => {
         const product = getNonConfigurableMenuItem(menu);
         order.cart.addLineItem(product, 1, product.id);
 
         return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(
           store.dispatch,
+          store.getState,
         ).then(() => {
           return setOrderAddress(order, addressStub)(store.dispatch).then(
             () => {

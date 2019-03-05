@@ -17,6 +17,13 @@ export const brandibble = new Brandibble({
 
 export const stateWithBrandibbleRef = {
   ref: brandibble,
+  session: {
+    order: {
+      orderData: {
+        requested_at: 'asap',
+      },
+    },
+  },
 };
 
 export function makeUnpersistedOrder() {

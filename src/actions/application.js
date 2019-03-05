@@ -73,22 +73,27 @@ export const updateInvalidOrderRequestedAt = (testArguments = {}) => (
      * So if for some reason it has been, we update it here.
      * Otherwise we resolve.
      */
+
     if (isCateringLocation && currentOrderRequestedAt === Asap) {
       const timezoneForCurrentLocation = get(
         state,
         `data.locations.locationsById.${currentOrderLocationId}.timezone`,
       );
-      const newRequestedAtAsLuxonDateTime = luxonDateTimeFromRequestedAt(
-        currentOrderRequestedAt,
-        SystemTimezoneMap[timezoneForCurrentLocation],
-      );
+      const newRequestedAtAsLuxonDateTime = isTestMode
+        ? get(testArguments, 'todayAsLuxonDateTime')
+        : luxonDateTimeFromRequestedAt(
+            currentOrderRequestedAt,
+            SystemTimezoneMap[timezoneForCurrentLocation],
+          );
       const newRequestedAtAsISO8601 = `${
         newRequestedAtAsLuxonDateTime
           .setZone('utc')
           .toISO()
           .split('.')[0]
       }Z`;
-      return dispatch(setRequestedAt(orderRef, newRequestedAtAsISO8601, false));
+      return dispatch(
+        setRequestedAt(orderRef, newRequestedAtAsISO8601, false),
+      ).then(resolve);
     }
     return resolve();
   }).then(() => {

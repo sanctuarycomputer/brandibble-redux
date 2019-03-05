@@ -10,7 +10,7 @@ module.exports = (config) => {
     client: {
       mocha: {
         reporter: 'html',
-        timeout: `${process.env.CI ? '80000' : '20000'}`,
+        timeout: `${process.env.CI ? '80000' : '50000'}`,
       },
     },
     files: [

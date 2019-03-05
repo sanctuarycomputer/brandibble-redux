@@ -94,18 +94,23 @@ describe('actions/session/order', () => {
   describe('resolveOrder with locationId', () => {
     before(() => {
       store = mockStore(stateWithBrandibbleRef);
-      return setOrderLocationId(makeUnpersistedOrder(), 19)(
+
+      return setRequestedAt(makeUnpersistedOrder(), 'asap')(
         store.dispatch,
-        store.getState,
-      ).then(() => {
-        return resolveOrder(brandibble)(store.dispatch).then(() => {
-          actionsCalled = store.getActions();
+      ).then((res) => {
+        return setOrderLocationId(res.value.order, 19)(
+          store.dispatch,
+          store.getState,
+        ).then(() => {
+          return resolveOrder(brandibble)(store.dispatch).then(() => {
+            actionsCalled = store.getActions();
+          });
         });
       });
     });
 
-    it('should call 10 actions', () => {
-      expect(actionsCalled).to.have.length.of(10);
+    it('should call 12 actions', () => {
+      expect(actionsCalled).to.have.length.of(12);
     });
 
     it('should have FETCH_MENU_PENDING action', () => {
@@ -125,6 +130,16 @@ describe('actions/session/order', () => {
 
     it('should have FETCH_LOCATION_FULFILLED action', () => {
       action = find(actionsCalled, { type: 'FETCH_LOCATION_FULFILLED' });
+      expect(action).to.exist;
+    });
+
+    it('should have RESOLVE_ORDER_PENDING action', () => {
+      action = find(actionsCalled, { type: 'RESOLVE_ORDER_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have RESOLVE_ORDER_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'RESOLVE_ORDER_FULFILLED' });
       expect(action).to.exist;
     });
   });
@@ -224,8 +239,8 @@ describe('actions/session/order', () => {
       });
     });
 
-    it('should call 2 actions', () =>
-      expect(actionsCalled).to.have.length.of(3));
+    it('should call 4 actions', () =>
+      expect(actionsCalled).to.have.length.of(4));
 
     it('should have SET_ORDER_LOCATION_ID_PENDING action', () => {
       action = find(actionsCalled, { type: 'SET_ORDER_LOCATION_ID_PENDING' });
@@ -236,11 +251,37 @@ describe('actions/session/order', () => {
       action = find(actionsCalled, { type: 'SET_ORDER_LOCATION_ID_FULFILLED' });
       expect(action).to.have.a.property('payload');
     });
+
+    it('should have FETCH_LOCATION_PENDING action', () => {
+      action = find(actionsCalled, { type: 'FETCH_LOCATION_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have FETCH_LOCATION_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'FETCH_LOCATION_FULFILLED' });
+      expect(action).to.exist;
+    });
+
+    it('should have a payload', () => {
+      action = find(actionsCalled, { type: 'SET_ORDER_LOCATION_ID_FULFILLED' });
+      expect(action).to.have.a.property('payload');
+    });
   });
 
-  describe('setOrderLocationId', () => {
+  describe('setOrderLocationId with location already in store', () => {
     before(() => {
-      store = mockStore(stateWithBrandibbleRef);
+      const stateWithLocation = {
+        ...stateWithBrandibbleRef,
+        data: {
+          locations: {
+            locationsById: {
+              19: {},
+            },
+          },
+        },
+      };
+
+      store = mockStore(stateWithLocation);
       return setOrderLocationId(makeUnpersistedOrder(), 19)(
         store.dispatch,
         store.getState,
@@ -250,7 +291,7 @@ describe('actions/session/order', () => {
     });
 
     it('should call 2 actions', () =>
-      expect(actionsCalled).to.have.length.of(3));
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have SET_ORDER_LOCATION_ID_PENDING action', () => {
       action = find(actionsCalled, { type: 'SET_ORDER_LOCATION_ID_PENDING' });

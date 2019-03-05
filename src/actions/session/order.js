@@ -370,34 +370,39 @@ export function validateCurrentOrder(brandibble, data = {}) {
 
 export function setOrderLocationId(currentOrder, locationId) {
   return (dispatch, getState) => {
-    return dispatch(_setOrderLocationId(...arguments)).then((res) => {
-      /**
-       * Prior to resolving, we want to ensure
-       * a valid requested at for the current location
-       */
-      const state = getStateWithNamespace(getState);
-      const brandibbleRef = get(state, 'ref');
-      const requestedAt = get(state, 'session.order.orderData.requested_at');
-      const hasLocationInMemory = !!get(
-        state,
-        `data.locations.locationsById.${locationId}`,
-        false,
-      );
+    return dispatch(_setOrderLocationId(...arguments))
+      .then(() => {
+        /**
+         * Prior to resolving, we want to ensure
+         * a valid requested at for the current location
+         */
+        const state = getStateWithNamespace(getState);
+        const brandibbleRef = get(state, 'ref');
+        const requestedAt = get(state, 'session.order.orderData.requested_at');
+        const hasLocationInMemory = !!get(
+          state,
+          `data.locations.locationsById.${locationId}`,
+          false,
+        );
 
-      /**
-       * First we determine whether the location exists in memory
-       * If it does, we fetch the location with the new locationId
-       * otherwise we return a resolved Promise
-       */
-      (!hasLocationInMemory
-        ? dispatch(
+        /**
+         * First we determine whether the location exists in memory
+         * If it does, we fetch the location with the new locationId
+         * otherwise we return a resolved Promise
+         */
+
+        if (!hasLocationInMemory) {
+          return dispatch(
             fetchLocation(brandibbleRef, locationId, {
               requested_at: requestedAt,
               include_times: true,
             }),
-          )
-        : Promise.resolve()
-      ).then(() => {
+          );
+        }
+
+        return Promise.resolve();
+      })
+      .then(() => {
         /**
          * Finally, we run the updateInvalidRequestedAt logic against the
          * new state, which will update the requested at if it is considered
@@ -405,7 +410,6 @@ export function setOrderLocationId(currentOrder, locationId) {
          */
         return dispatch(updateInvalidOrderRequestedAt());
       });
-    });
   };
 }
 

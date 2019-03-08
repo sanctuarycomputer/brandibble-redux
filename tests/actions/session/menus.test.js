@@ -2,11 +2,13 @@
 /* eslint one-var-declaration-per-line:1, one-var:1 */
 import { expect } from 'chai';
 import find from 'lodash.find';
+import { utils } from 'brandibble';
 import configureStore from 'redux-mock-store';
 import reduxMiddleware from 'config/middleware';
 import { fetchMenu, FETCH_MENU } from 'actions/session/menus';
 import { brandibble, SAMPLE_MENU_LOCATION_ID } from '../../config/stubs';
 
+const { coerceDateToISO8601 } = utils;
 const mockStore = configureStore(reduxMiddleware);
 
 describe('actions/session/menus', () => {
@@ -46,9 +48,9 @@ describe('actions/session/menus', () => {
         expect(action).to.have.property('meta');
         expect(action.meta).to.have.property(
           'menuKey',
-          `${menuType.locationId}_${menuType.serviceType}_${
-            menuType.requestedAt
-          }`,
+          `${menuType.locationId}_${menuType.serviceType}_${coerceDateToISO8601(
+            menuType.requestedAt,
+          )}`,
         );
       });
     });

@@ -1,8 +1,10 @@
+import { utils } from 'brandibble';
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
 
 export const FETCH_MENU = 'FETCH_MENU';
 
+const { coerceDateToISO8601 } = utils;
 const NOW = new Date();
 
 const defaultMenuType = {
@@ -17,12 +19,16 @@ export const fetchMenu = (
 ) => (dispatch) => {
   const { locationId, requestedAt, serviceType } = menuType;
 
+  const requestedAtAsISO8601 = coerceDateToISO8601(requestedAt);
+
   const payload = brandibble.menus
-    .build(locationId, serviceType, requestedAt)
+    .build(locationId, serviceType, requestedAtAsISO8601)
     .then(({ data }) => data)
     .catch(handleErrors);
 
-  const meta = { menuKey: `${locationId}_${serviceType}_${requestedAt}` };
+  const meta = {
+    menuKey: `${locationId}_${serviceType}_${requestedAtAsISO8601}`,
+  };
 
   return dispatch(fireAction(FETCH_MENU, payload, meta));
 };

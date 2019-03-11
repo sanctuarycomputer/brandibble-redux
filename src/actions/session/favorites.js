@@ -20,7 +20,7 @@ export const createFavorite = (brandibble, favorite = {}) => dispatch => {
   if (product) {
     lineItem = new brandibble.LineItem(product, 1);
   } else {
-    lineItem = favorite.lineItem;
+    lineItem = get(favorite, 'lineItem');
   }
 
   const payload = brandibble.favorites.create(name, lineItem).then(({ data }) => data).catch(handleErrors);

@@ -15,7 +15,6 @@ export const fetchFavorites = brandibble => (dispatch) => {
 export const createFavorite = (brandibble, favorite = {}) => (dispatch, getState) => {
   const state = getStateWithNamespace(getState);
   const name = favorite.name;
-  debugger;
   let lineItem;
   if (favorite.product) {
     lineItem = new state.ref.LineItem(favorite.product, 1);

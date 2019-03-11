@@ -21,11 +21,27 @@ export const Timezones = {
   EASTERN: 'America/New_York',
 };
 
-export const BrandibbleTimezoneMap = {
+/**
+ * System refers to Brandibble,
+ * as Brandibble's timezones are inconsistent
+ * with those used by most timezone libs (in our case luxon)
+ */
+
+export const SystemTimezoneMap = {
   'US/Pacific': Timezones.PACIFIC,
   'US/Mountain': Timezones.MOUNTAIN,
   'US/Central': Timezones.CENTRAL,
   'US/Eastern': Timezones.EASTERN,
+};
+
+export const MenuStatusCodes = {
+  FUTURE_ORDER_REQUEST: 'Future order requested',
+  ASAP_ORDER_REQUEST: "Order requested for 'asap'",
+  INVALID_REQUESTED_AT: 'Requested at time is invalid',
+  REQUESTED_AT_HAS_PASSED: 'Requested at time has passed',
+  ORDERING_FOR_FIRST_AVAILABLE_VALID_TIME:
+    'Ordering for first available valid time',
+  ORDERING_FOR_FUTURE_DAYPART: 'Ordering for future daypart',
 };
 
 /**

@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { ASAP } from './constants';
+import { Asap } from './constants';
 
 /**
  * An order can have a requested_at
@@ -7,5 +7,13 @@ import { ASAP } from './constants';
  * ISO8601 datetime string
  */
 
-export default requestedAt =>
-  requestedAt === ASAP ? DateTime.local() : DateTime.fromISO(requestedAt);
+export default (requestedAt, timezone) => {
+  const requestedAtAsLuxonDateTime =
+    requestedAt === Asap ? DateTime.local() : DateTime.fromISO(requestedAt);
+
+  if (timezone) {
+    return requestedAtAsLuxonDateTime.setZone(timezone);
+  }
+
+  return requestedAtAsLuxonDateTime;
+};

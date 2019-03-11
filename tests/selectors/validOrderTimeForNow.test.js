@@ -2,10 +2,10 @@
 import { expect } from 'chai';
 
 import {
-  brandibbleStateForCateringOrderStub,
-  brandibbleStateForOloOrderStub,
-  brandibbleStateForUnconfiguredOrderStub,
-} from '../config/brandibbleStateStubs';
+  stateForCateringOrderStub,
+  stateForOloOrderStub,
+  stateForUnconfiguredOrderStub,
+} from '../config/stateStubs';
 
 import { validOrderTimeForNow } from '../../src/selectors';
 
@@ -14,14 +14,14 @@ const cateringLocationId = 886;
 
 const serviceType = 'pickup';
 
-describe('selectors/validOrderTimeForNow', () => {
+describe('selectors/orders/validOrderTimeForNow', () => {
   it('it should return the valid first time object for a olo order location', () => {
     const testValidOrderTimeForNowWithOloOrderStub = validOrderTimeForNow(
-      brandibbleStateForOloOrderStub,
+      stateForOloOrderStub,
     );
 
     const firstTimeForOloLocation =
-      brandibbleStateForOloOrderStub.data.locations.locationsById[oloLocationId]
+      stateForOloOrderStub.data.locations.locationsById[oloLocationId]
         .first_times[serviceType];
 
     expect(testValidOrderTimeForNowWithOloOrderStub).to.deep.equal(
@@ -31,22 +31,21 @@ describe('selectors/validOrderTimeForNow', () => {
 
   it('it should return the valid first time object for a catering order location', () => {
     const testValidOrderTimeForNowWithCateringOrderStub = validOrderTimeForNow(
-      brandibbleStateForCateringOrderStub,
+      stateForCateringOrderStub,
     );
 
     const firstTimeForCateringLocation =
-      brandibbleStateForCateringOrderStub.data.locations.locationsById[
-        cateringLocationId
-      ].first_times[serviceType];
+      stateForCateringOrderStub.data.locations.locationsById[cateringLocationId]
+        .first_times[serviceType];
 
     expect(testValidOrderTimeForNowWithCateringOrderStub).to.deep.equal(
       firstTimeForCateringLocation,
     );
   });
 
-  it('it should return the undefined for a non configured order that (lacks a location_id)', () => {
+  it('it should return null for a non configured order that (lacks a location_id)', () => {
     const testValidOrderTimeForNowWithUnconfiguredOrderStub = validOrderTimeForNow(
-      brandibbleStateForUnconfiguredOrderStub,
+      stateForUnconfiguredOrderStub,
     );
 
     expect(testValidOrderTimeForNowWithUnconfiguredOrderStub).to.be.null;

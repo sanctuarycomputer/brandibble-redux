@@ -4,6 +4,8 @@ import { Defaults, Asap } from '../../utils/constants';
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
 import get from '../../utils/get';
+import { getStateWithNamespace } from '../../utils/getStateWithNamespace';
+import { updateInvalidOrderRequestedAt } from '../application';
 import { authenticateUser } from './user';
 import { fetchMenu } from './menus';
 import { fetchLocation } from '../data/locations';
@@ -21,6 +23,7 @@ export const SUBMIT_ORDER = 'SUBMIT_ORDER';
 export const BIND_CUSTOMER_TO_ORDER = 'BIND_CUSTOMER_TO_ORDER';
 export const SET_PAYMENT_METHOD = 'SET_PAYMENT_METHOD';
 export const SET_TIP = 'SET_TIP';
+export const RESET_TIP = 'RESET_TIP';
 export const SET_ORDER_ADDRESS = 'SET_ORDER_ADDRESS';
 export const SET_PROMO_CODE = 'SET_PROMO_CODE';
 export const SET_SERVICE_TYPE = 'SET_SERVICE_TYPE';
@@ -366,7 +369,48 @@ export function validateCurrentOrder(brandibble, data = {}) {
 }
 
 export function setOrderLocationId(currentOrder, locationId) {
-  return dispatch => dispatch(_setOrderLocationId(...arguments));
+  return (dispatch, getState) => {
+    return dispatch(_setOrderLocationId(...arguments))
+      .then(() => {
+        /**
+         * Prior to resolving, we want to ensure
+         * a valid requested at for the current location
+         */
+        const state = getStateWithNamespace(getState);
+        const brandibbleRef = get(state, 'ref');
+        const requestedAt = get(state, 'session.order.orderData.requested_at');
+        const hasLocationInMemory = !!get(
+          state,
+          `data.locations.locationsById.${locationId}`,
+          false,
+        );
+
+        /**
+         * First we determine whether the location exists in memory
+         * If it does, we fetch the location with the new locationId
+         * otherwise we return a resolved Promise
+         */
+
+        if (!hasLocationInMemory) {
+          return dispatch(
+            fetchLocation(brandibbleRef, locationId, {
+              requested_at: requestedAt,
+              include_times: true,
+            }),
+          );
+        }
+
+        return Promise.resolve();
+      })
+      .then(() => {
+        /**
+         * Finally, we run the updateInvalidRequestedAt logic against the
+         * new state, which will update the requested at if it is considered
+         * invalid or outdated.
+         */
+        return dispatch(updateInvalidOrderRequestedAt());
+      });
+  };
 }
 
 export function setOrderAddress(...args) {

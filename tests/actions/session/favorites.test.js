@@ -150,26 +150,5 @@ describe('actions/session/favorites', () => {
       action = find(actionsCalled, { type: `${CREATE_FAVORITE}_FULFILLED` });
       expect(action).to.exist;
     });
-
-    describe('deleteFavorite', () => {
-      before(() => {
-        store.clearActions();
-        return deleteFavorite(brandibble, id)(store.dispatch).then(() => {
-          actionsCalled = store.getActions();
-        });
-      });
-
-      it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
-
-      it(`should have ${DELETE_FAVORITE}_PENDING action`, () => {
-        action = find(actionsCalled, { type: `${DELETE_FAVORITE}_PENDING` });
-        expect(action).to.exist;
-      });
-
-      it(`should have ${DELETE_FAVORITE}_FULFILLED action`, () => {
-        action = find(actionsCalled, { type: `${DELETE_FAVORITE}_FULFILLED` });
-        expect(action).to.exist;
-      });
-    });
   });
 });

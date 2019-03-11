@@ -15,8 +15,7 @@ import {
   deleteFavorite,
 } from 'actions/session/favorites';
 import { authenticateUser } from 'actions/session/user';
-import { brandibble, buildLineItem, validCredentialsStub, stateWithBrandibbleRef, itemStub } from '../../config/stubs';
-import { discoverReduxNamespace } from '../../../src/utils/getStateWithNamespace';
+import { brandibble, buildLineItem, validCredentialsStub, itemStub } from '../../config/stubs';
 
 const mockStore = configureStore(reduxMiddleware);
 
@@ -24,8 +23,7 @@ describe('actions/session/favorites', () => {
   let action, actionsCalled, store;
 
   before(() => {
-    store = mockStore(stateWithBrandibbleRef);
-    discoverReduxNamespace(store.getState, brandibble);
+    store = mockStore();
     return authenticateUser(brandibble, validCredentialsStub)(store.dispatch).then(() => {
       store.clearActions();
     });
@@ -58,10 +56,9 @@ describe('actions/session/favorites', () => {
     let id;
 
     before(() => {
-      store = mockStore(stateWithBrandibbleRef);
-      discoverReduxNamespace(store.getState, brandibble);
+      store = mockStore();
       const favorite = { name: 'my favorite', lineItem: buildLineItem() };
-      return createFavorite(brandibble, favorite)(store.dispatch, store.getState).then(() => {
+      return createFavorite(brandibble, favorite)(store.dispatch).then(() => {
         actionsCalled = store.getActions();
         action = find(actionsCalled, { type: `${CREATE_FAVORITE}_FULFILLED` });
         id = action.payload.favorite_item_id;
@@ -129,10 +126,9 @@ describe('actions/session/favorites', () => {
     let id;
 
     before(() => {
-      store = mockStore(stateWithBrandibbleRef);
-      discoverReduxNamespace(store.getState, brandibble);
-      const favorite = { name: 'my favorite', product: itemStuba };
-      return createFavorite(brandibble, favorite)(store.dispatch, store.getState).then(() => {
+      store = mockStore();
+      const favorite = { name: 'my favorite', product: itemStub };
+      return createFavorite(brandibble, favorite)(store.dispatch).then(() => {
         actionsCalled = store.getActions();
         action = find(actionsCalled, { type: `${CREATE_FAVORITE}_FULFILLED` });
         id = action.payload.favorite_item_id;

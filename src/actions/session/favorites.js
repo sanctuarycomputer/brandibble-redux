@@ -1,6 +1,6 @@
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
-import { getStateWithNamespace } from '../../utils/getStateWithNamespace';
+import get from '../../utils/get';
 
 export const FETCH_FAVORITES = 'FETCH_FAVORITES';
 export const CREATE_FAVORITE = 'CREATE_FAVORITE';
@@ -12,15 +12,17 @@ export const fetchFavorites = brandibble => (dispatch) => {
   return dispatch(fireAction(FETCH_FAVORITES, payload));
 };
 
-export const createFavorite = (brandibble, favorite = {}) => (dispatch, getState) => {
-  const state = getStateWithNamespace(getState);
-  const name = favorite.name;
+export const createFavorite = (brandibble, favorite = {}) => dispatch => {
+  const name = get(favorite, 'name', '');
+  const product = get(favorite, 'product');
+
   let lineItem;
-  if (favorite.product) {
-    lineItem = new state.ref.LineItem(favorite.product, 1);
+  if (product) {
+    lineItem = new brandibble.LineItem(product, 1);
   } else {
     lineItem = favorite.lineItem;
   }
+
   const payload = brandibble.favorites.create(name, lineItem).then(({ data }) => data).catch(handleErrors);
   return dispatch(fireAction(CREATE_FAVORITE, payload));
 };

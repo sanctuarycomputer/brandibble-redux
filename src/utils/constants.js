@@ -5,6 +5,13 @@ export const Status = {
   REJECTED: 'REJECTED',
 };
 
+export const ErrorCodes = {
+  validateCart: {
+    locationIsClosed: 'orders.validate.location_closed',
+    invalidItems: 'orders.validate.invalid_items',
+  },
+};
+
 export const Defaults = {
   miscOptions: {
     include_utensils: true,

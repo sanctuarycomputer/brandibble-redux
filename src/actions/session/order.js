@@ -1,6 +1,6 @@
 /* eslint no-shadow:1, no-unused-vars:1, prefer-rest-params:1 */
 import BrandibbleReduxException from '../../utils/exception';
-import { Defaults, Asap } from '../../utils/constants';
+import { Defaults, Asap, ErrorCodes } from '../../utils/constants';
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
 import get from '../../utils/get';
@@ -524,4 +524,80 @@ export function bindCustomerToOrder(...args) {
 export function submitOrder(brandibble, order, options = {}) {
   return dispatch =>
     dispatch(_submitOrder(dispatch, brandibble, order, options));
+}
+
+/**
+ *
+
+export function setOrderLocationId(currentOrder, locationId, onValidationError) {
+  return dispatch => {
+    return dispatchEvent(_withCartValidation({ location_id: locationId }, () => innerLogic))
+  }
+}
+
+export function setRequestedAt(currentOrder, requestedAt, wantsFuture, onValidationError) {
+  return dispatch => {
+    return dispatchEvent(_withCartValidation({ location_id: locationId }, () => innerLogic))
+  }
+}
+
+export function setServiceType(currentOrder, serviceType, onValidationError) {
+  return dispatch => {
+    return dispatchEvent(_withCartValidation({ location_id: locationId }, () => innerLogic))
+  }
+}
+
+ *
+ */
+
+export function _withCartValidation(
+  validationHash,
+  onValidationError,
+  actionCallback,
+) {
+  return (dispatch, getState) => {
+    const state = getStateWithNamespace(getState);
+    const ref = get(state, 'ref');
+
+    return dispatch(validateCurrentCart(ref, validationHash))
+      .then(actionCallback)
+      .catch((err) => {
+        if (err && get(err, 'errors', []).length) {
+          /**
+           * Location is Closed
+           */
+          if (
+            get(err.errors[0], 'code') ===
+            ErrorCodes.validateCart.locationIsClosed
+          ) {
+            // Update requested at to next available time
+            // actionCallback (setOrderLocationId, setRequestedAt, setServiceType)
+          }
+
+          /**
+           * Invalid Items in Cart
+           */
+          if (
+            get(err.errors[0], 'code') === ErrorCodes.validateCart.invalidItems
+          ) {
+            const [, ...invalidItems] = err.errors;
+            // list of invalid items
+            // clear invalid items
+            // actionCallback (setOrderLocationId, setRequestedAt, setServiceType)
+          }
+
+          /**
+           * Unmet Delivery Minimum
+           */
+          if (
+            get(err.errors[0], 'code') ===
+            ErrorCodes.validateCart.unmetDeliveryMinimum
+          ) {
+            // Show delivery minimum?
+            // don't know
+            // actionCallback (setOrderLocationId, setRequestedAt, setServiceType)
+          }
+        }
+      });
+  };
 }

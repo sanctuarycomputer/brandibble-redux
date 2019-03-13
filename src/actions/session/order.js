@@ -1,42 +1,42 @@
 /* eslint no-shadow:1, no-unused-vars:1, prefer-rest-params:1 */
-import BrandibbleReduxException from "../../utils/exception";
-import { Defaults, Asap, ErrorCodes } from "../../utils/constants";
-import fireAction from "../../utils/fireAction";
-import handleErrors from "../../utils/handleErrors";
-import get from "../../utils/get";
-import getInvalidLineItems from "../../utils/getInvalidLineItems";
-import { getStateWithNamespace } from "../../utils/getStateWithNamespace";
-import { updateInvalidOrderRequestedAt } from "../application";
-import { authenticateUser } from "./user";
-import { fetchMenu } from "./menus";
-import { fetchLocation, fetchLocations } from "../data/locations";
+import BrandibbleReduxException from '../../utils/exception';
+import { Defaults, Asap, ErrorCodes } from '../../utils/constants';
+import fireAction from '../../utils/fireAction';
+import handleErrors from '../../utils/handleErrors';
+import get from '../../utils/get';
+import getInvalidLineItems from '../../utils/getInvalidLineItems';
+import { getStateWithNamespace } from '../../utils/getStateWithNamespace';
+import { updateInvalidOrderRequestedAt } from '../application';
+import { authenticateUser } from './user';
+import { fetchMenu } from './menus';
+import { fetchLocation, fetchLocations } from '../data/locations';
 
-export const RESOLVE_ORDER = "RESOLVE_ORDER";
-export const RESOLVE_ORDER_LOCATION = "RESOLVE_ORDER_LOCATION";
-export const ADD_LINE_ITEM = "ADD_LINE_ITEM";
-export const PUSH_LINE_ITEM = "PUSH_LINE_ITEM";
-export const SET_LINE_ITEM_QUANTITY = "SET_LINE_ITEM_QUANTITY";
-export const REMOVE_LINE_ITEM = "REMOVE_LINE_ITEM";
-export const ADD_OPTION_TO_LINE_ITEM = "ADD_OPTION_TO_LINE_ITEM";
-export const REMOVE_OPTION_FROM_LINE_ITEM = "REMOVE_OPTION_FROM_LINE_ITEM";
-export const SET_ORDER_LOCATION_ID = "SET_ORDER_LOCATION_ID";
-export const SUBMIT_ORDER = "SUBMIT_ORDER";
-export const BIND_CUSTOMER_TO_ORDER = "BIND_CUSTOMER_TO_ORDER";
-export const SET_PAYMENT_METHOD = "SET_PAYMENT_METHOD";
-export const SET_TIP = "SET_TIP";
-export const RESET_TIP = "RESET_TIP";
-export const SET_ORDER_ADDRESS = "SET_ORDER_ADDRESS";
-export const SET_PROMO_CODE = "SET_PROMO_CODE";
-export const SET_SERVICE_TYPE = "SET_SERVICE_TYPE";
-export const SET_MISC_OPTIONS = "SET_MISC_OPTIONS";
-export const SET_REQUESTED_AT = "SET_REQUESTED_AT";
-export const CREATE_NEW_ORDER = "CREATE_NEW_ORDER";
-export const VALIDATE_CURRENT_ORDER = "VALIDATE_CURRENT_ORDER";
-export const VALIDATE_CURRENT_CART = "VALIDATE_CURRENT_CART";
-export const SET_LINE_ITEM_MADE_FOR = "SET_LINE_ITEM_MADE_FOR";
-export const SET_LINE_ITEM_INSTRUCTIONS = "SET_LINE_ITEM_INSTRUCTIONS";
-export const ADD_APPLIED_DISCOUNT = "ADD_APPLIED_DISCOUNT";
-export const REMOVE_APPLIED_DISCOUNT = "REMOVE_APPLIED_DISCOUNT";
+export const RESOLVE_ORDER = 'RESOLVE_ORDER';
+export const RESOLVE_ORDER_LOCATION = 'RESOLVE_ORDER_LOCATION';
+export const ADD_LINE_ITEM = 'ADD_LINE_ITEM';
+export const PUSH_LINE_ITEM = 'PUSH_LINE_ITEM';
+export const SET_LINE_ITEM_QUANTITY = 'SET_LINE_ITEM_QUANTITY';
+export const REMOVE_LINE_ITEM = 'REMOVE_LINE_ITEM';
+export const ADD_OPTION_TO_LINE_ITEM = 'ADD_OPTION_TO_LINE_ITEM';
+export const REMOVE_OPTION_FROM_LINE_ITEM = 'REMOVE_OPTION_FROM_LINE_ITEM';
+export const SET_ORDER_LOCATION_ID = 'SET_ORDER_LOCATION_ID';
+export const SUBMIT_ORDER = 'SUBMIT_ORDER';
+export const BIND_CUSTOMER_TO_ORDER = 'BIND_CUSTOMER_TO_ORDER';
+export const SET_PAYMENT_METHOD = 'SET_PAYMENT_METHOD';
+export const SET_TIP = 'SET_TIP';
+export const RESET_TIP = 'RESET_TIP';
+export const SET_ORDER_ADDRESS = 'SET_ORDER_ADDRESS';
+export const SET_PROMO_CODE = 'SET_PROMO_CODE';
+export const SET_SERVICE_TYPE = 'SET_SERVICE_TYPE';
+export const SET_MISC_OPTIONS = 'SET_MISC_OPTIONS';
+export const SET_REQUESTED_AT = 'SET_REQUESTED_AT';
+export const CREATE_NEW_ORDER = 'CREATE_NEW_ORDER';
+export const VALIDATE_CURRENT_ORDER = 'VALIDATE_CURRENT_ORDER';
+export const VALIDATE_CURRENT_CART = 'VALIDATE_CURRENT_CART';
+export const SET_LINE_ITEM_MADE_FOR = 'SET_LINE_ITEM_MADE_FOR';
+export const SET_LINE_ITEM_INSTRUCTIONS = 'SET_LINE_ITEM_INSTRUCTIONS';
+export const ADD_APPLIED_DISCOUNT = 'ADD_APPLIED_DISCOUNT';
+export const REMOVE_APPLIED_DISCOUNT = 'REMOVE_APPLIED_DISCOUNT';
 
 /* Private Action Creators */
 function _resolveOrder(payload) {
@@ -52,7 +52,7 @@ function _addLineItem(order, product, quantity) {
     type: ADD_LINE_ITEM,
     payload: order
       .addLineItem(product, quantity)
-      .then(lineItem => ({ order, lineItem }))
+      .then(lineItem => ({ order, lineItem })),
   };
 }
 
@@ -62,7 +62,7 @@ function _pushLineItem(order, lineItem) {
     type: PUSH_LINE_ITEM,
     payload: order
       .pushLineItem(lineItem)
-      .then(lineItem => ({ order, lineItem }))
+      .then(lineItem => ({ order, lineItem })),
   };
 }
 
@@ -71,7 +71,7 @@ function _setLineItemQuantity(order, lineItem, newQuantity) {
     type: SET_LINE_ITEM_QUANTITY,
     payload: order
       .setLineItemQuantity(lineItem, newQuantity)
-      .then(lineItem => ({ order, lineItem }))
+      .then(lineItem => ({ order, lineItem })),
   };
 }
 
@@ -80,7 +80,7 @@ function _setLineItemMadeFor(order, lineItem, madeFor) {
     type: SET_LINE_ITEM_MADE_FOR,
     payload: order
       .setLineItemMadeFor(lineItem, madeFor)
-      .then(lineItem => ({ order, lineItem }))
+      .then(lineItem => ({ order, lineItem })),
   };
 }
 
@@ -89,7 +89,7 @@ function _setLineItemInstructions(order, lineItem, instructions) {
     type: SET_LINE_ITEM_INSTRUCTIONS,
     payload: order
       .setLineItemInstructions(lineItem, instructions)
-      .then(lineItem => ({ order, lineItem }))
+      .then(lineItem => ({ order, lineItem })),
   };
 }
 
@@ -98,7 +98,7 @@ function _removeLineItem(order, lineItem) {
     type: REMOVE_LINE_ITEM,
     payload: order
       .removeLineItem(lineItem)
-      .then(remainingLineItems => ({ order, remainingLineItems }))
+      .then(remainingLineItems => ({ order, remainingLineItems })),
   };
 }
 
@@ -107,7 +107,7 @@ function _addOptionToLineItem(order, lineItem, optionGroup, optionItem) {
     type: ADD_OPTION_TO_LINE_ITEM,
     payload: order
       .addOptionToLineItem(lineItem, optionGroup, optionItem)
-      .then(lineItem => ({ order, lineItem }))
+      .then(lineItem => ({ order, lineItem })),
   };
 }
 
@@ -116,84 +116,84 @@ function _removeOptionFromLineItem(order, lineItem, optionItem) {
     type: REMOVE_OPTION_FROM_LINE_ITEM,
     payload: order
       .removeOptionFromLineItem(lineItem, optionItem)
-      .then(lineItem => ({ order, lineItem }))
+      .then(lineItem => ({ order, lineItem })),
   };
 }
 
 function _setOrderLocationId(order, locationId) {
   return {
     type: SET_ORDER_LOCATION_ID,
-    payload: order.setLocation(locationId).then(order => ({ order }))
+    payload: order.setLocation(locationId).then(order => ({ order })),
   };
 }
 
 function _setOrderAddress(order, address) {
   return {
     type: SET_ORDER_ADDRESS,
-    payload: order.setAddress(address).then(order => ({ order }))
+    payload: order.setAddress(address).then(order => ({ order })),
   };
 }
 
 function _bindCustomerToOrder(order, customer) {
   return {
     type: BIND_CUSTOMER_TO_ORDER,
-    payload: order.setCustomer(customer).then(order => ({ order }))
+    payload: order.setCustomer(customer).then(order => ({ order })),
   };
 }
 
 function _setPaymentMethod(order, type, card) {
   return {
     type: SET_PAYMENT_METHOD,
-    payload: order.setPaymentMethod(type, card).then(order => ({ order }))
+    payload: order.setPaymentMethod(type, card).then(order => ({ order })),
   };
 }
 
 function _setTip(order, paymentType, tip) {
   return {
     type: SET_TIP,
-    payload: order.setTip(paymentType, tip).then(order => ({ order }))
+    payload: order.setTip(paymentType, tip).then(order => ({ order })),
   };
 }
 
 function _resetTip(order) {
   return {
     type: RESET_TIP,
-    payload: order.resetTip().then(order => ({ order }))
+    payload: order.resetTip().then(order => ({ order })),
   };
 }
 
 function _setPromoCode(order, promo) {
   return {
     type: SET_PROMO_CODE,
-    payload: order.setPromoCode(promo).then(order => ({ order }))
+    payload: order.setPromoCode(promo).then(order => ({ order })),
   };
 }
 
 function _setServiceType(order, serviceType) {
   return {
     type: SET_SERVICE_TYPE,
-    payload: order.setServiceType(serviceType).then(order => ({ order }))
+    payload: order.setServiceType(serviceType).then(order => ({ order })),
   };
 }
 
 function _addAppliedDiscount(order, discount) {
   return {
     type: ADD_APPLIED_DISCOUNT,
-    payload: order.addAppliedDiscount(discount).then(order => ({ order }))
+    payload: order.addAppliedDiscount(discount).then(order => ({ order })),
   };
 }
 
 function _removeAppliedDiscount(order, discount) {
   return {
     type: REMOVE_APPLIED_DISCOUNT,
-    payload: order.removeAppliedDiscount(discount).then(order => ({ order }))
+    payload: order.removeAppliedDiscount(discount).then(order => ({ order })),
   };
 }
 
 function _setRequestedAt(order, time, wantsFuture) {
   return {
     type: SET_REQUESTED_AT,
-    payload: order.setRequestedAt(time, wantsFuture).then(order => ({ order }))
+    payload: order.setRequestedAt(time, wantsFuture).then(order => ({ order })),
   };
 }
 
@@ -227,28 +227,28 @@ function _submitOrder(dispatch, brandibble, order, options) {
         data._didAuthenticateNewCustomer = true;
         return data;
       });
-    })
+    }),
   };
 }
 
 function _createNewOrder(data) {
   return {
     type: CREATE_NEW_ORDER,
-    payload: data
+    payload: data,
   };
 }
 
 function _validateCurrentCart(data) {
   return {
     type: VALIDATE_CURRENT_CART,
-    payload: data
+    payload: data,
   };
 }
 
 function _validateCurrentOrder(data) {
   return {
     type: VALIDATE_CURRENT_ORDER,
-    payload: data
+    payload: data,
   };
 }
 
@@ -258,9 +258,9 @@ export function createNewOrder(
   locationId = null,
   serviceType,
   paymentType = null,
-  miscOptions = Defaults.miscOptions
+  miscOptions = Defaults.miscOptions,
 ) {
-  return dispatch => {
+  return (dispatch) => {
     const { orders } = brandibble;
     const payload = orders
       .create(locationId, serviceType, paymentType, miscOptions)
@@ -272,9 +272,9 @@ export function createNewOrder(
 export function resolveOrder(
   brandibble,
   locationId = null,
-  serviceType = "pickup",
+  serviceType = 'pickup',
   paymentType = null,
-  miscOptions = Defaults.miscOptions
+  miscOptions = Defaults.miscOptions,
 ) {
   const { orders } = brandibble;
   const order = orders.current();
@@ -285,11 +285,11 @@ export function resolveOrder(
         .then(res => ({ order: res }));
 
   return dispatch =>
-    dispatch(_resolveOrder(payload)).then(res => {
-      const order = get(res, "value.order");
-      const orderLocationId = get(order, "locationId");
-      const orderRequestedAt = get(order, "requestedAt");
-      const orderServiceType = get(order, "serviceType");
+    dispatch(_resolveOrder(payload)).then((res) => {
+      const order = get(res, 'value.order');
+      const orderLocationId = get(order, 'locationId');
+      const orderRequestedAt = get(order, 'requestedAt');
+      const orderServiceType = get(order, 'serviceType');
 
       if (!orderLocationId) return;
 
@@ -325,7 +325,7 @@ export function resolveOrder(
       const menuType = {
         locationId: orderLocationId,
         requestedAt,
-        serviceType: orderServiceType
+        serviceType: orderServiceType,
       };
 
       promises.push(dispatch(fetchMenu(brandibble, menuType)));
@@ -333,9 +333,9 @@ export function resolveOrder(
         dispatch(
           fetchLocation(brandibble, orderLocationId, {
             requested_at: requestedAt,
-            include_times: true
-          })
-        )
+            include_times: true,
+          }),
+        ),
       );
       return Promise.all(promises);
     });
@@ -352,7 +352,7 @@ export function resolveOrderLocation(brandibble) {
 }
 
 export function validateCurrentCart(brandibble, data = {}) {
-  return dispatch => {
+  return (dispatch) => {
     const { orders } = brandibble;
     const order = orders.current();
     const payload = orders.validateCart(order, data).then(res => res);
@@ -361,7 +361,7 @@ export function validateCurrentCart(brandibble, data = {}) {
 }
 
 export function validateCurrentOrder(brandibble, data = {}) {
-  return dispatch => {
+  return (dispatch) => {
     const { orders } = brandibble;
     const order = orders.current();
     const payload = orders.validate(order, data).then(res => res);
@@ -372,7 +372,7 @@ export function validateCurrentOrder(brandibble, data = {}) {
 export function setOrderLocationId(
   currentOrder,
   locationId,
-  onValidationError
+  onValidationError,
 ) {
   return (dispatch, getState) => {
     const setOrderLocationIdLogic = () => (dispatch, getState) => {
@@ -383,15 +383,15 @@ export function setOrderLocationId(
            * a valid requested at for the current location
            */
           const state = getStateWithNamespace(getState);
-          const brandibbleRef = get(state, "ref");
+          const brandibbleRef = get(state, 'ref');
           const requestedAt = get(
             state,
-            "session.order.orderData.requested_at"
+            'session.order.orderData.requested_at',
           );
           const hasLocationInMemory = !!get(
             state,
             `data.locations.locationsById.${locationId}`,
-            false
+            false,
           );
 
           /**
@@ -404,8 +404,8 @@ export function setOrderLocationId(
             return dispatch(
               fetchLocation(brandibbleRef, locationId, {
                 requested_at: requestedAt,
-                include_times: true
-              })
+                include_times: true,
+              }),
             );
           }
 
@@ -426,18 +426,18 @@ export function setOrderLocationId(
      * we attempt to validate before proceeding
      */
     const state = getStateWithNamespace(getState);
-    const cart = get(state, "session.order.orderData.cart", []);
+    const cart = get(state, 'session.order.orderData.cart', []);
     const hasItemsInCart = !!cart && cart.length;
     if (
       hasItemsInCart &&
-      (onValidationError && typeof onValidationError === "function")
+      (onValidationError && typeof onValidationError === 'function')
     ) {
       return dispatch(
         _withCartValidation(
           { location_id: locationId },
           onValidationError,
-          setOrderLocationIdLogic
-        )
+          setOrderLocationIdLogic,
+        ),
       );
     }
     /**
@@ -455,8 +455,8 @@ export function setOrderAddress(...args) {
 export function addLineItem(currentOrder, product, quantity = 1) {
   if (!currentOrder.locationId) {
     throw new BrandibbleReduxException(
-      "addLineItem",
-      "Please set a Location ID for this order."
+      'addLineItem',
+      'Please set a Location ID for this order.',
     );
   }
   return dispatch => dispatch(_addLineItem(...arguments));
@@ -465,8 +465,8 @@ export function addLineItem(currentOrder, product, quantity = 1) {
 export function pushLineItem(currentOrder, lineItem) {
   if (!currentOrder.locationId) {
     throw new BrandibbleReduxException(
-      "addLineItem",
-      "Please set a Location ID for this order."
+      'addLineItem',
+      'Please set a Location ID for this order.',
     );
   }
   return dispatch => dispatch(_pushLineItem(...arguments));
@@ -475,21 +475,21 @@ export function pushLineItem(currentOrder, lineItem) {
 export function setLineItemQuantity(currentOrder, lineItem, newQuantity = 1) {
   if (newQuantity < 1) {
     throw new BrandibbleReduxException(
-      "updateLineItemQuantity",
-      "Please pass quantity more than 1 to this action. Use removeLineItem to remove from order."
+      'updateLineItemQuantity',
+      'Please pass quantity more than 1 to this action. Use removeLineItem to remove from order.',
     );
   }
   return dispatch => dispatch(_setLineItemQuantity(...arguments));
 }
 
-export function setLineItemMadeFor(currentOrder, lineItem, madeFor = "") {
+export function setLineItemMadeFor(currentOrder, lineItem, madeFor = '') {
   return dispatch => dispatch(_setLineItemMadeFor(...arguments));
 }
 
 export function setLineItemInstructions(
   currentOrder,
   lineItem,
-  instructions = ""
+  instructions = '',
 ) {
   return dispatch => dispatch(_setLineItemInstructions(...arguments));
 }
@@ -526,7 +526,7 @@ export function removeAppliedDiscount(currentOrder, discount) {
   return dispatch => dispatch(_removeAppliedDiscount(currentOrder, discount));
 }
 
-export const setMiscOptions = (currentOrder, opts) => dispatch => {
+export const setMiscOptions = (currentOrder, opts) => (dispatch) => {
   const payload = currentOrder
     .setMiscOptions(opts)
     .then(order => ({ order }))
@@ -543,7 +543,7 @@ export function addOptionToLineItem(
   currentOrder,
   lineItem,
   optionGroup,
-  optionItem
+  optionItem,
 ) {
   return dispatch => dispatch(_addOptionToLineItem(...arguments));
 }
@@ -561,41 +561,17 @@ export function submitOrder(brandibble, order, options = {}) {
     dispatch(_submitOrder(dispatch, brandibble, order, options));
 }
 
-/**
- *
-
-export function setOrderLocationId(currentOrder, locationId, onValidationError) {
-  return dispatch => {
-    return dispatchEvent(_withCartValidation({ location_id: locationId }, () => innerLogic))
-  }
-}
-
-export function setRequestedAt(currentOrder, requestedAt, wantsFuture, onValidationError) {
-  return dispatch => {
-    return dispatchEvent(_withCartValidation({ location_id: locationId }, () => innerLogic))
-  }
-}
-
-export function setServiceType(currentOrder, serviceType, onValidationError) {
-  return dispatch => {
-    return dispatchEvent(_withCartValidation({ location_id: locationId }, () => innerLogic))
-  }
-}
-
- *
- */
-
 export function _withCartValidation(
   validationHash,
   onValidationError,
-  actionCallback
+  actionCallback,
 ) {
   return (dispatch, getState) => {
     const state = getStateWithNamespace(getState);
-    const ref = get(state, "ref");
-    const isAttemptingToSetLocationId = "location_id" in validationHash;
-    const isAttemptingToSetServiceType = "service_type" in validationHash;
-    const isAttemptingToSetRequestedAt = "requested_at" in validationHash;
+    const ref = get(state, 'ref');
+    const isAttemptingToSetLocationId = 'location_id' in validationHash;
+    const isAttemptingToSetServiceType = 'service_type' in validationHash;
+    const isAttemptingToSetRequestedAt = 'requested_at' in validationHash;
 
     return (
       dispatch(validateCurrentCart(ref, validationHash))
@@ -610,29 +586,29 @@ export function _withCartValidation(
          * the necessary steps to resolve the error
          * before finally dispatching the actionCallback
          */
-        .catch(err => {
+        .catch((err) => {
           const proceed = () => {
-            if (err && get(err, "errors", []).length) {
-              const errorCode = get(err.errors[0], "code");
-              const orderRef = get(state, "session.order.ref");
+            if (err && get(err, 'errors', []).length) {
+              const errorCode = get(err.errors[0], 'code');
+              const orderRef = get(state, 'session.order.ref');
               /**
                * Invalid items in cart
                */
               if (errorCode === ErrorCodes.validateCart.invalidItems) {
                 const lineItemsData = get(
                   state,
-                  "session.order.lineItemsData",
-                  []
+                  'session.order.lineItemsData',
+                  [],
                 );
-                const [, ...invalidItems] = get(err, "errors");
+                const [, ...invalidItems] = get(err, 'errors');
 
                 const invalidItemsInCart = getInvalidLineItems(
                   invalidItems,
-                  lineItemsData
+                  lineItemsData,
                 );
 
                 const promises = invalidItemsInCart.map(invalidItem =>
-                  dispatch(removeLineItem(orderRef, invalidItem))
+                  dispatch(removeLineItem(orderRef, invalidItem)),
                 );
 
                 return Promise.all(promises).then(dispatch(actionCallback()));
@@ -644,18 +620,18 @@ export function _withCartValidation(
               if (errorCode === ErrorCodes.validateCart.locationIsClosed) {
                 const allLocationsById = get(
                   state,
-                  "data.locations.locationsById"
+                  'data.locations.locationsById',
                 );
 
                 const locationId = isAttemptingToSetLocationId
                   ? validationHash.location_id
-                  : get(state, "session.order.orderData.location_id");
+                  : get(state, 'session.order.orderData.location_id');
                 const serviceType = isAttemptingToSetServiceType
                   ? validationHash.service_type
-                  : get(state, "session.order.orderData.service_type");
+                  : get(state, 'session.order.orderData.service_type');
                 const requestedAt = isAttemptingToSetRequestedAt
                   ? validationHash.requested_at
-                  : get(state, "session.order.orderData.requested_at");
+                  : get(state, 'session.order.orderData.requested_at');
 
                 /**
                  * If the location already exists in memory
@@ -665,10 +641,10 @@ export function _withCartValidation(
                   const location = get(allLocationsById, `${locationId}`);
                   const firstAvailableOrderTime = get(
                     location,
-                    `first_times.${serviceType}.utc`
+                    `first_times.${serviceType}.utc`,
                   );
                   return dispatch(
-                    setRequestedAt(orderRef, firstAvailableOrderTime)
+                    setRequestedAt(orderRef, firstAvailableOrderTime),
                   ).then(dispatch(actionCallback()));
                 }
 
@@ -680,22 +656,22 @@ export function _withCartValidation(
                   fetchLocation(ref, locationId, {
                     service_type: serviceType,
                     requested_at: requestedAt,
-                    include_times: true
-                  })
+                    include_times: true,
+                  }),
                 ).then(() => {
                   const nextState = getStateWithNamespace(getState);
                   const nextAllLocationsById = get(
                     nextState,
-                    "data.locations.locationsById"
+                    'data.locations.locationsById',
                   );
                   const location = get(nextAllLocationsById, `${locationId}`);
                   const firstAvailableOrderTime = get(
                     location,
-                    `first_times.${serviceType}.utc`
+                    `first_times.${serviceType}.utc`,
                   );
 
                   return dispatch(
-                    setRequestedAt(orderRef, firstAvailableOrderTime)
+                    setRequestedAt(orderRef, firstAvailableOrderTime),
                   ).then(dispatch(actionCallback()));
                 });
               }

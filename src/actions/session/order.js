@@ -368,48 +368,75 @@ export function validateCurrentOrder(brandibble, data = {}) {
   };
 }
 
-export function setOrderLocationId(currentOrder, locationId) {
-  return (dispatch, getState) => {
-    return dispatch(_setOrderLocationId(...arguments))
-      .then(() => {
-        /**
-         * Prior to resolving, we want to ensure
-         * a valid requested at for the current location
-         */
-        const state = getStateWithNamespace(getState);
-        const brandibbleRef = get(state, 'ref');
-        const requestedAt = get(state, 'session.order.orderData.requested_at');
-        const hasLocationInMemory = !!get(
-          state,
-          `data.locations.locationsById.${locationId}`,
-          false,
-        );
-
-        /**
-         * First we determine whether the location exists in memory
-         * If it does, we fetch the location with the new locationId
-         * otherwise we return a resolved Promise
-         */
-
-        if (!hasLocationInMemory) {
-          return dispatch(
-            fetchLocation(brandibbleRef, locationId, {
-              requested_at: requestedAt,
-              include_times: true,
-            }),
+export function setOrderLocationId(
+  currentOrder,
+  locationId,
+  onValidationError,
+) {
+  return (dispatch) => {
+    const setOrderLocationIdLogic = (dispatch, getState) =>
+      dispatch(_setOrderLocationId(...arguments))
+        .then(() => {
+          /**
+           * Prior to resolving, we want to ensure
+           * a valid requested at for the current location
+           */
+          const state = getStateWithNamespace(getState);
+          const brandibbleRef = get(state, 'ref');
+          const requestedAt = get(
+            state,
+            'session.order.orderData.requested_at',
           );
-        }
+          const hasLocationInMemory = !!get(
+            state,
+            `data.locations.locationsById.${locationId}`,
+            false,
+          );
 
-        return Promise.resolve();
-      })
-      .then(() => {
-        /**
-         * Finally, we run the updateInvalidRequestedAt logic against the
-         * new state, which will update the requested at if it is considered
-         * invalid or outdated.
-         */
-        return dispatch(updateInvalidOrderRequestedAt());
-      });
+          /**
+           * First we determine whether the location exists in memory
+           * If it does, we fetch the location with the new locationId
+           * otherwise we return a resolved Promise
+           */
+
+          if (!hasLocationInMemory) {
+            return dispatch(
+              fetchLocation(brandibbleRef, locationId, {
+                requested_at: requestedAt,
+                include_times: true,
+              }),
+            );
+          }
+
+          return Promise.resolve();
+        })
+        .then(() => {
+          /**
+           * Finally, we run the updateInvalidRequestedAt logic against the
+           * new state, which will update the requested at if it is considered
+           * invalid or outdated.
+           */
+          return dispatch(updateInvalidOrderRequestedAt());
+        });
+
+    /**
+     * If passed an onValidationError callback
+     * we attempt to validate before proceeding
+     */
+    if (onValidationError && typeof onValidationError === 'function') {
+      return dispatch(
+        _withCartValidation(
+          { location_id: locationId },
+          onValidationError,
+          setOrderLocationIdLogic,
+        ),
+      );
+    }
+    /**
+     * Otherwise, we proceed with
+     * the original intended logic
+     */
+    return setOrderLocationIdLogic;
   };
 }
 
@@ -571,30 +598,6 @@ export function _withCartValidation(
             ErrorCodes.validateCart.locationIsClosed
           ) {
             // Update requested at to next available time
-            // actionCallback (setOrderLocationId, setRequestedAt, setServiceType)
-          }
-
-          /**
-           * Invalid Items in Cart
-           */
-          if (
-            get(err.errors[0], 'code') === ErrorCodes.validateCart.invalidItems
-          ) {
-            const [, ...invalidItems] = err.errors;
-            // list of invalid items
-            // clear invalid items
-            // actionCallback (setOrderLocationId, setRequestedAt, setServiceType)
-          }
-
-          /**
-           * Unmet Delivery Minimum
-           */
-          if (
-            get(err.errors[0], 'code') ===
-            ErrorCodes.validateCart.unmetDeliveryMinimum
-          ) {
-            // Show delivery minimum?
-            // don't know
             // actionCallback (setOrderLocationId, setRequestedAt, setServiceType)
           }
         }

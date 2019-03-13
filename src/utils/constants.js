@@ -9,6 +9,7 @@ export const ErrorCodes = {
   validateCart: {
     locationIsClosed: 'orders.validate.location_closed',
     invalidItems: 'orders.validate.invalid_items',
+    unmetDeliveryMinimum: 'orders.validate.delivery_minimum',
   },
 };
 

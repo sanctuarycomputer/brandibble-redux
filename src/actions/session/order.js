@@ -514,8 +514,36 @@ export function setPromoCode(currentOrder, promo) {
   return dispatch => dispatch(_setPromoCode(currentOrder, promo));
 }
 
-export function setServiceType(currentOrder, serviceType) {
-  return dispatch => dispatch(_setServiceType(currentOrder, serviceType));
+export function setServiceType(currentOrder, serviceType, onValidationError) {
+  return (dispatch, getState) => {
+    const setServiceTypeLogic = () => dispatch =>
+      dispatch(_setServiceType(currentOrder, serviceType));
+
+    /**
+     * If passed an onValidationError callback
+     * we attempt to validate before proceeding
+     */
+    const state = getStateWithNamespace(getState);
+    const cart = get(state, 'session.order.orderData.cart', []);
+    const hasItemsInCart = !!cart && cart.length;
+    if (
+      hasItemsInCart &&
+      (onValidationError && typeof onValidationError === 'function')
+    ) {
+      return dispatch(
+        _withCartValidation(
+          { service_type: serviceType },
+          onValidationError,
+          setServiceTypeLogic,
+        ),
+      );
+    }
+    /**
+     * Otherwise, we proceed with
+     * the original intended logic
+     */
+    return dispatch(setServiceTypeLogic());
+  };
 }
 
 export function addAppliedDiscount(currentOrder, discount) {

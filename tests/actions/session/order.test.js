@@ -330,6 +330,7 @@ describe('actions/session/order', () => {
       store = mockStore();
       return setServiceType(makeUnpersistedOrder(), 'pickup')(
         store.dispatch,
+        store.getState,
       ).then(() => {
         actionsCalled = store.getActions();
       });

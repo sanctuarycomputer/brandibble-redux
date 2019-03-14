@@ -15,7 +15,7 @@ import {
   deleteFavorite,
 } from 'actions/session/favorites';
 import { authenticateUser } from 'actions/session/user';
-import { brandibble, buildLineItem, validCredentialsStub } from '../../config/stubs';
+import { brandibble, buildLineItem, validCredentialsStub, itemStub } from '../../config/stubs';
 
 const mockStore = configureStore(reduxMiddleware);
 
@@ -51,10 +51,12 @@ describe('actions/session/favorites', () => {
       expect(action).to.exist;
     });
   });
+
   describe('createFavorite', () => {
     let id;
 
     before(() => {
+      store = mockStore();
       const favorite = { name: 'my favorite', lineItem: buildLineItem() };
       return createFavorite(brandibble, favorite)(store.dispatch).then(() => {
         actionsCalled = store.getActions();
@@ -116,6 +118,33 @@ describe('actions/session/favorites', () => {
         action = find(actionsCalled, { type: `${DELETE_FAVORITE}_FULFILLED` });
         expect(action).to.exist;
       });
+    });
+  });
+
+
+  describe('createFavorite with no lineItem', () => {
+    let id;
+
+    before(() => {
+      store = mockStore();
+      const favorite = { name: 'my favorite', product: itemStub };
+      return createFavorite(brandibble, favorite)(store.dispatch).then(() => {
+        actionsCalled = store.getActions();
+        action = find(actionsCalled, { type: `${CREATE_FAVORITE}_FULFILLED` });
+        id = action.payload.favorite_item_id;
+      });
+    });
+
+    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+
+    it(`should have ${CREATE_FAVORITE}_PENDING action`, () => {
+      action = find(actionsCalled, { type: `${CREATE_FAVORITE}_PENDING` });
+      expect(action).to.exist;
+    });
+
+    it(`should have ${CREATE_FAVORITE}_FULFILLED action`, () => {
+      action = find(actionsCalled, { type: `${CREATE_FAVORITE}_FULFILLED` });
+      expect(action).to.exist;
     });
   });
 });

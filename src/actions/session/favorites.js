@@ -1,5 +1,6 @@
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
+import get from '../../utils/get';
 
 export const FETCH_FAVORITES = 'FETCH_FAVORITES';
 export const CREATE_FAVORITE = 'CREATE_FAVORITE';
@@ -11,9 +12,12 @@ export const fetchFavorites = brandibble => (dispatch) => {
   return dispatch(fireAction(FETCH_FAVORITES, payload));
 };
 
-export const createFavorite = (brandibble, favorite = {}) => (dispatch) => {
-  const { lineItem, name } = favorite;
+export const createFavorite = (brandibble, favorite = {}) => dispatch => {
+  const name = get(favorite, 'name', '');
+  const product = get(favorite, 'product');
+  const lineItem = !!product ? new brandibble.LineItem(product, 1) : get(favorite, 'lineItem');
   const payload = brandibble.favorites.create(name, lineItem).then(({ data }) => data).catch(handleErrors);
+  
   return dispatch(fireAction(CREATE_FAVORITE, payload));
 };
 

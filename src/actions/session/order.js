@@ -506,8 +506,41 @@ export function resetTip(currentOrder) {
   return dispatch => dispatch(_resetTip(currentOrder));
 }
 
-export function setRequestedAt(currentOrder, time, wantsFuture = false) {
-  return dispatch => dispatch(_setRequestedAt(currentOrder, time, wantsFuture));
+export function setRequestedAt(
+  currentOrder,
+  time,
+  wantsFuture = false,
+  onValidationError,
+) {
+  return (dispatch, getState) => {
+    const setRequestedAtLogic = () => dispatch =>
+      dispatch(_setRequestedAt(currentOrder, time, wantsFuture));
+
+    /**
+     * If passed an onValidationError callback
+     * we attempt to validate before proceeding
+     */
+    const state = getStateWithNamespace(getState);
+    const cart = get(state, 'session.order.orderData.cart', []);
+    const hasItemsInCart = !!cart && cart.length;
+    if (
+      hasItemsInCart &&
+      (onValidationError && typeof onValidationError === 'function')
+    ) {
+      return dispatch(
+        _withCartValidation(
+          { requested_at: requestedAt },
+          onValidationError,
+          setRequestedAtLogic,
+        ),
+      );
+    }
+    /**
+     * Otherwise, we proceed with
+     * the original intended logic
+     */
+    return dispatch(setRequestedAtLogic());
+  };
 }
 
 export function setPromoCode(currentOrder, promo) {

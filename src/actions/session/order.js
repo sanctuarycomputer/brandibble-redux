@@ -1,14 +1,15 @@
 /* eslint no-shadow:1, no-unused-vars:1, prefer-rest-params:1 */
 import BrandibbleReduxException from '../../utils/exception';
-import { Defaults, Asap } from '../../utils/constants';
+import { Defaults, Asap, ErrorCodes } from '../../utils/constants';
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
 import get from '../../utils/get';
+import getInvalidLineItems from '../../utils/getInvalidLineItems';
 import { getStateWithNamespace } from '../../utils/getStateWithNamespace';
 import { updateInvalidOrderRequestedAt } from '../application';
 import { authenticateUser } from './user';
 import { fetchMenu } from './menus';
-import { fetchLocation } from '../data/locations';
+import { fetchLocation, fetchLocations } from '../data/locations';
 
 export const RESOLVE_ORDER = 'RESOLVE_ORDER';
 export const RESOLVE_ORDER_LOCATION = 'RESOLVE_ORDER_LOCATION';
@@ -368,48 +369,82 @@ export function validateCurrentOrder(brandibble, data = {}) {
   };
 }
 
-export function setOrderLocationId(currentOrder, locationId) {
+export function setOrderLocationId(
+  currentOrder,
+  locationId,
+  onValidationError,
+) {
   return (dispatch, getState) => {
-    return dispatch(_setOrderLocationId(...arguments))
-      .then(() => {
-        /**
-         * Prior to resolving, we want to ensure
-         * a valid requested at for the current location
-         */
-        const state = getStateWithNamespace(getState);
-        const brandibbleRef = get(state, 'ref');
-        const requestedAt = get(state, 'session.order.orderData.requested_at');
-        const hasLocationInMemory = !!get(
-          state,
-          `data.locations.locationsById.${locationId}`,
-          false,
-        );
-
-        /**
-         * First we determine whether the location exists in memory
-         * If it does, we fetch the location with the new locationId
-         * otherwise we return a resolved Promise
-         */
-
-        if (!hasLocationInMemory) {
-          return dispatch(
-            fetchLocation(brandibbleRef, locationId, {
-              requested_at: requestedAt,
-              include_times: true,
-            }),
+    const setOrderLocationIdLogic = () => (dispatch, getState) => {
+      return dispatch(_setOrderLocationId(currentOrder, locationId))
+        .then(() => {
+          /**
+           * Prior to resolving, we want to ensure
+           * a valid requested at for the current location
+           */
+          const state = getStateWithNamespace(getState);
+          const brandibbleRef = get(state, 'ref');
+          const requestedAt = get(
+            state,
+            'session.order.orderData.requested_at',
           );
-        }
+          const hasLocationInMemory = !!get(
+            state,
+            `data.locations.locationsById.${locationId}`,
+            false,
+          );
 
-        return Promise.resolve();
-      })
-      .then(() => {
-        /**
-         * Finally, we run the updateInvalidRequestedAt logic against the
-         * new state, which will update the requested at if it is considered
-         * invalid or outdated.
-         */
-        return dispatch(updateInvalidOrderRequestedAt());
-      });
+          /**
+           * First we determine whether the location exists in memory
+           * If it does, we fetch the location with the new locationId
+           * otherwise we return a resolved Promise
+           */
+
+          if (!hasLocationInMemory) {
+            return dispatch(
+              fetchLocation(brandibbleRef, locationId, {
+                requested_at: requestedAt,
+                include_times: true,
+              }),
+            );
+          }
+
+          return Promise.resolve();
+        })
+        .then(() => {
+          /**
+           * Finally, we run the updateInvalidRequestedAt logic against the
+           * new state, which will update the requested at if it is considered
+           * invalid or outdated.
+           */
+          return dispatch(updateInvalidOrderRequestedAt());
+        });
+    };
+
+    /**
+     * If passed an onValidationError callback
+     * we attempt to validate before proceeding
+     */
+    const state = getStateWithNamespace(getState);
+    const cart = get(state, 'session.order.orderData.cart', []);
+    const hasItemsInCart = !!cart && cart.length;
+    if (
+      hasItemsInCart &&
+      (onValidationError && typeof onValidationError === 'function')
+    ) {
+      return dispatch(
+        _withCartValidation(
+          { location_id: locationId },
+          onValidationError,
+          setOrderLocationIdLogic,
+        ),
+      );
+    }
+    /**
+     * Otherwise, we proceed with
+     * the original intended logic
+     */
+    return dispatch(setOrderLocationIdLogic());
   };
 }
 
@@ -524,4 +559,135 @@ export function bindCustomerToOrder(...args) {
 export function submitOrder(brandibble, order, options = {}) {
   return dispatch =>
     dispatch(_submitOrder(dispatch, brandibble, order, options));
+}
+
+export function _withCartValidation(
+  validationHash,
+  onValidationError,
+  actionCallback,
+) {
+  return (dispatch, getState) => {
+    const state = getStateWithNamespace(getState);
+    const ref = get(state, 'ref');
+    const isAttemptingToSetLocationId = 'location_id' in validationHash;
+    const isAttemptingToSetServiceType = 'service_type' in validationHash;
+    const isAttemptingToSetRequestedAt = 'requested_at' in validationHash;
+
+    return (
+      dispatch(validateCurrentCart(ref, validationHash))
+        /**
+         * If the validation succeeds
+         * we dispatch the actionCallback
+         */
+        .then(dispatch(actionCallback()))
+        /**
+         * If the validation throws
+         * we return a function that encapsulates
+         * the necessary steps to resolve the error
+         * before finally dispatching the actionCallback
+         */
+        .catch((err) => {
+          const proceed = () => {
+            if (err && get(err, 'errors', []).length) {
+              const errorCode = get(err.errors[0], 'code');
+              const orderRef = get(state, 'session.order.ref');
+              /**
+               * Invalid items in cart
+               */
+              if (errorCode === ErrorCodes.validateCart.invalidItems) {
+                const lineItemsData = get(
+                  state,
+                  'session.order.lineItemsData',
+                  [],
+                );
+                const [, ...invalidItems] = get(err, 'errors');
+
+                const invalidItemsInCart = getInvalidLineItems(
+                  invalidItems,
+                  lineItemsData,
+                );
+
+                const promises = invalidItemsInCart.map(invalidItem =>
+                  dispatch(removeLineItem(orderRef, invalidItem)),
+                );
+
+                return Promise.all(promises).then(dispatch(actionCallback()));
+              }
+
+              /**
+               * Location is closed
+               */
+              if (errorCode === ErrorCodes.validateCart.locationIsClosed) {
+                const allLocationsById = get(
+                  state,
+                  'data.locations.locationsById',
+                );
+
+                const locationId = isAttemptingToSetLocationId
+                  ? validationHash.location_id
+                  : get(state, 'session.order.orderData.location_id');
+                const serviceType = isAttemptingToSetServiceType
+                  ? validationHash.service_type
+                  : get(state, 'session.order.orderData.service_type');
+                const requestedAt = isAttemptingToSetRequestedAt
+                  ? validationHash.requested_at
+                  : get(state, 'session.order.orderData.requested_at');
+
+                /**
+                 * If the location already exists in memory
+                 * we find the first available order time
+                 */
+                if (locationId in allLocationsById) {
+                  const location = get(allLocationsById, `${locationId}`);
+                  const firstAvailableOrderTime = get(
+                    location,
+                    `first_times.${serviceType}.utc`,
+                  );
+                  return dispatch(
+                    setRequestedAt(orderRef, firstAvailableOrderTime),
+                  ).then(dispatch(actionCallback()));
+                }
+
+                /**
+                 * Otherwise, we fetch the location
+                 * and then find the first available order time
+                 */
+                return dispatch(
+                  fetchLocation(ref, locationId, {
+                    service_type: serviceType,
+                    requested_at: requestedAt,
+                    include_times: true,
+                  }),
+                ).then(() => {
+                  const nextState = getStateWithNamespace(getState);
+                  const nextAllLocationsById = get(
+                    nextState,
+                    'data.locations.locationsById',
+                  );
+                  const location = get(nextAllLocationsById, `${locationId}`);
+                  const firstAvailableOrderTime = get(
+                    location,
+                    `first_times.${serviceType}.utc`,
+                  );
+
+                  return dispatch(
+                    setRequestedAt(orderRef, firstAvailableOrderTime),
+                  ).then(dispatch(actionCallback()));
+                });
+              }
+
+              /**
+               * Unmet delivery minimum
+               * (not much we can do here apart from notify the customer)
+               */
+              if (errorCode === ErrorCodes.validateCart.unmetDeliveryMinimum) {
+                return () => Promise.resolve();
+              }
+            }
+          };
+
+          return onValidationError(err, proceed);
+        })
+    );
+  };
 }

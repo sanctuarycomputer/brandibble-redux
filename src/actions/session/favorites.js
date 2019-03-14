@@ -15,15 +15,9 @@ export const fetchFavorites = brandibble => (dispatch) => {
 export const createFavorite = (brandibble, favorite = {}) => dispatch => {
   const name = get(favorite, 'name', '');
   const product = get(favorite, 'product');
-
-  let lineItem;
-  if (product) {
-    lineItem = new brandibble.LineItem(product, 1);
-  } else {
-    lineItem = get(favorite, 'lineItem');
-  }
-
+  const lineItem = !!product ? new brandibble.LineItem(product, 1) : get(favorite, 'lineItem');
   const payload = brandibble.favorites.create(name, lineItem).then(({ data }) => data).catch(handleErrors);
+  
   return dispatch(fireAction(CREATE_FAVORITE, payload));
 };
 

@@ -97,6 +97,7 @@ describe('actions/session/order', () => {
 
       return setRequestedAt(makeUnpersistedOrder(), 'asap')(
         store.dispatch,
+        store.getState,
       ).then((res) => {
         return setOrderLocationId(res.value.order, 19)(
           store.dispatch,
@@ -330,6 +331,7 @@ describe('actions/session/order', () => {
       store = mockStore();
       return setServiceType(makeUnpersistedOrder(), 'pickup')(
         store.dispatch,
+        store.getState,
       ).then(() => {
         actionsCalled = store.getActions();
       });
@@ -409,6 +411,7 @@ describe('actions/session/order', () => {
       store = mockStore();
       return setRequestedAt(makeUnpersistedOrder(), '2017-03-22T17:50:29Z')(
         store.dispatch,
+        store.getState,
       ).then(() => {
         actionsCalled = store.getActions();
       });

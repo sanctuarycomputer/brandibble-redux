@@ -1,4 +1,5 @@
 /* eslint no-shadow:1, no-unused-vars:1, prefer-rest-params:1 */
+import { Constants } from 'brandibble';
 import BrandibbleReduxException from '../../utils/exception';
 import { Defaults, Asap, ErrorCodes } from '../../utils/constants';
 import fireAction from '../../utils/fireAction';
@@ -615,49 +616,51 @@ export function removeOptionFromLineItem(currentOrder, lineItem, optionItem) {
 }
 
 export function toggleAddOptionToLineItem(currentOrder, lineItem, optionGroup, optionItem) {
-  const optionGroupId = get(optionGroup, 'id');
-  const optionGroupFromOptionGroupMappings = get(
-    lineItem,
-    'optionGroupMappings',
-    []
-  ).find(mappedOptionGroup => get(mappedOptionGroup, 'id') === optionGroupId);
+  return dispatch => {
+    const optionGroupId = get(optionGroup, 'id');
+    const optionGroupFromOptionGroupMappings = get(
+      lineItem,
+      'optionGroupMappings',
+      []
+    ).find(mappedOptionGroup => get(mappedOptionGroup, 'id') === optionGroupId);
 
-  const optionItemPresentInOptionGroup = get(
-    optionGroupFromOptionGroupMappings,
-    'optionItems',
-    []
-  ).find(optionItem => get(optionItem, 'presence') === PRESENT);
+    const optionItemPresentInOptionGroup = get(
+      optionGroupFromOptionGroupMappings,
+      'optionItems',
+      []
+    ).find(optionItem => get(optionItem, 'presence') === Constants.OptionStatus.PRESENT);
 
-  const payload = async () => {
-    try {
-      /**
-       * If an option item is already PRESENT in the
-       * optionGroup, we remove it before adding the new one
-       */
-      if (!!optionItemPresentInOptionGroup) {
-        const optionItemToRemove = get(optionGroup, 'option_items', []).find(
-          optionItem =>
-            get(optionItem, 'id') ===
-            get(optionItemPresentInOptionGroup, 'optionId')
-        );
+    const payload = async () => {
+      try {
+        /**
+         * If an option item is already PRESENT in the
+         * optionGroup, we remove it before adding the new one
+         */
+        if (!!optionItemPresentInOptionGroup) {
+          const optionItemToRemove = get(optionGroup, 'option_items', []).find(
+            optionItem =>
+              get(optionItem, 'id') ===
+              get(optionItemPresentInOptionGroup, 'optionId')
+          );
+
+          await dispatch(
+            _removeOptionFromLineItem(currentOrder, lineItem, optionItemToRemove)
+          );
+        }
 
         await dispatch(
-          _removeOptionFromLineItem(currentOrder, lineItem, optionItemToRemove)
+          _addOptionToLineItem(currentOrder, lineItem, optionGroup, optionItem)
         );
+      } catch (err) {
+        console.error(err);
       }
+    };
 
-      await dispatch(
-        _addOptionToLineItem(currentOrder, lineItem, optionGroup, optionItem)
-      );
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  return dispatch({
-    type: TOGGLE_ADD_OPTION_TO_LINE_ITEM,
-    payload: payload()
-  });
+    return dispatch({
+      type: TOGGLE_ADD_OPTION_TO_LINE_ITEM,
+      payload: payload()
+    });
+  }
 };
 
 

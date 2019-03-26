@@ -9,7 +9,7 @@ import { getStateWithNamespace } from '../../utils/getStateWithNamespace';
 import { updateInvalidOrderRequestedAt } from '../application';
 import { authenticateUser } from './user';
 import { fetchMenu } from './menus';
-import { fetchLocation, fetchLocations } from '../data/locations';
+import { fetchLocation } from '../data/locations';
 
 export const RESOLVE_ORDER = 'RESOLVE_ORDER';
 export const RESOLVE_ORDER_LOCATION = 'RESOLVE_ORDER_LOCATION';
@@ -19,6 +19,7 @@ export const SET_LINE_ITEM_QUANTITY = 'SET_LINE_ITEM_QUANTITY';
 export const REMOVE_LINE_ITEM = 'REMOVE_LINE_ITEM';
 export const ADD_OPTION_TO_LINE_ITEM = 'ADD_OPTION_TO_LINE_ITEM';
 export const REMOVE_OPTION_FROM_LINE_ITEM = 'REMOVE_OPTION_FROM_LINE_ITEM';
+export const TOGGLE_ADD_OPTION_TO_LINE_ITEM = 'TOGGLE_ADD_OPTION_TO_LINE_ITEM';
 export const SET_ORDER_LOCATION_ID = 'SET_ORDER_LOCATION_ID';
 export const SUBMIT_ORDER = 'SUBMIT_ORDER';
 export const BIND_CUSTOMER_TO_ORDER = 'BIND_CUSTOMER_TO_ORDER';
@@ -612,6 +613,53 @@ export function addOptionToLineItem(
 export function removeOptionFromLineItem(currentOrder, lineItem, optionItem) {
   return dispatch => dispatch(_removeOptionFromLineItem(...arguments));
 }
+
+export function toggleAddOptionToLineItem(currentOrder, lineItem, optionGroup, optionItem) {
+  const optionGroupId = get(optionGroup, 'id');
+  const optionGroupFromOptionGroupMappings = get(
+    lineItem,
+    'optionGroupMappings',
+    []
+  ).find(mappedOptionGroup => get(mappedOptionGroup, 'id') === optionGroupId);
+
+  const optionItemPresentInOptionGroup = get(
+    optionGroupFromOptionGroupMappings,
+    'optionItems',
+    []
+  ).find(optionItem => get(optionItem, 'presence') === PRESENT);
+
+  const payload = async () => {
+    try {
+      /**
+       * If an option item is already PRESENT in the
+       * optionGroup, we remove it before adding the new one
+       */
+      if (!!optionItemPresentInOptionGroup) {
+        const optionItemToRemove = get(optionGroup, 'option_items', []).find(
+          optionItem =>
+            get(optionItem, 'id') ===
+            get(optionItemPresentInOptionGroup, 'optionId')
+        );
+
+        await dispatch(
+          _removeOptionFromLineItem(currentOrder, lineItem, optionItemToRemove)
+        );
+      }
+
+      await dispatch(
+        _addOptionToLineItem(currentOrder, lineItem, optionGroup, optionItem)
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return dispatch({
+    type: TOGGLE_ADD_OPTION_TO_LINE_ITEM,
+    payload: payload()
+  });
+};
+
 
 export function bindCustomerToOrder(...args) {
   return dispatch => dispatch(_bindCustomerToOrder(...args));

@@ -158,7 +158,7 @@ function _setTip(order, paymentType, tip) {
 function _resetTip(order) {
   return {
     type: RESET_TIP,
-    payload: order.resetTip().then(order => ({ order }))
+    payload: order.resetTip().then(order => ({ order })),
   };
 }
 
@@ -295,6 +295,7 @@ export function resolveOrder(
 
       const promises = [];
       let requestedAt;
+      let isAsap;
 
       const NOW = new Date();
 
@@ -302,6 +303,7 @@ export function resolveOrder(
       // is 'asap' then we fetch the menu for NOW
       // and leave the order untouched
       if (orderRequestedAt === Asap) {
+        isAsap = true;
         requestedAt = NOW;
       } else {
         // Otherwise, we check to see if the resolved order's
@@ -312,12 +314,14 @@ export function resolveOrder(
           // we update the orders requested at to 'asap'
           // and push that into the array of promises
           // to be resolved
+          isAsap = true;
           requestedAt = NOW;
           promises.push(dispatch(setRequestedAt(order, Asap)));
         } else {
           // In the case that it is not in the past
           // we set the new requestedAt to the orders requested at
           // and continue with fetching the menu
+          isAsap = false;
           requestedAt = orderRequestedAt;
         }
       }
@@ -328,7 +332,11 @@ export function resolveOrder(
         serviceType: orderServiceType,
       };
 
-      promises.push(dispatch(fetchMenu(brandibble, menuType)));
+      const menuOptions = {
+        isAsap,
+      };
+
+      promises.push(dispatch(fetchMenu(brandibble, menuType, menuOptions)));
       promises.push(
         dispatch(
           fetchLocation(brandibble, orderLocationId, {

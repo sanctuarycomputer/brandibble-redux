@@ -1,6 +1,7 @@
 import { utils } from 'brandibble';
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
+import { Asap } from '../../utils/constants';
 
 export const FETCH_MENU = 'FETCH_MENU';
 
@@ -18,7 +19,6 @@ export const fetchMenu = (
   menuType = defaultMenuType,
 ) => (dispatch) => {
   const { locationId, requestedAt, serviceType } = menuType;
-
   const requestedAtAsISO8601 = coerceDateToISO8601(requestedAt);
 
   const payload = brandibble.menus
@@ -26,8 +26,11 @@ export const fetchMenu = (
     .then(({ data }) => data)
     .catch(handleErrors);
 
+  const requestedAtKey =
+    menuType.requestedAt === Asap ? requestedAt : requestedAtAsISO8601;
+
   const meta = {
-    menuKey: `${locationId}_${serviceType}_${requestedAtAsISO8601}`,
+    menuKey: `${locationId}_${serviceType}_${requestedAtKey}`,
   };
 
   return dispatch(fireAction(FETCH_MENU, payload, meta));

@@ -2,6 +2,7 @@ import { utils } from 'brandibble';
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
 import { Asap } from '../../utils/constants';
+import get from '../../utils/get';
 
 export const FETCH_MENU = 'FETCH_MENU';
 
@@ -14,9 +15,14 @@ const defaultMenuType = {
   serviceType: 'delivery',
 };
 
+const defaultOptions = {
+  isAsap: false,
+};
+
 export const fetchMenu = (
   brandibble,
   menuType = defaultMenuType,
+  options = defaultOptions,
 ) => (dispatch) => {
   const { locationId, requestedAt, serviceType } = menuType;
   const requestedAtAsISO8601 = coerceDateToISO8601(requestedAt);
@@ -26,9 +32,7 @@ export const fetchMenu = (
     .then(({ data }) => data)
     .catch(handleErrors);
 
-  const requestedAtKey =
-    menuType.requestedAt === Asap ? requestedAt : requestedAtAsISO8601;
-
+  const requestedAtKey = get(options, 'isAsap') ? Asap : requestedAtAsISO8601;
   const meta = {
     menuKey: `${locationId}_${serviceType}_${requestedAtKey}`,
   };

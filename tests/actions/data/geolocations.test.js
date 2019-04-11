@@ -17,7 +17,7 @@ describe('actions/data/geolocations', () => {
 
   before(() => {
     store = mockStore();
-    return fetchGeolocations(brandibble, { latitude: 40.755912, longitude: -73.9709333 })(store.dispatch).then((response) => {
+    return fetchGeolocations(brandibble, { latitude: 40.755912, longitude: -73.9709333, include_times: true })(store.dispatch).then((response) => {
       data = response.value;
       actionsCalled = store.getActions();
     });

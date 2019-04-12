@@ -256,10 +256,10 @@ function _validateCurrentOrder(data) {
   };
 }
 
-function _attemptReorder(payload) {
+function _attemptReorder(payload, callback) {
   return {
     type: ATTEMPT_REORDER,
-    payload,
+    payload: payload.then(callback).catch(callback),
   };
 }
 
@@ -641,7 +641,11 @@ export function submitOrder(brandibble, order, options = {}) {
     dispatch(_submitOrder(dispatch, brandibble, order, options));
 }
 
-export function attemptReorder(order, shouldClearCart = true) {
+export function attemptReorder(
+  order,
+  callback = f => f,
+  shouldClearCart = true,
+) {
   return (dispatch, getState) => {
     const state = getStateWithNamespace(getState);
     const currentOrderLocationId = get(
@@ -767,7 +771,7 @@ export function attemptReorder(order, shouldClearCart = true) {
       });
     });
 
-    return dispatch(_attemptReorder(payload));
+    return dispatch(_attemptReorder(payload, callback));
   };
 }
 

@@ -5,11 +5,14 @@ import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
 import get from '../../utils/get';
 import getInvalidLineItems from '../../utils/getInvalidLineItems';
+import jsDateToValidISO8601 from '../../utils/jsDateToValidISO8601';
 import { getStateWithNamespace } from '../../utils/getStateWithNamespace';
+import { supportsCatering } from '../../utils/orderTypes';
 import { updateInvalidOrderRequestedAt } from '../application';
 import { authenticateUser } from './user';
 import { fetchMenu } from './menus';
 import { fetchLocation, fetchLocations } from '../data/locations';
+import { locationsAsArray } from '../../selectors/locations';
 
 export const RESOLVE_ORDER = 'RESOLVE_ORDER';
 export const RESOLVE_ORDER_LOCATION = 'RESOLVE_ORDER_LOCATION';
@@ -37,6 +40,7 @@ export const SET_LINE_ITEM_MADE_FOR = 'SET_LINE_ITEM_MADE_FOR';
 export const SET_LINE_ITEM_INSTRUCTIONS = 'SET_LINE_ITEM_INSTRUCTIONS';
 export const ADD_APPLIED_DISCOUNT = 'ADD_APPLIED_DISCOUNT';
 export const REMOVE_APPLIED_DISCOUNT = 'REMOVE_APPLIED_DISCOUNT';
+export const ATTEMPT_REORDER = 'ATTEMPT_REORDER';
 
 /* Private Action Creators */
 function _resolveOrder(payload) {
@@ -249,6 +253,13 @@ function _validateCurrentOrder(data) {
   return {
     type: VALIDATE_CURRENT_ORDER,
     payload: data,
+  };
+}
+
+function _attemptReorder(payload, callback) {
+  return {
+    type: ATTEMPT_REORDER,
+    payload: payload.then(callback).catch(callback),
   };
 }
 
@@ -628,6 +639,188 @@ export function bindCustomerToOrder(...args) {
 export function submitOrder(brandibble, order, options = {}) {
   return dispatch =>
     dispatch(_submitOrder(dispatch, brandibble, order, options));
+}
+
+export function attemptReorder(
+  order,
+  callback = f => f,
+  shouldClearCart = true,
+) {
+  return (dispatch, getState) => {
+    const state = getStateWithNamespace(getState);
+    const currentOrderLocationId = get(
+      state,
+      'session.order.orderData.location_id',
+    );
+    const brandibbleRef = get(state, 'ref');
+    const orderRef = get(state, 'session.order.ref');
+    const lineItemsData = get(state, 'session.order.lineItemsData', []);
+    const orderItems = get(order, 'items', []);
+    const orderLocationId = get(order, 'location_id');
+    const orderServiceType = get(order, 'service_type');
+    const orderRequestedAt = get(order, 'requested_at');
+    const nowInISO8601Format = jsDateToValidISO8601();
+    const requestedAtIsAsap = orderRequestedAt === Asap;
+
+    const payload = new Promise((resolve, reject) => {
+      // 1. we need to ensure that our order has a location_id (an order without a
+      // location_id doesn't make sense), so if it doesn't have one, we have to
+      // set it manually
+      (currentOrderLocationId && currentOrderLocationId === orderLocationId
+        ? Promise.resolve()
+        : dispatch(setOrderLocationId(orderRef, orderLocationId))
+      ).then(() => {
+        // 2. We'll want to ensure we have the latest menu and location for that menu
+        // in memory
+        return Promise.all([
+          dispatch(
+            fetchMenu(
+              brandibbleRef,
+              {
+                locationId: orderLocationId,
+                serviceType: orderServiceType,
+                requestedAt: nowInISO8601Format,
+              },
+              {
+                isAsap: requestedAtIsAsap,
+              },
+            ),
+          ),
+          dispatch(
+            fetchLocation(brandibbleRef, orderLocationId, {
+              service_type: orderServiceType,
+              requested_at: nowInISO8601Format,
+              include_times: true,
+            }),
+          ),
+        ])
+          .then(() => {
+            // 3. if the location we are ordering from is a catering location
+            // and the requested_at is for 'asap', we need to turn that into
+            // the closest IS08601 equivalent, as a catering location's requested_at
+            // must be a valid date/time string (and unlike OLO, cannot be of string 'asap')
+            const nextState = getStateWithNamespace(getState);
+            const locations = locationsAsArray(nextState);
+            const isCateringLocation = !!locations.find(location =>
+              supportsCatering(location.order_types),
+            );
+
+            if (isCateringLocation && requestedAtIsAsap) {
+              const nowInISO8601Format = jsDateToValidISO8601();
+
+              return dispatch(
+                setRequestedAt(orderRef, nowInISO8601Format, false),
+              );
+            }
+            return Promise.resolve();
+          })
+          .then(() => {
+            const nextState = getStateWithNamespace(getState);
+            const menusById = get(nextState, 'session.menus');
+
+            const removals = shouldClearCart
+              ? lineItemsData.map(item =>
+                  dispatch(removeLineItem(orderRef, item)),
+                )
+              : [];
+
+            return Promise.all(removals).then(() => {
+              const defaultResponse = {
+                isReorderable: false,
+                itemsWereRemoved: shouldClearCart && !!removals.length,
+              };
+
+              return _buildLineItemsForReorder(
+                brandibbleRef,
+                orderLocationId,
+                menusById,
+                orderItems,
+              )
+                .then(({ reorderItems, failedItems }) => {
+                  if (reorderItems.length) {
+                    const pushedLineItems = reorderItems.map(item =>
+                      dispatch(pushLineItem(orderRef, item)),
+                    );
+
+                    Promise.all(pushedLineItems).then(() => {
+                      if (failedItems.length) {
+                        resolve({
+                          ...defaultResponse,
+                          isReorderable: true,
+                          itemsWereRemoved: true,
+                        });
+                        return;
+                      }
+
+                      resolve({ ...defaultResponse, isReorderable: true });
+                    });
+                  } else {
+                    // In this case the order was NOT reorderable
+                    // so we reject, resulting in an action status of REJECTED
+                    reject({ ...defaultResponse });
+                  }
+                })
+                .catch(() => {
+                  // If the buildLineItemsForReorder fails for some reason
+                  // the order is also NOT reorderable
+                  // so we reject resulting in an action status of REJECTED
+                  reject({ ...defaultResponse });
+                });
+            });
+          });
+      });
+    });
+
+    return dispatch(_attemptReorder(payload, callback));
+  };
+}
+
+/*
+ Private
+*/
+
+export function _buildLineItemsForReorder(
+  brandibbleRef,
+  orderLocationId,
+  menusById,
+  items,
+) {
+  return new Promise((resolve) => {
+    const keyForMenu = Object.keys(menusById).find(
+      menuKey => menusById[menuKey].location_id === orderLocationId,
+    );
+    const menu = menusById[keyForMenu];
+    const failedItems = [];
+
+    const reorderItems = items
+      .map((item) => {
+        const orphan = brandibbleRef.orders.buildLineItemOrphan(
+          item,
+          get(menu, 'menu', []),
+        );
+
+        /**
+         * If an orphan can't be built we consider it a
+         * failed item, and push it into the
+         * array of failed items
+         */
+
+        if (!orphan) {
+          failedItems.push(item);
+        }
+
+        /**
+         * Otherwise, If an orphan can be built
+         * set the quantity and return as
+         * a valid reorder item
+         */
+        orphan.quantity = item.quantity;
+        return orphan;
+      })
+      .filter(mappedItem => !!mappedItem);
+
+    return resolve({ reorderItems, failedItems });
+  });
 }
 
 export function _withCartValidation(

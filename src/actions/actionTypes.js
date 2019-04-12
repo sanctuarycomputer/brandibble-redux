@@ -1,6 +1,6 @@
 /**
  * Application Action Types
-*/
+ */
 
 export {
   SETUP_BRANDIBBLE,
@@ -10,8 +10,8 @@ export {
 } from './application';
 
 /**
-* Session Action Types
-*/
+ * Session Action Types
+ */
 
 // Addresses
 export {
@@ -29,9 +29,7 @@ export {
 } from './session/favorites';
 
 // Menus
-export {
-  FETCH_MENU,
-} from './session/menus';
+export { FETCH_MENU } from './session/menus';
 
 // Order
 export {
@@ -58,6 +56,7 @@ export {
   VALIDATE_CURRENT_CART,
   SET_LINE_ITEM_MADE_FOR,
   SET_LINE_ITEM_INSTRUCTIONS,
+  ATTEMPT_REORDER,
 } from './session/order';
 
 // Payments
@@ -93,18 +92,14 @@ export {
 } from './session/user';
 
 /**
-* Data Action Types
-*/
+ * Data Action Types
+ */
 
 // Allergens
-export {
-  FETCH_ALLERGENS,
-} from './data/allergens';
+export { FETCH_ALLERGENS } from './data/allergens';
 
 // Brands
-export {
-  FETCH_BRAND,
-} from './data/brands';
+export { FETCH_BRAND } from './data/brands';
 
 // Customer Orders
 export {
@@ -114,15 +109,10 @@ export {
 } from './data/customerOrders';
 
 // Geolocations
-export {
-  FETCH_GEOLOCATIONS,
-  CLEAR_GEOLOCATIONS,
-} from './data/geolocations';
+export { FETCH_GEOLOCATIONS, CLEAR_GEOLOCATIONS } from './data/geolocations';
 
 // Images
-export {
-  FETCH_IMAGES,
-} from './data/images';
+export { FETCH_IMAGES } from './data/images';
 
 // Locations
 export {
@@ -133,7 +123,4 @@ export {
 } from './data/locations';
 
 // Loyalties
-export {
-  FETCH_CUSTOMER_LOYALTIES,
-} from './user/loyalties';
-
+export { FETCH_CUSTOMER_LOYALTIES } from './user/loyalties';

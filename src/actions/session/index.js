@@ -2,7 +2,7 @@ export {
   fetchAddresses,
   createAddress,
   deleteAddress,
-  setDefaultAddress,
+  setDefaultAddress
 } from './addresses';
 export { fetchMenu } from './menus';
 export {
@@ -32,24 +32,25 @@ export {
   validateCurrentOrder,
   addAppliedDiscount,
   removeAppliedDiscount,
+  attemptReorder
 } from './order';
 export {
   fetchPayments,
   createPayment,
   deletePayment,
-  setDefaultPayment,
+  setDefaultPayment
 } from './payments';
 export {
   fetchFavorites,
   createFavorite,
   updateFavorite,
-  deleteFavorite,
+  deleteFavorite
 } from './favorites';
 export {
   fetchRating,
   createRating,
   updateRating,
-  deleteRating,
+  deleteRating
 } from './ratings';
 export {
   authenticateUser,
@@ -71,5 +72,5 @@ export {
   updateUser,
   validateUser,
   addAllergens,
-  removeAllergens,
+  removeAllergens
 } from './user';

@@ -370,20 +370,20 @@ export function resolveOrderLocation(brandibble) {
   return dispatch => dispatch(_resolveOrderLocation(payload));
 }
 
-export function validateCurrentCart(brandibble, data = {}) {
+export function validateCurrentCart(brandibble, data = {}, testChanges = {}, options = {}) {
   return (dispatch) => {
     const { orders } = brandibble;
     const order = orders.current();
-    const payload = orders.validateCart(order, data).then(res => res);
+    const payload = orders.validateCart(order, data, testChanges, options).then(res => res);
     return dispatch(_validateCurrentCart(payload));
   };
 }
 
-export function validateCurrentOrder(brandibble, data = {}) {
+export function validateCurrentOrder(brandibble, data = {}, options = {}) {
   return (dispatch) => {
     const { orders } = brandibble;
     const order = orders.current();
-    const payload = orders.validate(order, data).then(res => res);
+    const payload = orders.validate(order, data, options).then(res => res);
     return dispatch(_validateCurrentOrder(payload));
   };
 }
@@ -392,6 +392,7 @@ export function setOrderLocationId(
   currentOrder,
   locationId,
   onValidationError,
+  validateOptions = {}
 ) {
   return (dispatch, getState) => {
     const setOrderLocationIdLogic = () => (dispatch, getState) => {
@@ -456,6 +457,7 @@ export function setOrderLocationId(
           { location_id: locationId },
           onValidationError,
           setOrderLocationIdLogic,
+          validateOptions
         ),
       );
     }
@@ -530,6 +532,7 @@ export function setRequestedAt(
   time,
   wantsFuture = false,
   onValidationError,
+  validateOptions = {}
 ) {
   return (dispatch, getState) => {
     const setRequestedAtLogic = () => dispatch =>
@@ -551,6 +554,7 @@ export function setRequestedAt(
           { requested_at: requestedAt },
           onValidationError,
           setRequestedAtLogic,
+          validateOptions
         ),
       );
     }
@@ -566,7 +570,7 @@ export function setPromoCode(currentOrder, promo) {
   return dispatch => dispatch(_setPromoCode(currentOrder, promo));
 }
 
-export function setServiceType(currentOrder, serviceType, onValidationError) {
+export function setServiceType(currentOrder, serviceType, onValidationError, validateOptions = {}) {
   return (dispatch, getState) => {
     const setServiceTypeLogic = () => dispatch =>
       dispatch(_setServiceType(currentOrder, serviceType));
@@ -587,6 +591,7 @@ export function setServiceType(currentOrder, serviceType, onValidationError) {
           { service_type: serviceType },
           onValidationError,
           setServiceTypeLogic,
+          validateOptions
         ),
       );
     }
@@ -827,6 +832,7 @@ export function _withCartValidation(
   validationHash,
   onValidationError,
   actionCallback,
+  options = {}
 ) {
   return (dispatch, getState) => {
     const state = getStateWithNamespace(getState);
@@ -836,7 +842,7 @@ export function _withCartValidation(
     const isAttemptingToSetRequestedAt = 'requested_at' in validationHash;
 
     return (
-      dispatch(validateCurrentCart(ref, validationHash))
+      dispatch(validateCurrentCart(ref, validationHash, options))
         /**
          * If the validation succeeds
          * we dispatch the actionCallback

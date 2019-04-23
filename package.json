@@ -1,6 +1,6 @@
 {
   "name": "brandibble-redux",
-  "version": "1.13.8",
+  "version": "1.13.9",
   "description": "A Redux Framework for Brandibble.co",
   "repository": "https://github.com/sanctuarycomputer/brandibble-redux",
   "engines": {
@@ -20,7 +20,7 @@
   "author": "Sanctuary Computer <hello@sanctuary.computer> (http://sanctuary.computer/)",
   "license": "MIT",
   "dependencies": {
-    "brandibble": "git+https://git@github.com/sanctuarycomputer/brandibble.js#f04080bea49044a0623536f14faad655d564e4dd",
+    "brandibble": "git+https://git@github.com/sanctuarycomputer/brandibble.js#8ec510de2b76ee6f376fefa556daacf0576cb590",
     "localforage": "^1.5.0",
     "lodash.filter": "^4.6.0",
     "lodash.find": "^4.6.0",

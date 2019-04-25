@@ -333,7 +333,7 @@ export function resolveOrder(
           // to be resolved
           isAsap = true;
           requestedAt = NOW;
-          promises.push(dispatch(setRequestedAt(order, Asap)));
+          promises.push(dispatch(setRequestedAt(order, Asap, false)));
         } else {
           // In the case that it is not in the past
           // we set the new requestedAt to the orders requested at
@@ -543,17 +543,63 @@ export function resetTip(currentOrder) {
 export function setRequestedAt(
   currentOrder,
   time,
-  wantsFuture = false,
+  wantsFuture,
   onValidationError,
   validateOptions = {},
 ) {
   return (dispatch, getState) => {
-    const setRequestedAtLogic = () => (dispatch) => {
-      const wantsFutureFlag = _determineIfWantsFuture(time);
-      console.log(wantsFutureFlag);
-      return dispatch(
-        _setRequestedAt(currentOrder, time, wantsFutureFlag.wantsFuture),
-      );
+    const setRequestedAtLogic = () => (dispatch, getState) => {
+      if (typeof wantsFuture !== 'boolean') {
+        const wantsFutureInfo = _determineIfWantsFuture(time);
+        const state = getStateWithNamespace(getState);
+        const locations = locationsAsArray(state);
+        const isCateringLocation = !!locations.find(location =>
+          supportsCatering(location.order_types),
+        );
+
+        if (wantsFutureInfo.reason === WantsFutureReasons.isPast) {
+          time = Asap;
+        }
+
+        if (time === Asap && isCateringLocation) {
+          const brandibbleRef = get(state, 'ref');
+          const orderData = get(state, 'session.order.orderData');
+          const locationId = get(orderData, 'location_id');
+          const serviceType = get(orderData, 'service_type');
+          const now = DateTime.local().toJSDate();
+
+          return dispatch(
+            fetchLocation(brandibbleRef, locationId, {
+              service_type: serviceType,
+              requested_at: now,
+              include_times: true,
+            }),
+          ).then((res) => {
+            const firstAvailableOrderTime = get(
+              res,
+              `value.first_times.${serviceType}.utc`,
+            );
+
+            const wantsFutureInfo = _determineIfWantsFuture(
+              firstAvailableOrderTime,
+            );
+
+            return dispatch(
+              setRequestedAt(
+                currentOrder,
+                firstAvailableOrderTime,
+                wantsFutureInfo.wantsFuture,
+              ),
+            );
+          });
+        }
+
+        return dispatch(
+          _setRequestedAt(currentOrder, time, wantsFutureInfo.wantsFuture),
+        );
+      }
+
+      return dispatch(_setRequestedAt(currentOrder, time, wantsFuture));
     };
 
     /**

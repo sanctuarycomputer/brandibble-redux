@@ -7,6 +7,7 @@ import {
   ErrorCodes,
   WantsFutureReasons,
 } from '../../utils/constants';
+import determineIfWantsFuture from '../../utils/determineIfWantsFuture';
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
 import get from '../../utils/get';
@@ -558,7 +559,7 @@ export function setRequestedAt(
         wantsFuture argument
       */
       if (typeof wantsFuture !== 'boolean') {
-        const wantsFutureInfo = _determineIfWantsFuture(time);
+        const wantsFutureInfo = determineIfWantsFuture(time);
         const state = getStateWithNamespace(getState);
         const locations = locationsAsArray(state);
         const isCateringLocation = !!locations.find(location =>
@@ -588,7 +589,7 @@ export function setRequestedAt(
               `value.first_times.${serviceType}.utc`,
             );
 
-            const wantsFutureInfo = _determineIfWantsFuture(
+            const wantsFutureInfo = determineIfWantsFuture(
               firstAvailableOrderTime,
             );
 
@@ -860,44 +861,6 @@ export function attemptReorder(
 /*
  Private
 */
-const _determineIfWantsFuture = (requestedAt) => {
-  // If the requestedtAt is 'asap'
-  // set wantsFuture to false
-  if (requestedAt === Asap) {
-    return {
-      wantsFuture: false,
-      reason: WantsFutureReasons.isAsap,
-    };
-  }
-
-  const now = DateTime.local();
-  const requestedAtAsLuxonDateTime = DateTime.fromISO(requestedAt);
-
-  // If the requestedtAt is in the past (rare case)
-  // set wantsFuture to false
-  if (requestedAtAsLuxonDateTime < now) {
-    return {
-      wantsFuture: false,
-      reason: WantsFutureReasons.isPast,
-    };
-  }
-
-  if (requestedAtAsLuxonDateTime === now) {
-    return {
-      wantsFuture: false,
-      reason: WantsFutureReasons.isNow,
-    };
-  }
-
-  // If the requestedAt is in the future
-  // set wantsFuture to true
-  if (requestedAtAsLuxonDateTime > now) {
-    return {
-      wantsFuture: true,
-      reason: WantsFutureReasons.isFuture,
-    };
-  }
-};
 
 export function _buildLineItemsForReorder(
   brandibbleRef,

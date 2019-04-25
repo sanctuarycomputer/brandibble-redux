@@ -549,6 +549,14 @@ export function setRequestedAt(
 ) {
   return (dispatch, getState) => {
     const setRequestedAtLogic = () => (dispatch, getState) => {
+      /*
+        if an argument of type boolean is not
+        passed for wantsFuture, then we determine wantsFuture
+        before setting the requestedAt.
+
+        Otherwise, we set the requestedAt and honor the
+        wantsFuture argument
+      */
       if (typeof wantsFuture !== 'boolean') {
         const wantsFutureInfo = _determineIfWantsFuture(time);
         const state = getStateWithNamespace(getState);

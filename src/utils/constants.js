@@ -64,3 +64,10 @@ export const DateTimeFormats = {
 };
 
 export const Asap = 'asap';
+
+export const WantsFutureReasons = {
+  isAsap: 'is asap',
+  isPast: 'is past',
+  isFuture: 'is future',
+  isNow: 'is now',
+};

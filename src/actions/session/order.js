@@ -1,6 +1,12 @@
 /* eslint no-shadow:1, no-unused-vars:1, prefer-rest-params:1 */
+import { DateTime } from 'luxon';
 import BrandibbleReduxException from '../../utils/exception';
-import { Defaults, Asap, ErrorCodes } from '../../utils/constants';
+import {
+  Defaults,
+  Asap,
+  ErrorCodes,
+  WantsFutureReasons,
+} from '../../utils/constants';
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
 import get from '../../utils/get';
@@ -11,7 +17,7 @@ import { supportsCatering } from '../../utils/orderTypes';
 import { updateInvalidOrderRequestedAt } from '../application';
 import { authenticateUser } from './user';
 import { fetchMenu } from './menus';
-import { fetchLocation, fetchLocations } from '../data/locations';
+import { fetchLocation } from '../data/locations';
 import { locationsAsArray } from '../../selectors/locations';
 
 export const RESOLVE_ORDER = 'RESOLVE_ORDER';
@@ -370,11 +376,18 @@ export function resolveOrderLocation(brandibble) {
   return dispatch => dispatch(_resolveOrderLocation(payload));
 }
 
-export function validateCurrentCart(brandibble, data = {}, testChanges = {}, options = {}) {
+export function validateCurrentCart(
+  brandibble,
+  data = {},
+  testChanges = {},
+  options = {},
+) {
   return (dispatch) => {
     const { orders } = brandibble;
     const order = orders.current();
-    const payload = orders.validateCart(order, data, testChanges, options).then(res => res);
+    const payload = orders
+      .validateCart(order, data, testChanges, options)
+      .then(res => res);
     return dispatch(_validateCurrentCart(payload));
   };
 }
@@ -392,7 +405,7 @@ export function setOrderLocationId(
   currentOrder,
   locationId,
   onValidationError,
-  validateOptions = {}
+  validateOptions = {},
 ) {
   return (dispatch, getState) => {
     const setOrderLocationIdLogic = () => (dispatch, getState) => {
@@ -457,7 +470,7 @@ export function setOrderLocationId(
           { location_id: locationId },
           onValidationError,
           setOrderLocationIdLogic,
-          validateOptions
+          validateOptions,
         ),
       );
     }
@@ -532,11 +545,16 @@ export function setRequestedAt(
   time,
   wantsFuture = false,
   onValidationError,
-  validateOptions = {}
+  validateOptions = {},
 ) {
   return (dispatch, getState) => {
-    const setRequestedAtLogic = () => dispatch =>
-      dispatch(_setRequestedAt(currentOrder, time, wantsFuture));
+    const setRequestedAtLogic = () => (dispatch) => {
+      const wantsFutureFlag = _determineIfWantsFuture(time);
+      console.log(wantsFutureFlag);
+      return dispatch(
+        _setRequestedAt(currentOrder, time, wantsFutureFlag.wantsFuture),
+      );
+    };
 
     /**
      * If passed an onValidationError callback
@@ -551,10 +569,10 @@ export function setRequestedAt(
     ) {
       return dispatch(
         _withCartValidation(
-          { requested_at: requestedAt },
+          { requested_at: time },
           onValidationError,
           setRequestedAtLogic,
-          validateOptions
+          validateOptions,
         ),
       );
     }
@@ -570,7 +588,12 @@ export function setPromoCode(currentOrder, promo) {
   return dispatch => dispatch(_setPromoCode(currentOrder, promo));
 }
 
-export function setServiceType(currentOrder, serviceType, onValidationError, validateOptions = {}) {
+export function setServiceType(
+  currentOrder,
+  serviceType,
+  onValidationError,
+  validateOptions = {},
+) {
   return (dispatch, getState) => {
     const setServiceTypeLogic = () => dispatch =>
       dispatch(_setServiceType(currentOrder, serviceType));
@@ -591,7 +614,7 @@ export function setServiceType(currentOrder, serviceType, onValidationError, val
           { service_type: serviceType },
           onValidationError,
           setServiceTypeLogic,
-          validateOptions
+          validateOptions,
         ),
       );
     }
@@ -783,6 +806,44 @@ export function attemptReorder(
 /*
  Private
 */
+const _determineIfWantsFuture = (requestedAt) => {
+  // If the requestedtAt is 'asap'
+  // set wantsFuture to false
+  if (requestedAt === Asap) {
+    return {
+      wantsFuture: false,
+      reason: WantsFutureReasons.isAsap,
+    };
+  }
+
+  const now = DateTime.local();
+  const requestedAtAsLuxonDateTime = DateTime.fromISO(requestedAt);
+
+  // If the requestedtAt is in the past (rare case)
+  // set wantsFuture to false
+  if (requestedAtAsLuxonDateTime < now) {
+    return {
+      wantsFuture: false,
+      reason: WantsFutureReasons.isPast,
+    };
+  }
+
+  if (requestedAtAsLuxonDateTime === now) {
+    return {
+      wantsFuture: false,
+      reason: WantsFutureReasons.isNow,
+    };
+  }
+
+  // If the requestedAt is in the future
+  // set wantsFuture to true
+  if (requestedAtAsLuxonDateTime > now) {
+    return {
+      wantsFuture: true,
+      reason: WantsFutureReasons.isFuture,
+    };
+  }
+};
 
 export function _buildLineItemsForReorder(
   brandibbleRef,
@@ -832,7 +893,7 @@ export function _withCartValidation(
   validationHash,
   onValidationError,
   actionCallback,
-  options = {}
+  options = {},
 ) {
   return (dispatch, getState) => {
     const state = getStateWithNamespace(getState);

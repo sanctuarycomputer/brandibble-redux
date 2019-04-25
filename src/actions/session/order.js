@@ -1,6 +1,13 @@
 /* eslint no-shadow:1, no-unused-vars:1, prefer-rest-params:1 */
+import { DateTime } from 'luxon';
 import BrandibbleReduxException from '../../utils/exception';
-import { Defaults, Asap, ErrorCodes } from '../../utils/constants';
+import {
+  Defaults,
+  Asap,
+  ErrorCodes,
+  WantsFutureReasons,
+} from '../../utils/constants';
+import determineIfWantsFuture from '../../utils/determineIfWantsFuture';
 import fireAction from '../../utils/fireAction';
 import handleErrors from '../../utils/handleErrors';
 import get from '../../utils/get';
@@ -11,7 +18,7 @@ import { supportsCatering } from '../../utils/orderTypes';
 import { updateInvalidOrderRequestedAt } from '../application';
 import { authenticateUser } from './user';
 import { fetchMenu } from './menus';
-import { fetchLocation, fetchLocations } from '../data/locations';
+import { fetchLocation } from '../data/locations';
 import { locationsAsArray } from '../../selectors/locations';
 
 export const RESOLVE_ORDER = 'RESOLVE_ORDER';
@@ -327,7 +334,7 @@ export function resolveOrder(
           // to be resolved
           isAsap = true;
           requestedAt = NOW;
-          promises.push(dispatch(setRequestedAt(order, Asap)));
+          promises.push(dispatch(setRequestedAt(order, Asap, false)));
         } else {
           // In the case that it is not in the past
           // we set the new requestedAt to the orders requested at
@@ -370,11 +377,18 @@ export function resolveOrderLocation(brandibble) {
   return dispatch => dispatch(_resolveOrderLocation(payload));
 }
 
-export function validateCurrentCart(brandibble, data = {}, testChanges = {}, options = {}) {
+export function validateCurrentCart(
+  brandibble,
+  data = {},
+  testChanges = {},
+  options = {},
+) {
   return (dispatch) => {
     const { orders } = brandibble;
     const order = orders.current();
-    const payload = orders.validateCart(order, data, testChanges, options).then(res => res);
+    const payload = orders
+      .validateCart(order, data, testChanges, options)
+      .then(res => res);
     return dispatch(_validateCurrentCart(payload));
   };
 }
@@ -392,7 +406,7 @@ export function setOrderLocationId(
   currentOrder,
   locationId,
   onValidationError,
-  validateOptions = {}
+  validateOptions = {},
 ) {
   return (dispatch, getState) => {
     const setOrderLocationIdLogic = () => (dispatch, getState) => {
@@ -457,7 +471,7 @@ export function setOrderLocationId(
           { location_id: locationId },
           onValidationError,
           setOrderLocationIdLogic,
-          validateOptions
+          validateOptions,
         ),
       );
     }
@@ -530,13 +544,72 @@ export function resetTip(currentOrder) {
 export function setRequestedAt(
   currentOrder,
   time,
-  wantsFuture = false,
+  wantsFuture,
   onValidationError,
-  validateOptions = {}
+  validateOptions = {},
 ) {
   return (dispatch, getState) => {
-    const setRequestedAtLogic = () => dispatch =>
-      dispatch(_setRequestedAt(currentOrder, time, wantsFuture));
+    const setRequestedAtLogic = () => (dispatch, getState) => {
+      /*
+        if an argument of type boolean is not
+        passed for wantsFuture, then we determine wantsFuture
+        before setting the requestedAt.
+
+        Otherwise, we set the requestedAt and honor the
+        wantsFuture argument
+      */
+      if (typeof wantsFuture !== 'boolean') {
+        const wantsFutureInfo = determineIfWantsFuture(time);
+        const state = getStateWithNamespace(getState);
+        const locations = locationsAsArray(state);
+        const isCateringLocation = !!locations.find(location =>
+          supportsCatering(location.order_types),
+        );
+
+        if (wantsFutureInfo.reason === WantsFutureReasons.isPast) {
+          time = Asap;
+        }
+
+        if (time === Asap && isCateringLocation) {
+          const brandibbleRef = get(state, 'ref');
+          const orderData = get(state, 'session.order.orderData');
+          const locationId = get(orderData, 'location_id');
+          const serviceType = get(orderData, 'service_type');
+          const now = DateTime.local().toJSDate();
+
+          return dispatch(
+            fetchLocation(brandibbleRef, locationId, {
+              service_type: serviceType,
+              requested_at: now,
+              include_times: true,
+            }),
+          ).then((res) => {
+            const firstAvailableOrderTime = get(
+              res,
+              `value.first_times.${serviceType}.utc`,
+            );
+
+            const wantsFutureInfo = determineIfWantsFuture(
+              firstAvailableOrderTime,
+            );
+
+            return dispatch(
+              setRequestedAt(
+                currentOrder,
+                firstAvailableOrderTime,
+                wantsFutureInfo.wantsFuture,
+              ),
+            );
+          });
+        }
+
+        return dispatch(
+          _setRequestedAt(currentOrder, time, wantsFutureInfo.wantsFuture),
+        );
+      }
+
+      return dispatch(_setRequestedAt(currentOrder, time, wantsFuture));
+    };
 
     /**
      * If passed an onValidationError callback
@@ -551,10 +624,10 @@ export function setRequestedAt(
     ) {
       return dispatch(
         _withCartValidation(
-          { requested_at: requestedAt },
+          { requested_at: time },
           onValidationError,
           setRequestedAtLogic,
-          validateOptions
+          validateOptions,
         ),
       );
     }
@@ -570,7 +643,12 @@ export function setPromoCode(currentOrder, promo) {
   return dispatch => dispatch(_setPromoCode(currentOrder, promo));
 }
 
-export function setServiceType(currentOrder, serviceType, onValidationError, validateOptions = {}) {
+export function setServiceType(
+  currentOrder,
+  serviceType,
+  onValidationError,
+  validateOptions = {},
+) {
   return (dispatch, getState) => {
     const setServiceTypeLogic = () => dispatch =>
       dispatch(_setServiceType(currentOrder, serviceType));
@@ -591,7 +669,7 @@ export function setServiceType(currentOrder, serviceType, onValidationError, val
           { service_type: serviceType },
           onValidationError,
           setServiceTypeLogic,
-          validateOptions
+          validateOptions,
         ),
       );
     }
@@ -832,7 +910,7 @@ export function _withCartValidation(
   validationHash,
   onValidationError,
   actionCallback,
-  options = {}
+  options = {},
 ) {
   return (dispatch, getState) => {
     const state = getStateWithNamespace(getState);

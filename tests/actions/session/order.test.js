@@ -95,7 +95,7 @@ describe('actions/session/order', () => {
     before(() => {
       store = mockStore(stateWithBrandibbleRef);
 
-      return setRequestedAt(makeUnpersistedOrder(), 'asap')(
+      return setRequestedAt(makeUnpersistedOrder(), 'asap', false)(
         store.dispatch,
         store.getState,
       ).then((res) => {
@@ -149,10 +149,11 @@ describe('actions/session/order', () => {
     before(() => {
       store = mockStore(stateWithBrandibbleRef);
 
-      return setRequestedAt(makeUnpersistedOrder(), '2017-03-22T17:50:29Z')(
-        store.dispatch,
-        store.getState,
-      ).then((res) => {
+      return setRequestedAt(
+        makeUnpersistedOrder(),
+        '2017-03-22T17:50:29Z',
+        false,
+      )(store.dispatch, store.getState).then((res) => {
         return setOrderLocationId(res.value.order, 19)(
           store.dispatch,
           store.getState,
@@ -409,10 +410,11 @@ describe('actions/session/order', () => {
   describe('setRequestedAt', () => {
     before(() => {
       store = mockStore();
-      return setRequestedAt(makeUnpersistedOrder(), '2017-03-22T17:50:29Z')(
-        store.dispatch,
-        store.getState,
-      ).then(() => {
+      return setRequestedAt(
+        makeUnpersistedOrder(),
+        '2017-03-22T17:50:29Z',
+        false,
+      )(store.dispatch, store.getState).then(() => {
         actionsCalled = store.getActions();
       });
     });
@@ -606,11 +608,14 @@ describe('actions/session/order', () => {
       });
     });
 
-    it('should call 2 actions', () => expect(actionsCalled).to.have.length.of(2));
+    it('should call 2 actions', () =>
+      expect(actionsCalled).to.have.length.of(2));
 
     it('should have RESET_TIP_FULFILLED action', () => {
       action = find(actionsCalled, { type: 'RESET_TIP_FULFILLED' });
-      expect(action.payload.order).to.exist.and.have.property('miscOptions').to.have.property('tip');
+      expect(action.payload.order)
+        .to.exist.and.have.property('miscOptions')
+        .to.have.property('tip');
       expect(action.payload.order.miscOptions.tip).to.equal(null);
     });
   });

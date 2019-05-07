@@ -926,9 +926,11 @@ export function _withCartValidation(
          * before finally dispatching the actionCallback
          */
         .catch((err) => {
-          const proceed = () => {
-            if (err && get(err, 'errors', []).length) {
-              const errorCode = get(err.errors[0], 'code');
+          const errors = get(err, 'errors', []);
+
+          if (errors.length) {
+            const errorHandler = (error) => {
+              const errorCode = get(error, 'code');
               const orderRef = get(state, 'session.order.ref');
               /**
                * Invalid items in cart
@@ -1020,12 +1022,19 @@ export function _withCartValidation(
                * (not much we can do here apart from notify the customer)
                */
               if (errorCode === ErrorCodes.validateCart.unmetDeliveryMinimum) {
-                return () => Promise.resolve();
+                return () => Promise.resolve(null);
               }
-            }
-          };
+            };
 
-          return onValidationError(err, proceed);
+            const errorsWithHandlers = errors.map((error) => {
+              return {
+                error,
+                proceed: errorHandler(error),
+              };
+            });
+
+            return onValidationError(errorsWithHandlers);
+          }
         })
     );
   };

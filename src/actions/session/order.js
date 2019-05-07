@@ -13,6 +13,7 @@ import handleErrors from '../../utils/handleErrors';
 import get from '../../utils/get';
 import getInvalidLineItems from '../../utils/getInvalidLineItems';
 import jsDateToValidISO8601 from '../../utils/jsDateToValidISO8601';
+import formatValidateCartErrors from '../../utils/formatValidateCartErrors';
 import { getStateWithNamespace } from '../../utils/getStateWithNamespace';
 import { supportsCatering } from '../../utils/orderTypes';
 import { updateInvalidOrderRequestedAt } from '../application';
@@ -927,29 +928,7 @@ export function _withCartValidation(
          */
         .catch((err) => {
           const errors = get(err, 'errors', []);
-
-          const errorsFormatted = errors.reduce((formatted, error) => {
-            if (
-              !get(error, 'errorCode') === ErrorCodes.validateCart.invalidItems
-            ) {
-              return formatted.push(error);
-            }
-
-            const existingInvalidItemsHash = formatted.find(
-              formattedError =>
-                get(formattedError, 'errorCode') ===
-                ErrorCodes.validateCart.invalidItems,
-            );
-
-            let invalidItemError;
-            if (existingInvalidItemsHash) {
-            }
-
-            const formattedInvalidItemError = Object.assign(
-              {},
-              { ...error, source: { pointers: [error.source.pointer] } },
-            );
-          }, []);
+          const errorsFormatted = formatValidateCartErrors(errors);
 
           if (errorsFormatted.length) {
             const errorHandler = (error) => {
@@ -957,17 +936,19 @@ export function _withCartValidation(
               const orderRef = get(state, 'session.order.ref');
               /**
                * Invalid items in cart
+               *
+               * This uses updated validateCart v2 error
                */
-              if (errorCode === ErrorCodes.validateCart.invalidItems) {
+              if (errorCode === ErrorCodes.validateCart.invalidItemsInCart) {
                 const lineItemsData = get(
                   state,
                   'session.order.lineItemsData',
                   [],
                 );
-                const [, ...invalidItems] = get(err, 'errors');
 
+                const invalidItemIds = get(error, 'source.pointers', []);
                 const invalidItemsInCart = getInvalidLineItems(
-                  invalidItems,
+                  invalidItemIds,
                   lineItemsData,
                 );
 
@@ -980,6 +961,8 @@ export function _withCartValidation(
 
               /**
                * Location is closed
+               *
+               * TODO: Not sure what the new cartValidate v2 error is
                */
               if (errorCode === ErrorCodes.validateCart.locationIsClosed) {
                 const allLocationsById = get(
@@ -1043,6 +1026,8 @@ export function _withCartValidation(
               /**
                * Unmet delivery minimum
                * (not much we can do here apart from notify the customer)
+               *
+               * TODO: Not sure what the new cartValidate v2 error is
                */
               if (errorCode === ErrorCodes.validateCart.unmetDeliveryMinimum) {
                 return () => Promise.resolve(null);

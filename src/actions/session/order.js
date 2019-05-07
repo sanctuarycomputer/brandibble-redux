@@ -377,18 +377,11 @@ export function resolveOrderLocation(brandibble) {
   return dispatch => dispatch(_resolveOrderLocation(payload));
 }
 
-export function validateCurrentCart(
-  brandibble,
-  data = {},
-  testChanges = {},
-  options = {},
-) {
+export function validateCurrentCart(brandibble, data = {}, options = {}) {
   return (dispatch) => {
     const { orders } = brandibble;
     const order = orders.current();
-    const payload = orders
-      .validateCart(order, data, testChanges, options)
-      .then(res => res);
+    const payload = orders.validateCart(order, data, options).then(res => res);
     return dispatch(_validateCurrentCart(payload));
   };
 }

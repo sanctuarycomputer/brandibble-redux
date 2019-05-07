@@ -10,6 +10,7 @@ export const ErrorCodes = {
     locationIsClosed: 'orders.validate.location_closed',
     invalidItems: 'orders.validate.invalid_items',
     unmetDeliveryMinimum: 'orders.validate.delivery_minimum',
+    invalidItemsInCart: 'cart.validate.invalid_cart', // This is the new error code (validate#cart v2)
   },
 };
 

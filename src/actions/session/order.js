@@ -928,7 +928,30 @@ export function _withCartValidation(
         .catch((err) => {
           const errors = get(err, 'errors', []);
 
-          if (errors.length) {
+          const errorsFormatted = errors.reduce((formatted, error) => {
+            if (
+              !get(error, 'errorCode') === ErrorCodes.validateCart.invalidItems
+            ) {
+              return formatted.push(error);
+            }
+
+            const existingInvalidItemsHash = formatted.find(
+              formattedError =>
+                get(formattedError, 'errorCode') ===
+                ErrorCodes.validateCart.invalidItems,
+            );
+
+            let invalidItemError;
+            if (existingInvalidItemsHash) {
+            }
+
+            const formattedInvalidItemError = Object.assign(
+              {},
+              { ...error, source: { pointers: [error.source.pointer] } },
+            );
+          }, []);
+
+          if (errorsFormatted.length) {
             const errorHandler = (error) => {
               const errorCode = get(error, 'code');
               const orderRef = get(state, 'session.order.ref');

@@ -456,11 +456,12 @@ describe('actions/session/order', () => {
                   store.dispatch,
                 ).then(() => {
                   store.clearActions();
-                  return validateCurrentCart(brandibble)(store.dispatch).then(
-                    () => {
-                      actionsCalled = store.getActions();
-                    },
-                  );
+                  return validateCurrentCart(brandibble)(
+                    store.dispatch,
+                    store.getState,
+                  ).then(() => {
+                    actionsCalled = store.getActions();
+                  });
                 });
               });
             },

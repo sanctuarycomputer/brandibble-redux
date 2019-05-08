@@ -379,11 +379,56 @@ export function resolveOrderLocation(brandibble) {
   return dispatch => dispatch(_resolveOrderLocation(payload));
 }
 
-export function validateCurrentCart(brandibble, data = {}, options = {}) {
-  return (dispatch) => {
+export function validateCurrentCart(
+  brandibble,
+  data = {},
+  options = {},
+  onValidationError,
+) {
+  return (dispatch, getState) => {
+    /**
+     * If passed an onValidationError callback
+     * we attempt to validate before proceeding
+     */
+    const state = getStateWithNamespace(getState);
+    const cart = get(state, 'session.order.orderData.cart', []);
+    const hasItemsInCart = !!cart && cart.length;
+
+    if (
+      hasItemsInCart &&
+      (onValidationError && typeof onValidationError === 'function')
+    ) {
+      /**
+       * apiVersion: v2
+       */
+      if (get(options, 'apiVersion') === ApiVersion.V2) {
+        return dispatch(
+          _v2_withCartValidation(
+            null, // validationsHash is not necessary, so we pass null
+            onValidationError,
+            null, // actionCallback is not necessary, so we pass null
+            options,
+          ),
+        );
+      }
+
+      /**
+       * apiVersion: v1
+       */
+      return dispatch(
+        _v1_withCartValidation(
+          null,
+          onValidationError,
+          null, // actionCallback is not necessary, so we pass null
+          options,
+        ),
+      );
+    }
+
     const { orders } = brandibble;
     const order = orders.current();
     const payload = orders.validateCart(order, data, options).then(res => res);
+
     return dispatch(_validateCurrentCart(payload));
   };
 }
@@ -947,12 +992,17 @@ function _v2_withCartValidation(
   return (dispatch, getState) => {
     const state = getStateWithNamespace(getState);
     const ref = get(state, 'ref');
+    const { orders } = ref;
+    const order = orders.current();
     const isAttemptingToSetLocationId = 'location_id' in validationHash;
     const isAttemptingToSetServiceType = 'service_type' in validationHash;
     const isAttemptingToSetRequestedAt = 'requested_at' in validationHash;
 
+    const payload = orders
+      .validateCart(order, validationHash, options)
+      .then(res => res);
     return (
-      dispatch(validateCurrentCart(ref, validationHash, options))
+      dispatch(_validateCurrentCart(payload))
         /**
          * If the validation succeeds
          * we dispatch the actionCallback
@@ -1098,17 +1148,37 @@ function _v1_withCartValidation(
   return (dispatch, getState) => {
     const state = getStateWithNamespace(getState);
     const ref = get(state, 'ref');
-    const isAttemptingToSetLocationId = 'location_id' in validationHash;
-    const isAttemptingToSetServiceType = 'service_type' in validationHash;
-    const isAttemptingToSetRequestedAt = 'requested_at' in validationHash;
+    const { orders } = ref;
+    const order = orders.current();
 
+    const hasValidationHash = typeof validationHash === 'object';
+    const isAttemptingToSetLocationId = hasValidationHash
+      ? 'location_id' in validationHash
+      : false;
+    const isAttemptingToSetServiceType = hasValidationHash
+      ? 'service_type' in validationHash
+      : false;
+    const isAttemptingToSetRequestedAt = hasValidationHash
+      ? 'requested_at' in validationHash
+      : false;
+
+    const payload = orders
+      .validateCart(order, validationHash, options)
+      .then(res => res);
     return (
-      dispatch(validateCurrentCart(ref, validationHash, options))
+      dispatch(_validateCurrentCart(payload))
         /**
          * If the validation succeeds
-         * we dispatch the actionCallback
+         * we check if an actionCallback was passed
+         * in the case that it was, we call it.
+         * Otherwise we return null (this is necessary in the case that
+         * validateCurrentCart is passed an onValidationError callback)
          */
-        .then(dispatch(actionCallback()))
+        .then(() =>
+          typeof actionCallback === 'function'
+            ? dispatch(actionCallback())
+            : null,
+        )
         /**
          * If the validation throws
          * we return a function that encapsulates

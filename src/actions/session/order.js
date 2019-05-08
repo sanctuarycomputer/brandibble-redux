@@ -460,8 +460,25 @@ export function setOrderLocationId(
       hasItemsInCart &&
       (onValidationError && typeof onValidationError === 'function')
     ) {
+      /**
+       * apiVersion v2
+       */
+      if (get(validateOptions, 'apiVersion') === 'v2') {
+        return dispatch(
+          _v2_withCartValidation(
+            { location_id: locationId },
+            onValidationError,
+            setOrderLocationIdLogic,
+            validateOptions,
+          ),
+        );
+      }
+
+      /**
+       * apiVersion v1
+       */
       return dispatch(
-        _withCartValidation(
+        _v1_withCartValidation(
           { location_id: locationId },
           onValidationError,
           setOrderLocationIdLogic,
@@ -469,6 +486,7 @@ export function setOrderLocationId(
         ),
       );
     }
+
     /**
      * Otherwise, we proceed with
      * the original intended logic
@@ -900,7 +918,7 @@ export function _buildLineItemsForReorder(
   });
 }
 
-export function _withCartValidation(
+export function _v2_withCartValidation(
   validationHash,
   onValidationError,
   actionCallback,
@@ -936,10 +954,8 @@ export function _withCartValidation(
               const orderRef = get(state, 'session.order.ref');
               /**
                * Invalid items in cart
-               *
-               * This uses updated validateCart v2 error
                */
-              if (errorCode === ErrorCodes.validateCart.invalidItemsInCart) {
+              if (errorCode === ErrorCodes.validateCart.v2.invalidItemsInCart) {
                 const lineItemsData = get(
                   state,
                   'session.order.lineItemsData',
@@ -961,10 +977,8 @@ export function _withCartValidation(
 
               /**
                * Location is closed
-               *
-               * TODO: Not sure what the new cartValidate v2 error is
                */
-              if (errorCode === ErrorCodes.validateCart.locationIsClosed) {
+              if (errorCode === ErrorCodes.validateCart.v2.locationIsClosed) {
                 const allLocationsById = get(
                   state,
                   'data.locations.locationsById',
@@ -1026,15 +1040,15 @@ export function _withCartValidation(
               /**
                * Unmet delivery minimum
                * (not much we can do here apart from notify the customer)
-               *
-               * TODO: Not sure what the new cartValidate v2 error is
                */
-              if (errorCode === ErrorCodes.validateCart.unmetDeliveryMinimum) {
-                return () => Promise.resolve(null);
+              if (
+                errorCode === ErrorCodes.validateCart.v2.unmetDeliveryMinimum
+              ) {
+                return null;
               }
             };
 
-            const errorsWithHandlers = errors.map((error) => {
+            const errorsWithHandlers = errorsFormatted.map((error) => {
               return {
                 error,
                 proceed: errorHandler(error),
@@ -1043,6 +1057,140 @@ export function _withCartValidation(
 
             return onValidationError(errorsWithHandlers);
           }
+        })
+    );
+  };
+}
+
+export function _v1_withCartValidation(
+  validationHash,
+  onValidationError,
+  actionCallback,
+  options = {},
+) {
+  return (dispatch, getState) => {
+    const state = getStateWithNamespace(getState);
+    const ref = get(state, 'ref');
+    const isAttemptingToSetLocationId = 'location_id' in validationHash;
+    const isAttemptingToSetServiceType = 'service_type' in validationHash;
+    const isAttemptingToSetRequestedAt = 'requested_at' in validationHash;
+
+    return (
+      dispatch(validateCurrentCart(ref, validationHash, options))
+        /**
+         * If the validation succeeds
+         * we dispatch the actionCallback
+         */
+        .then(dispatch(actionCallback()))
+        /**
+         * If the validation throws
+         * we return a function that encapsulates
+         * the necessary steps to resolve the error
+         * before finally dispatching the actionCallback
+         */
+        .catch((err) => {
+          const proceed = () => {
+            if (err && get(err, 'errors', []).length) {
+              const errorCode = get(err.errors[0], 'code');
+              const orderRef = get(state, 'session.order.ref');
+              /**
+               * Invalid items in cart
+               */
+              if (errorCode === ErrorCodes.validateCart.v1.invalidItems) {
+                const lineItemsData = get(
+                  state,
+                  'session.order.lineItemsData',
+                  [],
+                );
+                const [, ...invalidItems] = get(err, 'errors');
+
+                const invalidItemsInCart = getInvalidLineItems(
+                  invalidItems,
+                  lineItemsData,
+                );
+
+                const promises = invalidItemsInCart.map(invalidItem =>
+                  dispatch(removeLineItem(orderRef, invalidItem)),
+                );
+
+                return Promise.all(promises).then(dispatch(actionCallback()));
+              }
+
+              /**
+               * Location is closed
+               */
+              if (errorCode === ErrorCodes.validateCart.v1.locationIsClosed) {
+                const allLocationsById = get(
+                  state,
+                  'data.locations.locationsById',
+                );
+
+                const locationId = isAttemptingToSetLocationId
+                  ? validationHash.location_id
+                  : get(state, 'session.order.orderData.location_id');
+                const serviceType = isAttemptingToSetServiceType
+                  ? validationHash.service_type
+                  : get(state, 'session.order.orderData.service_type');
+                const requestedAt = isAttemptingToSetRequestedAt
+                  ? validationHash.requested_at
+                  : get(state, 'session.order.orderData.requested_at');
+
+                /**
+                 * If the location already exists in memory
+                 * we find the first available order time
+                 */
+                if (locationId in allLocationsById) {
+                  const location = get(allLocationsById, `${locationId}`);
+                  const firstAvailableOrderTime = get(
+                    location,
+                    `first_times.${serviceType}.utc`,
+                  );
+                  return dispatch(
+                    setRequestedAt(orderRef, firstAvailableOrderTime),
+                  ).then(dispatch(actionCallback()));
+                }
+
+                /**
+                 * Otherwise, we fetch the location
+                 * and then find the first available order time
+                 */
+                return dispatch(
+                  fetchLocation(ref, locationId, {
+                    service_type: serviceType,
+                    requested_at: requestedAt,
+                    include_times: true,
+                  }),
+                ).then(() => {
+                  const nextState = getStateWithNamespace(getState);
+                  const nextAllLocationsById = get(
+                    nextState,
+                    'data.locations.locationsById',
+                  );
+                  const location = get(nextAllLocationsById, `${locationId}`);
+                  const firstAvailableOrderTime = get(
+                    location,
+                    `first_times.${serviceType}.utc`,
+                  );
+
+                  return dispatch(
+                    setRequestedAt(orderRef, firstAvailableOrderTime),
+                  ).then(dispatch(actionCallback()));
+                });
+              }
+
+              /**
+               * Unmet delivery minimum
+               * (not much we can do here apart from notify the customer)
+               */
+              if (
+                errorCode === ErrorCodes.validateCart.v1.unmetDeliveryMinimum
+              ) {
+                return () => Promise.resolve();
+              }
+            }
+          };
+
+          return onValidationError(err, proceed);
         })
     );
   };

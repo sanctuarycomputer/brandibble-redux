@@ -7,10 +7,23 @@ export const Status = {
 
 export const ErrorCodes = {
   validateCart: {
+    // TO DO: These have been duplicated below (nested under v1)
+    // for cleaner usage within brandibble-redux itself.
+    // I've opted not to remove the legacy formatting just yet,
+    // as I am not sure which host apps are using them.
     locationIsClosed: 'orders.validate.location_closed',
     invalidItems: 'orders.validate.invalid_items',
     unmetDeliveryMinimum: 'orders.validate.delivery_minimum',
-    invalidItemsInCart: 'cart.validate.invalid_cart', // This is the new error code (validate#cart v2)
+    v1: {
+      locationIsClosed: 'orders.validate.location_closed',
+      invalidItems: 'orders.validate.invalid_items',
+      unmetDeliveryMinimum: 'orders.validate.delivery_minimum',
+    },
+    v2: {
+      locationIsClosed: 'cart.validate.location_closed',
+      invalidItems: 'cart.validate.invalid_cart',
+      unmetDeliveryMinimum: '', // Waiting on JC
+    },
   },
 };
 

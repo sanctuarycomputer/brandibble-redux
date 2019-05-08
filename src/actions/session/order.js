@@ -994,20 +994,34 @@ function _v2_withCartValidation(
     const ref = get(state, 'ref');
     const { orders } = ref;
     const order = orders.current();
-    const isAttemptingToSetLocationId = 'location_id' in validationHash;
-    const isAttemptingToSetServiceType = 'service_type' in validationHash;
-    const isAttemptingToSetRequestedAt = 'requested_at' in validationHash;
+
+    const hasValidationHash =
+      !!validationHash && typeof validationHash === 'object';
+    const isAttemptingToSetLocationId = hasValidationHash
+      ? 'location_id' in validationHash
+      : false;
+    const isAttemptingToSetServiceType = hasValidationHash
+      ? 'service_type' in validationHash
+      : false;
+    const isAttemptingToSetRequestedAt = hasValidationHash
+      ? 'requested_at' in validationHash
+      : false;
 
     const payload = orders
       .validateCart(order, validationHash, options)
       .then(res => res);
+
     return (
       dispatch(_validateCurrentCart(payload))
         /**
          * If the validation succeeds
          * we dispatch the actionCallback
          */
-        .then(dispatch(actionCallback()))
+        .then(() => {
+          return !!actionCallback && typeof actionCallback === 'function'
+            ? dispatch(actionCallback())
+            : null;
+        })
         /**
          * If the validation throws
          * we return a function that encapsulates
@@ -1128,7 +1142,7 @@ function _v2_withCartValidation(
             const errorsWithHandlers = errorsFormatted.map((error) => {
               return {
                 error,
-                proceed: errorHandler(error),
+                proceed: () => errorHandler(error),
               };
             });
 
@@ -1151,7 +1165,8 @@ function _v1_withCartValidation(
     const { orders } = ref;
     const order = orders.current();
 
-    const hasValidationHash = typeof validationHash === 'object';
+    const hasValidationHash =
+      !!validationHash && typeof validationHash === 'object';
     const isAttemptingToSetLocationId = hasValidationHash
       ? 'location_id' in validationHash
       : false;
@@ -1174,11 +1189,11 @@ function _v1_withCartValidation(
          * Otherwise we return null (this is necessary in the case that
          * validateCurrentCart is passed an onValidationError callback)
          */
-        .then(() =>
-          typeof actionCallback === 'function'
+        .then(() => {
+          return !!actionCallback && typeof actionCallback === 'function'
             ? dispatch(actionCallback())
-            : null,
-        )
+            : null;
+        })
         /**
          * If the validation throws
          * we return a function that encapsulates

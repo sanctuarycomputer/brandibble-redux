@@ -27,7 +27,7 @@ export const ErrorCodes = {
     [ApiVersion.V2]: {
       locationIsClosed: 'cart.validate.location_closed',
       invalidItems: 'cart.validate.invalid_cart',
-      unmetDeliveryMinimum: '', // Waiting on JC
+      unmetDeliveryMinimum: 'cart.validate.delivery_minimum',
     },
   },
 };

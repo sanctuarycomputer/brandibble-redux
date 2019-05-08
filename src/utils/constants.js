@@ -1,3 +1,8 @@
+export const ApiVersions = {
+  V1: 'v1',
+  V2: 'v2',
+};
+
 export const Status = {
   IDLE: 'IDLE',
   PENDING: 'PENDING',
@@ -14,12 +19,12 @@ export const ErrorCodes = {
     locationIsClosed: 'orders.validate.location_closed',
     invalidItems: 'orders.validate.invalid_items',
     unmetDeliveryMinimum: 'orders.validate.delivery_minimum',
-    v1: {
+    [ApiVersions.V1]: {
       locationIsClosed: 'orders.validate.location_closed',
       invalidItems: 'orders.validate.invalid_items',
       unmetDeliveryMinimum: 'orders.validate.delivery_minimum',
     },
-    v2: {
+    [ApiVersions.V2]: {
       locationIsClosed: 'cart.validate.location_closed',
       invalidItems: 'cart.validate.invalid_cart',
       unmetDeliveryMinimum: '', // Waiting on JC

@@ -6,6 +6,7 @@ import {
   Asap,
   ErrorCodes,
   WantsFutureReasons,
+  ApiVersions,
 } from '../../utils/constants';
 import determineIfWantsFuture from '../../utils/determineIfWantsFuture';
 import fireAction from '../../utils/fireAction';
@@ -461,9 +462,9 @@ export function setOrderLocationId(
       (onValidationError && typeof onValidationError === 'function')
     ) {
       /**
-       * apiVersion v2
+       * apiVersion: v2
        */
-      if (get(validateOptions, 'apiVersion') === 'v2') {
+      if (get(validateOptions, 'apiVersion') === ApiVersions.V2) {
         return dispatch(
           _v2_withCartValidation(
             { location_id: locationId },
@@ -475,7 +476,7 @@ export function setOrderLocationId(
       }
 
       /**
-       * apiVersion v1
+       * apiVersion: v1
        */
       return dispatch(
         _v1_withCartValidation(
@@ -634,14 +635,16 @@ export function setRequestedAt(
       hasItemsInCart &&
       (onValidationError && typeof onValidationError === 'function')
     ) {
-      return dispatch(
-        _withCartValidation(
-          { requested_at: time },
-          onValidationError,
-          setRequestedAtLogic,
-          validateOptions,
-        ),
-      );
+      if (get(validateOptions, 'apiVersion') === ApiVersions.V2) {
+        return dispatch(
+          _withCartValidation(
+            { requested_at: time },
+            onValidationError,
+            setRequestedAtLogic,
+            validateOptions,
+          ),
+        );
+      }
     }
     /**
      * Otherwise, we proceed with
@@ -676,8 +679,25 @@ export function setServiceType(
       hasItemsInCart &&
       (onValidationError && typeof onValidationError === 'function')
     ) {
+      /**
+       * apiVersion: v2
+       */
+      if (get(validateOptions, 'apiVersion') === ApiVersions.V2) {
+        return dispatch(
+          _v2_withCartValidation(
+            { service_type: serviceType },
+            onValidationError,
+            setServiceTypeLogic,
+            validateOptions,
+          ),
+        );
+      }
+
+      /**
+       * apiVersion: v1
+       */
       return dispatch(
-        _withCartValidation(
+        _v1_withCartValidation(
           { service_type: serviceType },
           onValidationError,
           setServiceTypeLogic,
@@ -874,7 +894,7 @@ export function attemptReorder(
  Private
 */
 
-export function _buildLineItemsForReorder(
+function _buildLineItemsForReorder(
   brandibbleRef,
   orderLocationId,
   menusById,
@@ -918,7 +938,7 @@ export function _buildLineItemsForReorder(
   });
 }
 
-export function _v2_withCartValidation(
+function _v2_withCartValidation(
   validationHash,
   onValidationError,
   actionCallback,
@@ -1062,7 +1082,7 @@ export function _v2_withCartValidation(
   };
 }
 
-export function _v1_withCartValidation(
+function _v1_withCartValidation(
   validationHash,
   onValidationError,
   actionCallback,

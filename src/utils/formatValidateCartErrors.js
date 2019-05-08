@@ -1,5 +1,5 @@
 import get from './get';
-import { ErrorCodes } from './constants';
+import { ApiVersion, ErrorCodes } from './constants';
 
 export default function (errors) {
   if (!errors || !errors.length) return [];
@@ -7,7 +7,9 @@ export default function (errors) {
   return errors.reduce((formattedArray, error) => {
     // If the current error is not of invalidItems
     // We push it into the array as is, and return the formattedArray
-    if (get(error, 'code') !== ErrorCodes.validateCart.invalidItemsInCart) {
+    if (
+      get(error, 'code') !== ErrorCodes.validateCart[ApiVersion.V2].invalidItems
+    ) {
       formattedArray.push(error);
       return formattedArray;
     }
@@ -17,7 +19,7 @@ export default function (errors) {
     const existingInvalidItemsHash = formattedArray.find(
       formattedError =>
         get(formattedError, 'code') ===
-        ErrorCodes.validateCart.invalidItemsInCart,
+        ErrorCodes.validateCart[ApiVersion.V2].invalidItems,
     );
 
     // If we have not formatted our invalidItemsHash

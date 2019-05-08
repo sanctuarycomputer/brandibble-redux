@@ -6,7 +6,7 @@ import {
   Asap,
   ErrorCodes,
   WantsFutureReasons,
-  ApiVersions,
+  ApiVersion,
 } from '../../utils/constants';
 import determineIfWantsFuture from '../../utils/determineIfWantsFuture';
 import fireAction from '../../utils/fireAction';
@@ -464,7 +464,7 @@ export function setOrderLocationId(
       /**
        * apiVersion: v2
        */
-      if (get(validateOptions, 'apiVersion') === ApiVersions.V2) {
+      if (get(validateOptions, 'apiVersion') === ApiVersion.V2) {
         return dispatch(
           _v2_withCartValidation(
             { location_id: locationId },
@@ -635,7 +635,7 @@ export function setRequestedAt(
       hasItemsInCart &&
       (onValidationError && typeof onValidationError === 'function')
     ) {
-      if (get(validateOptions, 'apiVersion') === ApiVersions.V2) {
+      if (get(validateOptions, 'apiVersion') === ApiVersion.V2) {
         return dispatch(
           _withCartValidation(
             { requested_at: time },
@@ -682,7 +682,7 @@ export function setServiceType(
       /**
        * apiVersion: v2
        */
-      if (get(validateOptions, 'apiVersion') === ApiVersions.V2) {
+      if (get(validateOptions, 'apiVersion') === ApiVersion.V2) {
         return dispatch(
           _v2_withCartValidation(
             { service_type: serviceType },
@@ -975,7 +975,10 @@ function _v2_withCartValidation(
               /**
                * Invalid items in cart
                */
-              if (errorCode === ErrorCodes.validateCart.v2.invalidItemsInCart) {
+              if (
+                errorCode ===
+                ErrorCodes.validateCart[ApiVersion.V2].invalidItems
+              ) {
                 const lineItemsData = get(
                   state,
                   'session.order.lineItemsData',
@@ -998,7 +1001,10 @@ function _v2_withCartValidation(
               /**
                * Location is closed
                */
-              if (errorCode === ErrorCodes.validateCart.v2.locationIsClosed) {
+              if (
+                errorCode ===
+                ErrorCodes.validateCart[ApiVersion.V2].locationIsClosed
+              ) {
                 const allLocationsById = get(
                   state,
                   'data.locations.locationsById',
@@ -1062,7 +1068,8 @@ function _v2_withCartValidation(
                * (not much we can do here apart from notify the customer)
                */
               if (
-                errorCode === ErrorCodes.validateCart.v2.unmetDeliveryMinimum
+                errorCode ===
+                ErrorCodes.validateCart[ApiVersion.V2].unmetDeliveryMinimum
               ) {
                 return null;
               }
@@ -1116,7 +1123,10 @@ function _v1_withCartValidation(
               /**
                * Invalid items in cart
                */
-              if (errorCode === ErrorCodes.validateCart.v1.invalidItems) {
+              if (
+                errorCode ===
+                ErrorCodes.validateCart[ApiVersion.V1].invalidItems
+              ) {
                 const lineItemsData = get(
                   state,
                   'session.order.lineItemsData',
@@ -1139,7 +1149,10 @@ function _v1_withCartValidation(
               /**
                * Location is closed
                */
-              if (errorCode === ErrorCodes.validateCart.v1.locationIsClosed) {
+              if (
+                errorCode ===
+                ErrorCodes.validateCart[ApiVersion.V1].locationIsClosed
+              ) {
                 const allLocationsById = get(
                   state,
                   'data.locations.locationsById',
@@ -1203,7 +1216,8 @@ function _v1_withCartValidation(
                * (not much we can do here apart from notify the customer)
                */
               if (
-                errorCode === ErrorCodes.validateCart.v1.unmetDeliveryMinimum
+                errorCode ===
+                ErrorCodes.validateCart[ApiVersion.V1].unmetDeliveryMinimum
               ) {
                 return () => Promise.resolve();
               }

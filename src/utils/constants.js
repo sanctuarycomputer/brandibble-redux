@@ -1,4 +1,4 @@
-export const ApiVersions = {
+export const ApiVersion = {
   V1: 'v1',
   V2: 'v2',
 };
@@ -19,12 +19,12 @@ export const ErrorCodes = {
     locationIsClosed: 'orders.validate.location_closed',
     invalidItems: 'orders.validate.invalid_items',
     unmetDeliveryMinimum: 'orders.validate.delivery_minimum',
-    [ApiVersions.V1]: {
+    [ApiVersion.V1]: {
       locationIsClosed: 'orders.validate.location_closed',
       invalidItems: 'orders.validate.invalid_items',
       unmetDeliveryMinimum: 'orders.validate.delivery_minimum',
     },
-    [ApiVersions.V2]: {
+    [ApiVersion.V2]: {
       locationIsClosed: 'cart.validate.location_closed',
       invalidItems: 'cart.validate.invalid_cart',
       unmetDeliveryMinimum: '', // Waiting on JC

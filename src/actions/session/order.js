@@ -502,6 +502,7 @@ export function setOrderLocationId(
     const state = getStateWithNamespace(getState);
     const cart = get(state, 'session.order.orderData.cart', []);
     const hasItemsInCart = !!cart && cart.length;
+
     if (
       hasItemsInCart &&
       (onValidationError && typeof onValidationError === 'function')
@@ -509,6 +510,7 @@ export function setOrderLocationId(
       /**
        * apiVersion: v2
        */
+
       if (get(validateOptions, 'apiVersion') === ApiVersion.V2) {
         return dispatch(
           _v2_withCartValidation(
@@ -994,7 +996,7 @@ function _v2_withCartValidation(
     const ref = get(state, 'ref');
     const { orders } = ref;
     const order = orders.current();
-    const callback =
+    const callback = () =>
       !!actionCallback && typeof actionCallback === 'function'
         ? dispatch(actionCallback())
         : Promise.resolve();
@@ -1021,7 +1023,7 @@ function _v2_withCartValidation(
          * If the validation succeeds
          * we dispatch the actionCallback
          */
-        .then(callback)
+        .then(() => callback())
         /**
          * If the validation throws
          * we return a function that encapsulates
@@ -1060,7 +1062,7 @@ function _v2_withCartValidation(
                   dispatch(removeLineItem(orderRef, invalidItem)),
                 );
 
-                return Promise.all(promises).then(callback);
+                return Promise.all(promises).then(() => callback());
               }
 
               /**
@@ -1097,7 +1099,7 @@ function _v2_withCartValidation(
                   );
                   return dispatch(
                     setRequestedAt(orderRef, firstAvailableOrderTime),
-                  ).then(callback);
+                  ).then(() => callback());
                 }
 
                 /**
@@ -1124,7 +1126,7 @@ function _v2_withCartValidation(
 
                   return dispatch(
                     setRequestedAt(orderRef, firstAvailableOrderTime),
-                  ).then(callback);
+                  ).then(() => callback());
                 });
               }
 
@@ -1165,7 +1167,7 @@ function _v1_withCartValidation(
     const ref = get(state, 'ref');
     const { orders } = ref;
     const order = orders.current();
-    const callback =
+    const callback = () =>
       !!actionCallback && typeof actionCallback === 'function'
         ? dispatch(actionCallback())
         : Promise.resolve();
@@ -1194,7 +1196,7 @@ function _v1_withCartValidation(
          * Otherwise we return null (this is necessary in the case that
          * validateCurrentCart is passed an onValidationError callback)
          */
-        .then(callback)
+        .then(() => callback())
         /**
          * If the validation throws
          * we return a function that encapsulates
@@ -1229,7 +1231,7 @@ function _v1_withCartValidation(
                   dispatch(removeLineItem(orderRef, invalidItem)),
                 );
 
-                return Promise.all(promises).then(callback);
+                return Promise.all(promises).then(() => callback());
               }
 
               /**
@@ -1266,7 +1268,7 @@ function _v1_withCartValidation(
                   );
                   return dispatch(
                     setRequestedAt(orderRef, firstAvailableOrderTime),
-                  ).then(callback);
+                  ).then(() => callback());
                 }
 
                 /**
@@ -1293,7 +1295,7 @@ function _v1_withCartValidation(
 
                   return dispatch(
                     setRequestedAt(orderRef, firstAvailableOrderTime),
-                  ).then(callback);
+                  ).then(() => callback());
                 });
               }
 

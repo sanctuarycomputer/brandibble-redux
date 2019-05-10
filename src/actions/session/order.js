@@ -1000,10 +1000,11 @@ function _v2_withCartValidation(
     const ref = get(state, 'ref');
     const { orders } = ref;
     const order = orders.current();
-    const callback = () =>
-      !!actionCallback && typeof actionCallback === 'function'
+    const callback = () => {
+      return !!actionCallback && typeof actionCallback === 'function'
         ? dispatch(actionCallback())
         : Promise.resolve();
+    };
 
     const hasValidationHash =
       !!validationHash && typeof validationHash === 'object';
@@ -1038,7 +1039,7 @@ function _v2_withCartValidation(
 
           if (errorsFormatted.length === 0) return onValidationError([]);
 
-          const errorHandler = (error) => {
+          const makeErrorHandler = (error) => {
             const errorCode = get(error, 'code');
             const orderRef = get(state, 'session.order.ref');
             /**
@@ -1047,24 +1048,28 @@ function _v2_withCartValidation(
             if (
               errorCode === ErrorCodes.validateCart[ApiVersion.V2].invalidItems
             ) {
-              const lineItemsData = get(
-                state,
-                'session.order.lineItemsData',
-                [],
-              );
+              const errorHandler = () => {
+                const lineItemsData = get(
+                  state,
+                  'session.order.lineItemsData',
+                  [],
+                );
 
-              const invalidItemIds = get(error, 'source.pointers', []);
-              const invalidItemsInCart = getInvalidLineItems(
-                invalidItemIds,
-                lineItemsData,
-                options,
-              );
+                const invalidItemIds = get(error, 'source.pointers', []);
+                const invalidItemsInCart = getInvalidLineItems(
+                  invalidItemIds,
+                  lineItemsData,
+                  options,
+                );
 
-              const promises = invalidItemsInCart.map(invalidItem =>
-                dispatch(removeLineItem(orderRef, invalidItem)),
-              );
+                const promises = invalidItemsInCart.map(invalidItem =>
+                  dispatch(removeLineItem(orderRef, invalidItem)),
+                );
 
-              return Promise.all(promises).then(() => callback());
+                return Promise.all(promises).then(() => callback());
+              };
+
+              return errorHandler;
             }
 
             /**
@@ -1074,62 +1079,66 @@ function _v2_withCartValidation(
               errorCode ===
               ErrorCodes.validateCart[ApiVersion.V2].locationIsClosed
             ) {
-              const allLocationsById = get(
-                state,
-                'data.locations.locationsById',
-              );
-
-              const locationId = isAttemptingToSetLocationId
-                ? validationHash.location_id
-                : get(state, 'session.order.orderData.location_id');
-              const serviceType = isAttemptingToSetServiceType
-                ? validationHash.service_type
-                : get(state, 'session.order.orderData.service_type');
-              const requestedAt = isAttemptingToSetRequestedAt
-                ? validationHash.requested_at
-                : get(state, 'session.order.orderData.requested_at');
-
-              /**
-               * If the location already exists in memory
-               * we find the first available order time
-               */
-              if (locationId in allLocationsById) {
-                const location = get(allLocationsById, `${locationId}`);
-                const firstAvailableOrderTime = get(
-                  location,
-                  `first_times.${serviceType}.utc`,
-                );
-                return dispatch(
-                  setRequestedAt(orderRef, firstAvailableOrderTime),
-                ).then(() => callback());
-              }
-
-              /**
-               * Otherwise, we fetch the location
-               * and then find the first available order time
-               */
-              return dispatch(
-                fetchLocation(ref, locationId, {
-                  service_type: serviceType,
-                  requested_at: requestedAt,
-                  include_times: true,
-                }),
-              ).then(() => {
-                const nextState = getStateWithNamespace(getState);
-                const nextAllLocationsById = get(
-                  nextState,
+              const errorHandler = () => {
+                const allLocationsById = get(
+                  state,
                   'data.locations.locationsById',
                 );
-                const location = get(nextAllLocationsById, `${locationId}`);
-                const firstAvailableOrderTime = get(
-                  location,
-                  `first_times.${serviceType}.utc`,
-                );
 
+                const locationId = isAttemptingToSetLocationId
+                  ? validationHash.location_id
+                  : get(state, 'session.order.orderData.location_id');
+                const serviceType = isAttemptingToSetServiceType
+                  ? validationHash.service_type
+                  : get(state, 'session.order.orderData.service_type');
+                const requestedAt = isAttemptingToSetRequestedAt
+                  ? validationHash.requested_at
+                  : get(state, 'session.order.orderData.requested_at');
+
+                /**
+                 * If the location already exists in memory
+                 * we find the first available order time
+                 */
+                if (locationId in allLocationsById) {
+                  const location = get(allLocationsById, `${locationId}`);
+                  const firstAvailableOrderTime = get(
+                    location,
+                    `first_times.${serviceType}.utc`,
+                  );
+                  return dispatch(
+                    setRequestedAt(orderRef, firstAvailableOrderTime),
+                  ).then(() => callback());
+                }
+
+                /**
+                 * Otherwise, we fetch the location
+                 * and then find the first available order time
+                 */
                 return dispatch(
-                  setRequestedAt(orderRef, firstAvailableOrderTime),
-                ).then(() => callback());
-              });
+                  fetchLocation(ref, locationId, {
+                    service_type: serviceType,
+                    requested_at: requestedAt,
+                    include_times: true,
+                  }),
+                ).then(() => {
+                  const nextState = getStateWithNamespace(getState);
+                  const nextAllLocationsById = get(
+                    nextState,
+                    'data.locations.locationsById',
+                  );
+                  const location = get(nextAllLocationsById, `${locationId}`);
+                  const firstAvailableOrderTime = get(
+                    location,
+                    `first_times.${serviceType}.utc`,
+                  );
+
+                  return dispatch(
+                    setRequestedAt(orderRef, firstAvailableOrderTime),
+                  ).then(() => callback());
+                });
+              };
+
+              return errorHandler;
             }
 
             /**
@@ -1147,7 +1156,7 @@ function _v2_withCartValidation(
           const errorsWithHandlers = errorsFormatted.map((error) => {
             return {
               error,
-              proceed: () => errorHandler(error),
+              proceed: makeErrorHandler(error),
             };
           });
 
@@ -1168,11 +1177,11 @@ function _v1_withCartValidation(
     const ref = get(state, 'ref');
     const { orders } = ref;
     const order = orders.current();
-    const callback = () =>
-      !!actionCallback && typeof actionCallback === 'function'
+    const callback = () => {
+      return !!actionCallback && typeof actionCallback === 'function'
         ? dispatch(actionCallback())
         : Promise.resolve();
-
+    };
     const hasValidationHash =
       !!validationHash && typeof validationHash === 'object';
     const isAttemptingToSetLocationId = hasValidationHash

@@ -382,8 +382,8 @@ export function resolveOrderLocation(brandibble) {
 export function validateCurrentCart(
   brandibble,
   data = {},
-  options = {},
   onValidationError,
+  options = {},
 ) {
   return (dispatch, getState) => {
     /**
@@ -433,7 +433,12 @@ export function validateCurrentCart(
   };
 }
 
-export function validateCurrentOrder(brandibble, data = {}, options = {}) {
+export function validateCurrentOrder(
+  brandibble,
+  data = {},
+  onValidationError,
+  options = {},
+) {
   return (dispatch) => {
     const { orders } = brandibble;
     const order = orders.current();

@@ -1026,7 +1026,7 @@ function _v2_withCartValidation(
          * If the validation succeeds
          * we dispatch the actionCallback
          */
-        .then(() => callback())
+        .then(callback)
         /**
          * If the validation throws
          * we return a function that encapsulates
@@ -1066,7 +1066,7 @@ function _v2_withCartValidation(
                   dispatch(removeLineItem(orderRef, invalidItem)),
                 );
 
-                return Promise.all(promises).then(() => callback());
+                return Promise.all(promises).then(callback);
               };
 
               return errorHandler;
@@ -1107,7 +1107,7 @@ function _v2_withCartValidation(
                   );
                   return dispatch(
                     setRequestedAt(orderRef, firstAvailableOrderTime),
-                  ).then(() => callback());
+                  ).then(callback);
                 }
 
                 /**
@@ -1134,7 +1134,7 @@ function _v2_withCartValidation(
 
                   return dispatch(
                     setRequestedAt(orderRef, firstAvailableOrderTime),
-                  ).then(() => callback());
+                  ).then(callback);
                 });
               };
 
@@ -1205,7 +1205,7 @@ function _v1_withCartValidation(
          * Otherwise we return null (this is necessary in the case that
          * validateCurrentCart is passed an onValidationError callback)
          */
-        .then(() => callback())
+        .then(callback)
         /**
          * If the validation throws
          * we return a function that encapsulates
@@ -1240,7 +1240,7 @@ function _v1_withCartValidation(
                   dispatch(removeLineItem(orderRef, invalidItem)),
                 );
 
-                return Promise.all(promises).then(() => callback());
+                return Promise.all(promises).then(callback);
               }
 
               /**
@@ -1277,7 +1277,7 @@ function _v1_withCartValidation(
                   );
                   return dispatch(
                     setRequestedAt(orderRef, firstAvailableOrderTime),
-                  ).then(() => callback());
+                  ).then(callback);
                 }
 
                 /**
@@ -1304,7 +1304,7 @@ function _v1_withCartValidation(
 
                   return dispatch(
                     setRequestedAt(orderRef, firstAvailableOrderTime),
-                  ).then(() => callback());
+                  ).then(callback);
                 });
               }
 

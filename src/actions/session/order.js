@@ -1152,7 +1152,7 @@ function _v2_withCartValidation(
               return null;
             }
 
-            /** We don't know */
+            /** This error case has not been handled */
             return null;
           };
 

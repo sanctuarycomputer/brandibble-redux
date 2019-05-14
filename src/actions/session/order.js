@@ -381,7 +381,7 @@ export function resolveOrderLocation(brandibble) {
 
 export function validateCurrentCart(
   brandibble,
-  data = {},
+  testChanges = {},
   onValidationError,
   options = {},
 ) {
@@ -427,7 +427,7 @@ export function validateCurrentCart(
 
     const { orders } = brandibble;
     const order = orders.current();
-    const payload = orders.validateCart(order, data, options);
+    const payload = orders.validateCart(order, testChanges, options);
 
     return dispatch(_validateCurrentCart(payload));
   };
@@ -1151,6 +1151,9 @@ function _v2_withCartValidation(
             ) {
               return null;
             }
+
+            /** We don't know */
+            return null;
           };
 
           const errorsWithHandlers = errorsFormatted.map((error) => {

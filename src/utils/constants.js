@@ -1,3 +1,8 @@
+export const ApiVersion = {
+  V1: 'v1',
+  V2: 'v2',
+};
+
 export const Status = {
   IDLE: 'IDLE',
   PENDING: 'PENDING',
@@ -7,9 +12,23 @@ export const Status = {
 
 export const ErrorCodes = {
   validateCart: {
+    // TO DO: These have been duplicated below (nested under v1)
+    // for cleaner usage within brandibble-redux itself.
+    // I've opted not to remove the legacy formatting just yet,
+    // as I am not sure which host apps are using them.
     locationIsClosed: 'orders.validate.location_closed',
     invalidItems: 'orders.validate.invalid_items',
     unmetDeliveryMinimum: 'orders.validate.delivery_minimum',
+    [ApiVersion.V1]: {
+      locationIsClosed: 'orders.validate.location_closed',
+      invalidItems: 'orders.validate.invalid_items',
+      unmetDeliveryMinimum: 'orders.validate.delivery_minimum',
+    },
+    [ApiVersion.V2]: {
+      locationIsClosed: 'cart.validate.location_closed',
+      invalidItems: 'cart.validate.invalid_cart',
+      unmetDeliveryMinimum: 'cart.validate.delivery_minimum',
+    },
   },
 };
 

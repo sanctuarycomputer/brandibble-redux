@@ -456,11 +456,12 @@ describe('actions/session/order', () => {
                   store.dispatch,
                 ).then(() => {
                   store.clearActions();
-                  return validateCurrentCart(brandibble)(store.dispatch).then(
-                    () => {
-                      actionsCalled = store.getActions();
-                    },
-                  );
+                  return validateCurrentCart(brandibble)(
+                    store.dispatch,
+                    store.getState,
+                  ).then(() => {
+                    actionsCalled = store.getActions();
+                  });
                 });
               });
             },
@@ -471,6 +472,129 @@ describe('actions/session/order', () => {
 
     it('should have VALIDATE_CURRENT_CART_PENDING action', () => {
       action = find(actionsCalled, { type: 'VALIDATE_CURRENT_CART_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have a payload', () => {
+      action = find(actionsCalled, { type: 'VALIDATE_CURRENT_CART_FULFILLED' });
+      expect(action).to.have.a.property('payload');
+    });
+  });
+
+  describe('validateCurrentCart with errorHandlers v1', () => {
+    before(() => {
+      store = mockStore(stateWithBrandibbleRef);
+      const order = makeUnpersistedOrder('pickup');
+      const onValidationErrorCallback = f => f;
+
+      return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(
+        store.dispatch,
+        store.getState,
+      ).then(({ value: { menu } }) => {
+        const product = getNonConfigurableMenuItem(menu);
+        order.cart.addLineItem(product, 1, product.id);
+
+        return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(
+          store.dispatch,
+          store.getState,
+        ).then(() => {
+          return setOrderAddress(order, addressStub)(store.dispatch).then(
+            () => {
+              return bindCustomerToOrder(order, authResponseStub)(
+                store.dispatch,
+              ).then(() => {
+                return setPaymentMethod(order, 'credit', cardStub)(
+                  store.dispatch,
+                ).then(() => {
+                  store.clearActions();
+                  return validateCurrentCart(
+                    brandibble,
+                    null,
+                    onValidationErrorCallback,
+                  )(store.dispatch, store.getState).then(() => {
+                    actionsCalled = store.getActions();
+                  });
+                });
+              });
+            },
+          );
+        });
+      });
+    });
+
+    it('should call 2 actions', () => {
+      expect(actionsCalled).to.have.length.of(2);
+    });
+
+    it('should have VALIDATE_CURRENT_CART_PENDING action', () => {
+      action = find(actionsCalled, { type: 'VALIDATE_CURRENT_CART_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have VALIDATE_CURRENT_CART_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'VALIDATE_CURRENT_CART_FULFILLED' });
+      expect(action).to.exist;
+    });
+
+    it('should have a payload', () => {
+      action = find(actionsCalled, { type: 'VALIDATE_CURRENT_CART_FULFILLED' });
+      expect(action).to.have.a.property('payload');
+    });
+  });
+
+  describe('validateCurrentCart with errorHandlers v2', () => {
+    before(() => {
+      store = mockStore(stateWithBrandibbleRef);
+      const order = makeUnpersistedOrder('pickup');
+      const onValidationErrorCallback = f => f;
+
+      return fetchMenu(brandibble, { locationId: SAMPLE_MENU_LOCATION_ID })(
+        store.dispatch,
+        store.getState,
+      ).then(({ value: { menu } }) => {
+        const product = getNonConfigurableMenuItem(menu);
+        order.cart.addLineItem(product, 1, product.id);
+
+        return setOrderLocationId(order, SAMPLE_MENU_LOCATION_ID)(
+          store.dispatch,
+          store.getState,
+        ).then(() => {
+          return setOrderAddress(order, addressStub)(store.dispatch).then(
+            () => {
+              return bindCustomerToOrder(order, authResponseStub)(
+                store.dispatch,
+              ).then(() => {
+                return setPaymentMethod(order, 'credit', cardStub)(
+                  store.dispatch,
+                ).then(() => {
+                  store.clearActions();
+                  return validateCurrentCart(
+                    brandibble,
+                    null,
+                    onValidationErrorCallback,
+                    { apiVersion: 'v2' },
+                  )(store.dispatch, store.getState).then(() => {
+                    actionsCalled = store.getActions();
+                  });
+                });
+              });
+            },
+          );
+        });
+      });
+    });
+
+    it('should call 2 actions', () => {
+      expect(actionsCalled).to.have.length.of(2);
+    });
+
+    it('should have VALIDATE_CURRENT_CART_PENDING action', () => {
+      action = find(actionsCalled, { type: 'VALIDATE_CURRENT_CART_PENDING' });
+      expect(action).to.exist;
+    });
+
+    it('should have VALIDATE_CURRENT_CART_FULFILLED action', () => {
+      action = find(actionsCalled, { type: 'VALIDATE_CURRENT_CART_FULFILLED' });
       expect(action).to.exist;
     });
 

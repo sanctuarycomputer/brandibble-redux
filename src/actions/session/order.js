@@ -6,6 +6,7 @@ import {
   Asap,
   ErrorCodes,
   WantsFutureReasons,
+  ApiVersion,
 } from '../../utils/constants';
 import determineIfWantsFuture from '../../utils/determineIfWantsFuture';
 import fireAction from '../../utils/fireAction';
@@ -13,6 +14,7 @@ import handleErrors from '../../utils/handleErrors';
 import get from '../../utils/get';
 import getInvalidLineItems from '../../utils/getInvalidLineItems';
 import jsDateToValidISO8601 from '../../utils/jsDateToValidISO8601';
+import formatValidateCartErrors from '../../utils/formatValidateCartErrors';
 import { getStateWithNamespace } from '../../utils/getStateWithNamespace';
 import { supportsCatering } from '../../utils/orderTypes';
 import { updateInvalidOrderRequestedAt } from '../application';
@@ -379,25 +381,67 @@ export function resolveOrderLocation(brandibble) {
 
 export function validateCurrentCart(
   brandibble,
-  data = {},
   testChanges = {},
+  onValidationError,
+  options = {},
+) {
+  return (dispatch, getState) => {
+    /**
+     * If passed an onValidationError callback
+     * we attempt to validate before proceeding
+     */
+    const state = getStateWithNamespace(getState);
+    const cart = get(state, 'session.order.orderData.cart', []);
+    const hasItemsInCart = !!cart && cart.length;
+
+    if (
+      hasItemsInCart &&
+      (onValidationError && typeof onValidationError === 'function')
+    ) {
+      /**
+       * apiVersion: v2
+       */
+      if (get(options, 'apiVersion') === ApiVersion.V2) {
+        return dispatch(
+          _v2_withCartValidation(
+            null, // validationsHash is not necessary, so we pass null
+            onValidationError,
+            null, // actionCallback is not necessary, so we pass null
+            options,
+          ),
+        );
+      }
+
+      /**
+       * apiVersion: v1
+       */
+      return dispatch(
+        _v1_withCartValidation(
+          null,
+          onValidationError,
+          null, // actionCallback is not necessary, so we pass null
+          options,
+        ),
+      );
+    }
+
+    const { orders } = brandibble;
+    const order = orders.current();
+    const payload = orders.validateCart(order, testChanges, options);
+
+    return dispatch(_validateCurrentCart(payload));
+  };
+}
+
+export function validateCurrentOrder(
+  brandibble,
+  onValidationError,
   options = {},
 ) {
   return (dispatch) => {
     const { orders } = brandibble;
     const order = orders.current();
-    const payload = orders
-      .validateCart(order, data, testChanges, options)
-      .then(res => res);
-    return dispatch(_validateCurrentCart(payload));
-  };
-}
-
-export function validateCurrentOrder(brandibble, data = {}, options = {}) {
-  return (dispatch) => {
-    const { orders } = brandibble;
-    const order = orders.current();
-    const payload = orders.validate(order, data, options).then(res => res);
+    const payload = orders.validate(order, options);
     return dispatch(_validateCurrentOrder(payload));
   };
 }
@@ -462,12 +506,31 @@ export function setOrderLocationId(
     const state = getStateWithNamespace(getState);
     const cart = get(state, 'session.order.orderData.cart', []);
     const hasItemsInCart = !!cart && cart.length;
+
     if (
       hasItemsInCart &&
       (onValidationError && typeof onValidationError === 'function')
     ) {
+      /**
+       * apiVersion: v2
+       */
+
+      if (get(validateOptions, 'apiVersion') === ApiVersion.V2) {
+        return dispatch(
+          _v2_withCartValidation(
+            { location_id: locationId },
+            onValidationError,
+            setOrderLocationIdLogic,
+            validateOptions,
+          ),
+        );
+      }
+
+      /**
+       * apiVersion: v1
+       */
       return dispatch(
-        _withCartValidation(
+        _v1_withCartValidation(
           { location_id: locationId },
           onValidationError,
           setOrderLocationIdLogic,
@@ -475,6 +538,7 @@ export function setOrderLocationId(
         ),
       );
     }
+
     /**
      * Otherwise, we proceed with
      * the original intended logic
@@ -622,14 +686,16 @@ export function setRequestedAt(
       hasItemsInCart &&
       (onValidationError && typeof onValidationError === 'function')
     ) {
-      return dispatch(
-        _withCartValidation(
-          { requested_at: time },
-          onValidationError,
-          setRequestedAtLogic,
-          validateOptions,
-        ),
-      );
+      if (get(validateOptions, 'apiVersion') === ApiVersion.V2) {
+        return dispatch(
+          _withCartValidation(
+            { requested_at: time },
+            onValidationError,
+            setRequestedAtLogic,
+            validateOptions,
+          ),
+        );
+      }
     }
     /**
      * Otherwise, we proceed with
@@ -664,8 +730,25 @@ export function setServiceType(
       hasItemsInCart &&
       (onValidationError && typeof onValidationError === 'function')
     ) {
+      /**
+       * apiVersion: v2
+       */
+      if (get(validateOptions, 'apiVersion') === ApiVersion.V2) {
+        return dispatch(
+          _v2_withCartValidation(
+            { service_type: serviceType },
+            onValidationError,
+            setServiceTypeLogic,
+            validateOptions,
+          ),
+        );
+      }
+
+      /**
+       * apiVersion: v1
+       */
       return dispatch(
-        _withCartValidation(
+        _v1_withCartValidation(
           { service_type: serviceType },
           onValidationError,
           setServiceTypeLogic,
@@ -862,7 +945,7 @@ export function attemptReorder(
  Private
 */
 
-export function _buildLineItemsForReorder(
+function _buildLineItemsForReorder(
   brandibbleRef,
   orderLocationId,
   menusById,
@@ -906,7 +989,7 @@ export function _buildLineItemsForReorder(
   });
 }
 
-export function _withCartValidation(
+function _v2_withCartValidation(
   validationHash,
   onValidationError,
   actionCallback,
@@ -915,17 +998,35 @@ export function _withCartValidation(
   return (dispatch, getState) => {
     const state = getStateWithNamespace(getState);
     const ref = get(state, 'ref');
-    const isAttemptingToSetLocationId = 'location_id' in validationHash;
-    const isAttemptingToSetServiceType = 'service_type' in validationHash;
-    const isAttemptingToSetRequestedAt = 'requested_at' in validationHash;
+    const { orders } = ref;
+    const order = orders.current();
+    const callback = () => {
+      return !!actionCallback && typeof actionCallback === 'function'
+        ? dispatch(actionCallback())
+        : Promise.resolve();
+    };
+
+    const hasValidationHash =
+      !!validationHash && typeof validationHash === 'object';
+    const isAttemptingToSetLocationId = hasValidationHash
+      ? 'location_id' in validationHash
+      : false;
+    const isAttemptingToSetServiceType = hasValidationHash
+      ? 'service_type' in validationHash
+      : false;
+    const isAttemptingToSetRequestedAt = hasValidationHash
+      ? 'requested_at' in validationHash
+      : false;
+
+    const payload = orders.validateCart(order, validationHash, options);
 
     return (
-      dispatch(validateCurrentCart(ref, validationHash, options))
+      dispatch(_validateCurrentCart(payload))
         /**
          * If the validation succeeds
          * we dispatch the actionCallback
          */
-        .then(dispatch(actionCallback()))
+        .then(callback)
         /**
          * If the validation throws
          * we return a function that encapsulates
@@ -933,37 +1034,52 @@ export function _withCartValidation(
          * before finally dispatching the actionCallback
          */
         .catch((err) => {
-          const proceed = () => {
-            if (err && get(err, 'errors', []).length) {
-              const errorCode = get(err.errors[0], 'code');
-              const orderRef = get(state, 'session.order.ref');
-              /**
-               * Invalid items in cart
-               */
-              if (errorCode === ErrorCodes.validateCart.invalidItems) {
+          const errors = get(err, 'errors', []);
+          const errorsFormatted = formatValidateCartErrors(errors);
+
+          if (errorsFormatted.length === 0) return onValidationError([]);
+
+          const makeErrorHandler = (error) => {
+            const errorCode = get(error, 'code');
+            const orderRef = get(state, 'session.order.ref');
+            /**
+             * Invalid items in cart
+             */
+            if (
+              errorCode === ErrorCodes.validateCart[ApiVersion.V2].invalidItems
+            ) {
+              const errorHandler = () => {
                 const lineItemsData = get(
                   state,
                   'session.order.lineItemsData',
                   [],
                 );
-                const [, ...invalidItems] = get(err, 'errors');
 
+                const invalidItemIds = get(error, 'source.pointers', []);
                 const invalidItemsInCart = getInvalidLineItems(
-                  invalidItems,
+                  invalidItemIds,
                   lineItemsData,
+                  options,
                 );
 
                 const promises = invalidItemsInCart.map(invalidItem =>
                   dispatch(removeLineItem(orderRef, invalidItem)),
                 );
 
-                return Promise.all(promises).then(dispatch(actionCallback()));
-              }
+                return Promise.all(promises).then(callback);
+              };
 
-              /**
-               * Location is closed
-               */
-              if (errorCode === ErrorCodes.validateCart.locationIsClosed) {
+              return errorHandler;
+            }
+
+            /**
+             * Location is closed
+             */
+            if (
+              errorCode ===
+              ErrorCodes.validateCart[ApiVersion.V2].locationIsClosed
+            ) {
+              const errorHandler = () => {
                 const allLocationsById = get(
                   state,
                   'data.locations.locationsById',
@@ -991,7 +1107,7 @@ export function _withCartValidation(
                   );
                   return dispatch(
                     setRequestedAt(orderRef, firstAvailableOrderTime),
-                  ).then(dispatch(actionCallback()));
+                  ).then(callback);
                 }
 
                 /**
@@ -1018,7 +1134,180 @@ export function _withCartValidation(
 
                   return dispatch(
                     setRequestedAt(orderRef, firstAvailableOrderTime),
-                  ).then(dispatch(actionCallback()));
+                  ).then(callback);
+                });
+              };
+
+              return errorHandler;
+            }
+
+            /**
+             * Unmet delivery minimum
+             * (not much we can do here apart from notify the customer)
+             */
+            if (
+              errorCode ===
+              ErrorCodes.validateCart[ApiVersion.V2].unmetDeliveryMinimum
+            ) {
+              return null;
+            }
+
+            /** This error case has not been handled */
+            return null;
+          };
+
+          const errorsWithHandlers = errorsFormatted.map((error) => {
+            return {
+              error,
+              proceed: makeErrorHandler(error),
+            };
+          });
+
+          return onValidationError(errorsWithHandlers);
+        })
+    );
+  };
+}
+
+function _v1_withCartValidation(
+  validationHash,
+  onValidationError,
+  actionCallback,
+  options = {},
+) {
+  return (dispatch, getState) => {
+    const state = getStateWithNamespace(getState);
+    const ref = get(state, 'ref');
+    const { orders } = ref;
+    const order = orders.current();
+    const callback = () => {
+      return !!actionCallback && typeof actionCallback === 'function'
+        ? dispatch(actionCallback())
+        : Promise.resolve();
+    };
+    const hasValidationHash =
+      !!validationHash && typeof validationHash === 'object';
+    const isAttemptingToSetLocationId = hasValidationHash
+      ? 'location_id' in validationHash
+      : false;
+    const isAttemptingToSetServiceType = hasValidationHash
+      ? 'service_type' in validationHash
+      : false;
+    const isAttemptingToSetRequestedAt = hasValidationHash
+      ? 'requested_at' in validationHash
+      : false;
+
+    const payload = orders.validateCart(order, validationHash, options);
+
+    return (
+      dispatch(_validateCurrentCart(payload))
+        /**
+         * If the validation succeeds
+         * we check if an actionCallback was passed
+         * in the case that it was, we call it.
+         * Otherwise we return null (this is necessary in the case that
+         * validateCurrentCart is passed an onValidationError callback)
+         */
+        .then(callback)
+        /**
+         * If the validation throws
+         * we return a function that encapsulates
+         * the necessary steps to resolve the error
+         * before finally dispatching the actionCallback
+         */
+        .catch((err) => {
+          const proceed = () => {
+            if (err && get(err, 'errors', []).length) {
+              const errorCode = get(err.errors[0], 'code');
+              const orderRef = get(state, 'session.order.ref');
+              /**
+               * Invalid items in cart
+               */
+              if (
+                errorCode ===
+                ErrorCodes.validateCart[ApiVersion.V1].invalidItems
+              ) {
+                const lineItemsData = get(
+                  state,
+                  'session.order.lineItemsData',
+                  [],
+                );
+                const [, ...invalidItems] = get(err, 'errors');
+
+                const invalidItemsInCart = getInvalidLineItems(
+                  invalidItems,
+                  lineItemsData,
+                );
+
+                const promises = invalidItemsInCart.map(invalidItem =>
+                  dispatch(removeLineItem(orderRef, invalidItem)),
+                );
+
+                return Promise.all(promises).then(callback);
+              }
+
+              /**
+               * Location is closed
+               */
+              if (
+                errorCode ===
+                ErrorCodes.validateCart[ApiVersion.V1].locationIsClosed
+              ) {
+                const allLocationsById = get(
+                  state,
+                  'data.locations.locationsById',
+                );
+
+                const locationId = isAttemptingToSetLocationId
+                  ? validationHash.location_id
+                  : get(state, 'session.order.orderData.location_id');
+                const serviceType = isAttemptingToSetServiceType
+                  ? validationHash.service_type
+                  : get(state, 'session.order.orderData.service_type');
+                const requestedAt = isAttemptingToSetRequestedAt
+                  ? validationHash.requested_at
+                  : get(state, 'session.order.orderData.requested_at');
+
+                /**
+                 * If the location already exists in memory
+                 * we find the first available order time
+                 */
+                if (locationId in allLocationsById) {
+                  const location = get(allLocationsById, `${locationId}`);
+                  const firstAvailableOrderTime = get(
+                    location,
+                    `first_times.${serviceType}.utc`,
+                  );
+                  return dispatch(
+                    setRequestedAt(orderRef, firstAvailableOrderTime),
+                  ).then(callback);
+                }
+
+                /**
+                 * Otherwise, we fetch the location
+                 * and then find the first available order time
+                 */
+                return dispatch(
+                  fetchLocation(ref, locationId, {
+                    service_type: serviceType,
+                    requested_at: requestedAt,
+                    include_times: true,
+                  }),
+                ).then(() => {
+                  const nextState = getStateWithNamespace(getState);
+                  const nextAllLocationsById = get(
+                    nextState,
+                    'data.locations.locationsById',
+                  );
+                  const location = get(nextAllLocationsById, `${locationId}`);
+                  const firstAvailableOrderTime = get(
+                    location,
+                    `first_times.${serviceType}.utc`,
+                  );
+
+                  return dispatch(
+                    setRequestedAt(orderRef, firstAvailableOrderTime),
+                  ).then(callback);
                 });
               }
 
@@ -1026,7 +1315,10 @@ export function _withCartValidation(
                * Unmet delivery minimum
                * (not much we can do here apart from notify the customer)
                */
-              if (errorCode === ErrorCodes.validateCart.unmetDeliveryMinimum) {
+              if (
+                errorCode ===
+                ErrorCodes.validateCart[ApiVersion.V1].unmetDeliveryMinimum
+              ) {
                 return () => Promise.resolve();
               }
             }

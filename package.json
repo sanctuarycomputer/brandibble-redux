@@ -10,7 +10,7 @@
   "main": "lib/brandibble-redux.js",
   "scripts": {
     "lint": "eslint src",
-    "build": "node_modules/.bin/rimraf lib && node_modules/.bin/rollup --format cjs --config",
+    "build": "npx rimraf lib && npx rollup --format cjs --config",
     "build:umd": "webpack src/index.js dist/brandibble-redux.js --config webpack.config.development.js",
     "build:umd:min": "webpack src/index.js dist/brandibble-redux.min.js --config webpack.config.production.js",
     "test": "node ./node_modules/karma/bin/karma start",
